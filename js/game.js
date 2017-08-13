@@ -7,7 +7,7 @@ var canvas;
 var engine;
 var scene;
 var currentLevel;
-
+var dragonL;
 var dragon;
 var isAPressed = false;
 var isDPressed = false;
@@ -26,7 +26,7 @@ function startGame() {
 		}
 	});
 
-function addListeners() {
+
     document.addEventListener("keydown", function (event) {
 
         if (event.key == 'a' || event.key == 'A') {
@@ -65,7 +65,7 @@ function addListeners() {
        
     });}
 
-}
+
 
 function loadScene() {
 	switch(currentLevel) {
@@ -89,10 +89,10 @@ function loadScene() {
 }
 
 function createDragon() {
-	var dragonL = new BABYLON.Mesh.CreateBox("dragon", 2, scene);
+	 dragonL = new BABYLON.Mesh.CreateBox("dragon", 2, scene);
 	dragonL.material = new BABYLON.StandardMaterial("DragonMaterial", scene);
 	dragonL.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
-	dragonL.position.y = 0;
+	dragonL.position.z = 0;
     dragonL.position.x = 0
 	dragonL.scaling.z = 2;
 
@@ -104,11 +104,11 @@ function createDragon() {
     	
     	if(isAPressed)
     	{
-    		dragonL.position.y -= 1;
+    		dragonL.position.x -= 1;
     		console.log("shmal A");
     	}
     	if (isDPressed) {
-    		dragonL.position.y += 1;
+    		dragonL.position.x += 1;
     		console.log("ymyn D");
     	}
        if (isWPressed) {
@@ -122,7 +122,7 @@ function createDragon() {
 function levelZero() {
 	scene = new BABYLON.Scene(engine);
 	currentLevel = 0;
-
+      
 	//Scene follow camera
 	var camera = new BABYLON.ArcRotateCamera("ArcRotateCamera", (Math.PI / 2), (Math.PI / 2) - 0.35, 7, dragon, scene);
 
