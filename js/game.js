@@ -137,3 +137,24 @@ function levelZero() {
 	camera.attachControl(canvas);
 }
 
+function createConfiguredGround()
+{
+
+    var ground = new BABYLON.Mesh.CreateGroundFromHeightMap
+        ("ground", "scenes/Landscape1.jpg", 1000, 1000,
+        50, 0, 100, scene, false, onGroundCreated);
+
+    var groundMaterial = new BABYLON.StandardMaterial("m1", scene);
+    groundMaterial.ambientColor = new BABYLON.Color3(1, 0, 0);
+    groundMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
+    groundMaterial.diffuseTexture = new BABYLON.Texture("scenes/checker_large.gif", scene);
+    groundMaterial.diffuseTexture.uScale = 10;
+    groundMaterial.diffuseTexture.vScale = 10;
+
+    function onGroundCreated() {
+        ground.material = groundMaterial;
+        ground.checkCollisions = true;
+    }
+
+    return ground;
+}
