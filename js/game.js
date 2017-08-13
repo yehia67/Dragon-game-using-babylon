@@ -22,7 +22,9 @@ function startGame() {
 	engine.runRenderLoop(function() {
 		if(scene) {
 			scene.render();
-			applyMovement()
+			if(dragon) {
+				applyMovement();
+			}
 		}
 	});
 
@@ -89,16 +91,12 @@ function loadScene() {
 }
 
 function createDragon() {
-	BABYLON.SceneLoader.ImportMesh("drago", "scenes/", "dragon.babylon", scene, function (newMeshes,
-	 particleSystems, skeletons) {
-	 	var boundingBox = calculateBoundingBoxOfCompositeMeshes(newMeshes);
-        newMeshes[0].position = new Babylon.vector3(0.0001,3.6501,3.3172);    
-        newMeshes[0].scaling = new Babylon.vector3(1, 1, 1);
-        dragonL = newMeshes[0]; });
-	
-	
+	BABYLON.SceneLoader.ImportMesh("", "scenes/", "dragon.babylon", scene, onDragonLoaded);
 
-	return dragonL;
+	function onDragonLoaded(newMeshes, particleSystems, skeletons) {
+	 	dragon = newMeshes[0];
+	 	dragon.position = new BABYLON.Vector3(0, 10, 0);
+    }
 }
 
 
@@ -106,16 +104,16 @@ function createDragon() {
     	
     	if(isAPressed)
     	{
-    		dragonL.position.x -= 1;
-    		console.log("shmal A");
+    		dragon.position.x -= 1;
+    		console.log(dragon.position);
     	}
     	if (isDPressed) {
-    		dragonL.position.x += 1;
-    		console.log("ymyn D");
+    		dragon.position.x += 1;
+    		console.log(dragon.position);
     	}
        if (isWPressed) {
-             dragonL.position.z += 1;
-             console.log(" 2odam W");
+             dragon.position.z += 1;
+             console.log(dragon.position);
        }
     }
 
@@ -124,14 +122,18 @@ function createDragon() {
 function levelZero() {
 	scene = new BABYLON.Scene(engine);
 	currentLevel = 0;
+	var box = new BABYLON.Mesh.CreateBox("test_box", 1, scene);
+	box.material = new BABYLON.StandardMaterial("mat", scene);
+	box.material.diffuseColor = new BABYLON.Color3.Red();
+	box.position.z = 10;
       
 	//Scene follow camera
-	var camera = new BABYLON.ArcRotateCamera("ArcRotateCamera", (Math.PI / 2), (Math.PI / 2) - 0.35, 7, dragon, scene);
+	var camera = new BABYLON.ArcRotateCamera("ArcRotateCamera", (Math.PI / 2), (Math.PI / 2) - 0.35, 30, dragon, scene);
 
 	//Scene light
 	var light = new BABYLON.HemisphericLight("MainLevelLight", new BABYLON.Vector3(0, 10, 0), scene);
 
-	dragon = createDragon();
+	createDragon();
 
 	camera.lockedTarget = dragon;
 	camera.attachControl(canvas);
