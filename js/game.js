@@ -95,7 +95,7 @@ function createDragon() {
 
 	function onDragonLoaded(newMeshes, particleSystems, skeletons) {
 	 	dragon = newMeshes[0];
-	 	dragon.position = new BABYLON.Vector3(0, 10, 0);
+	 	dragon.position = new BABYLON.Vector3(100, 500, 0);
     }
 }
 
@@ -143,14 +143,14 @@ function createConfiguredGround()
 {
 
     var ground = new BABYLON.Mesh.CreateGroundFromHeightMap
-        ("ground", "scenes/Landscape1.jpg", 1000, 1000,
-        50, 0, 100, scene, false, onGroundCreated);
+        ("ground", "scenes/lake.png", 1000, 1000,
+        50,-50, 100, scene, false, onGroundCreated);
 
     var groundMaterial = new BABYLON.StandardMaterial("m1", scene);
-    groundMaterial.ambientColor = new BABYLON.Color3(1, 0, 0);
-    groundMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
-    groundMaterial.diffuseTexture = new BABYLON.Texture("scenes/checker_large.gif", scene);
-    groundMaterial.diffuseTexture.uScale = 10;
+   // groundMaterial.ambientColor = new BABYLON.Color3(1, 0, 0);
+   // groundMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
+    groundMaterial.diffuseTexture = new BABYLON.Texture("scenes/RockMountain.jpg", scene);
+   groundMaterial.diffuseTexture.uScale = 10;
     groundMaterial.diffuseTexture.vScale = 10;
 
     function onGroundCreated() {
