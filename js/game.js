@@ -89,12 +89,14 @@ function loadScene() {
 }
 
 function createDragon() {
-	 dragonL = new BABYLON.Mesh.CreateBox("dragon", 2, scene);
-	dragonL.material = new BABYLON.StandardMaterial("DragonMaterial", scene);
-	dragonL.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
-	dragonL.position.z = 0;
-    dragonL.position.x = 0
-	dragonL.scaling.z = 2;
+	BABYLON.SceneLoader.ImportMesh("drago", "scenes/", "dragon.babylon", scene, function (newMeshes,
+	 particleSystems, skeletons) {
+	 	var boundingBox = calculateBoundingBoxOfCompositeMeshes(newMeshes);
+        newMeshes[0].position = new Babylon.vector3(0.0001,3.6501,3.3172);    
+        newMeshes[0].scaling = new Babylon.vector3(1, 1, 1);
+        dragonL = newMeshes[0]; });
+	
+	
 
 	return dragonL;
 }
