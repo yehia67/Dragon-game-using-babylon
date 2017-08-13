@@ -9,18 +9,62 @@ var scene;
 var currentLevel;
 
 var dragon;
-
+var isAPressed = false;
+var isDPressed = false;
+var isWPressed = false;
 function startGame() {
 	canvas = document.getElementById("renderCanvas");
 	engine = new BABYLON.Engine(canvas);
 	currentLevel = 0;
 	loadScene();
-
+     
+     
 	engine.runRenderLoop(function() {
 		if(scene) {
 			scene.render();
+			applyMovement()
 		}
 	});
+
+function addListeners() {
+    document.addEventListener("keydown", function (event) {
+
+        if (event.key == 'a' || event.key == 'A') {
+            isAPressed = true;
+            console.log(" A true");
+        }
+        if (event.key == 'd' || event.key == 'D') {
+            isDPressed = true;
+            console.log(" D true");
+        }
+        if (event.key == 'w' || event.key == 'W') {
+            isWPressed = true;
+            console.log(" W true");
+        }
+        
+
+
+    });
+
+    document.addEventListener("keyup", function () {
+
+        if (event.key == 'a' || event.key == 'A') {
+            isAPressed = false;
+            console.log(" A false");
+        }
+        if (event.key == 'd' || event.key == 'D') {
+            isDPressed = false;
+              console.log(" d false");
+        }
+        if (event.key == 'w' || event.key == 'W') {
+            isWPressed = false;
+              console.log(" w false");
+        }
+        // breath fire
+
+       
+    });}
+
 }
 
 function loadScene() {
@@ -45,15 +89,35 @@ function loadScene() {
 }
 
 function createDragon() {
-	var dragonLevel = new BABYLON.Mesh.CreateBox("dragon", 2, scene);
-	dragonLevel.material = new BABYLON.StandardMaterial("DragonMaterial", scene);
-	dragonLevel.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
-	dragonLevel.position.y = 6;
+	var dragonL = new BABYLON.Mesh.CreateBox("dragon", 2, scene);
+	dragonL.material = new BABYLON.StandardMaterial("DragonMaterial", scene);
+	dragonL.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+	dragonL.position.y = 0;
+    dragonL.position.x = 0
+	dragonL.scaling.z = 2;
 
-	dragonLevel.scaling.z = 6;
-
-	return dragonLevel;
+	return dragonL;
 }
+
+
+    function applyMovement(){
+    	
+    	if(isAPressed)
+    	{
+    		dragonL.position.y -= 1;
+    		console.log("shmal A");
+    	}
+    	if (isDPressed) {
+    		dragonL.position.y += 1;
+    		console.log("ymyn D");
+    	}
+       if (isWPressed) {
+             dragonL.position.z += 1;
+             console.log(" 2odam W");
+       }
+    }
+
+
 
 function levelZero() {
 	scene = new BABYLON.Scene(engine);
