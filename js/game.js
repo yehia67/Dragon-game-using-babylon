@@ -74,7 +74,8 @@ function startGame() {
 function loadScene() {
 	switch(currentLevel) {
 		case 0:
-			console.log("called level zero!");
+	console.log("called level zero!");
+    
 			levelZero();
 			break;
 		case 1:
@@ -98,6 +99,7 @@ function createDragon() {
 	function onDragonLoaded(newMeshes, particleSystems, skeletons) {
 	 	dragon = newMeshes[1];
 	 	dragon.position = new BABYLON.Vector3(0, 30, 0);
+        dragon.scaling = new BABYLON.Vector3(3, 3, 3);
         camera.lockedTarget = dragon;
         camera.radius = 50;
     }
