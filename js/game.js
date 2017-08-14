@@ -6,12 +6,15 @@ document.addEventListener("DOMContentLoaded", startGame, false);
 var canvas;
 var engine;
 var scene;
+var camera;
+
 var currentLevel;
-var dragonL;
 var dragon;
+
 var isAPressed = false;
 var isDPressed = false;
 var isWPressed = false;
+
 function startGame() {
 	canvas = document.getElementById("renderCanvas");
 	engine = new BABYLON.Engine(canvas);
@@ -28,7 +31,6 @@ function startGame() {
 		}
 	});
 
-	var ground = createConfiguredGround();
     document.addEventListener("keydown", function (event) {
 
         if (event.key == 'a' || event.key == 'A') {
@@ -94,8 +96,10 @@ function createDragon() {
 	BABYLON.SceneLoader.ImportMesh("", "scenes/", "dragon.babylon", scene, onDragonLoaded);
 
 	function onDragonLoaded(newMeshes, particleSystems, skeletons) {
-	 	dragon = newMeshes[0];
-	 	dragon.position = new BABYLON.Vector3(100, 500, 0);
+	 	dragon = newMeshes[1];
+	 	dragon.position = new BABYLON.Vector3(0, 30, 0);
+        camera.lockedTarget = dragon;
+        camera.radius = 50;
     }
 }
 
@@ -104,16 +108,13 @@ function createDragon() {
     	
     	if(isAPressed)
     	{
-    		dragon.position.x -= 1;
-    		console.log(dragon.position);
+    		dragon.position.x += 1;
     	}
     	if (isDPressed) {
-    		dragon.position.x += 1;
-    		console.log(dragon.position);
+    		dragon.position.x += -1;
     	}
        if (isWPressed) {
-             dragon.position.z += 1;
-             console.log(dragon.position);
+             dragon.position.z += -1;
        }
     }
 
@@ -122,21 +123,18 @@ function createDragon() {
 function levelZero() {
 	scene = new BABYLON.Scene(engine);
 	currentLevel = 0;
-	var box = new BABYLON.Mesh.CreateBox("test_box", 1, scene);
-	box.material = new BABYLON.StandardMaterial("mat", scene);
-	box.material.diffuseColor = new BABYLON.Color3.Red();
-	box.position.z = 10;
-      
-	//Scene follow camera
-	var camera = new BABYLON.ArcRotateCamera("ArcRotateCamera", (Math.PI / 2), (Math.PI / 2) - 0.35, 30, dragon, scene);
+
+    //Scene camera
+    camera = new BABYLON.FollowCamera("dragonCamera", new BABYLON.Vector3.Zero(), scene);
+    
+    createDragon();
+
+    camera.attachControl(canvas, true);
 
 	//Scene light
 	var light = new BABYLON.HemisphericLight("MainLevelLight", new BABYLON.Vector3(0, 10, 0), scene);
 
-	createDragon();
-
-	camera.lockedTarget = dragon;
-	camera.attachControl(canvas);
+    var ground = createConfiguredGround();
 }
 
 function createConfiguredGround()
