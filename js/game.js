@@ -14,6 +14,8 @@ var dragon;
 var isAPressed = false;
 var isDPressed = false;
 var isWPressed = false;
+var isLeftPressed = false;
+var isRightPressed = false;
 
 function startGame() {
 	canvas = document.getElementById("renderCanvas");
@@ -44,6 +46,18 @@ function startGame() {
         if (event.key == 'w' || event.key == 'W') {
             isWPressed = true;
             console.log(" W true");
+
+        }
+        if (event.key == '37') {
+            isLeftPressed = true;
+            
+            console.log(" left true");
+        }
+        if (event.key == '39') {
+            isRightPressed = true;
+            console.log(" right true");
+
+
         }
         
 
@@ -63,6 +77,16 @@ function startGame() {
         if (event.key == 'w' || event.key == 'W') {
             isWPressed = false;
               console.log(" w false");
+        }
+       if (event.key == '37') {
+            isLeftPressed = false;
+
+            console.log(" left false");
+        }
+        if (event.key == '39') {
+            isRightPressed = false;
+
+            console.log(" left false");
         }
         // breath fire
 
@@ -101,7 +125,8 @@ function createDragon() {
 	 	dragon.position = new BABYLON.Vector3(0, 30, 0);
         dragon.scaling = new BABYLON.Vector3(3, 3, 3);
         camera.lockedTarget = dragon;
-        camera.radius = 50;
+        camera.heightOffset = 20;
+        camera.radius = 60;
     }
 }
 
@@ -118,6 +143,23 @@ function createDragon() {
        if (isWPressed) {
              dragon.position.z += -1;
        }
+       if (isLeftPressed)
+       {
+           dragon.rotation.y -= .1 *0.4 ;
+       }
+       if (isRightPressed)
+       {
+           dragon.rotation.y += .1 * 0.4;
+       }
+       if (dragon.position.x>=500  )
+           dragon.position.x = 500
+       if (dragon.position.x <= -500)
+           dragon.position.x = -500
+       if (dragon.position.z >= 500)
+           dragon.position.z = 500
+       if (dragon.position.z <= -475)
+           dragon.position.z = -475
+
     }
 
 
