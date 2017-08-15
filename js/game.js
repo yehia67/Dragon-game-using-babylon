@@ -14,6 +14,7 @@ var dragon;
 var isAPressed = false;
 var isDPressed = false;
 var isWPressed = false;
+var isSPressed = false;
 var isLeftPressed = false;
 var isRightPressed = false;
 var isUpPressed = false;
@@ -51,7 +52,16 @@ function startGame() {
             console.log(" W true");
 
         }
+<<<<<<< HEAD
       /*  if (event.key == '37') {
+=======
+        if (event.key == 's' || event.key == 'S') {
+            isSPressed = true;
+            console.log(" S true");
+
+        }
+        if (event.key == '37') {
+>>>>>>> e53ff8e2582be527437cb6f8818ce07ee3aedab3
             isLeftPressed = true;
             
             console.log(" left true");
@@ -148,7 +158,15 @@ function startGame() {
             isWPressed = false;
            //   console.log(" w false");
         }
+<<<<<<< HEAD
        /*if (event.key == '37') {
+=======
+        if (event.key == 's' || event.key == 'S') {
+            isSPressed = false;
+              console.log(" S false");
+        }
+       if (event.key == '37') {
+>>>>>>> e53ff8e2582be527437cb6f8818ce07ee3aedab3
             isLeftPressed = false;
 
             console.log(" left false");
@@ -207,6 +225,7 @@ function createDragon() {
     	
     	if(isAPressed)
     	{
+<<<<<<< HEAD
     	    dragon.position.x += -1;
     	   // console.log("x :" + dragon.position.x)
 
@@ -229,6 +248,18 @@ function createDragon() {
            console.log("Front vector x :" + dragon.frontVector.x + "       Z:" + dragon.frontVector.z)
 
 
+=======
+    		dragon.position.x += 2;
+    	}
+    	if (isDPressed) {
+    		dragon.position.x -= 2;
+    	}
+       if (isWPressed) {
+             dragon.position.z -= 2;
+       }
+       if (isSPressed) {
+             dragon.position.z += 2;
+>>>>>>> e53ff8e2582be527437cb6f8818ce07ee3aedab3
        }
        if (isLeftPressed)
        {
@@ -251,15 +282,20 @@ function createDragon() {
            dragon.position.y -= 1;
        }
        if (dragon.position.x>=500  )
-           dragon.position.x = 500
+           dragon.position.x = 500;
        if (dragon.position.x <= -500)
-           dragon.position.x = -500
+           dragon.position.x = -500;
        if (dragon.position.z >= 500)
-           dragon.position.z = 500
+           dragon.position.z = 500;
        if (dragon.position.z <= -475)
+<<<<<<< HEAD
            dragon.position.z = -475
      //  dragon.frontVector.x = Math.sin(dragon.rotation.y) * -1;
         // dragon.frontVector.z = Math.cos(dragon.rotation.y) * -1;
+=======
+           dragon.position.z = -475;
+
+>>>>>>> e53ff8e2582be527437cb6f8818ce07ee3aedab3
     }
 
 
