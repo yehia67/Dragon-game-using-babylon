@@ -26,7 +26,7 @@ function startGame() {
     engine = new BABYLON.Engine(canvas);
     currentLevel = 0;
     loadScene();
-     
+    loadCoins();
      
     engine.runRenderLoop(function() {
         if(scene) {
@@ -52,7 +52,12 @@ function startGame() {
             console.log(" W true");
 
         }
-<<<<<<< HEAD
+        if (event.key == 's' || event.key == 'S') {
+            isSPressed = true;
+            console.log(" S true");
+
+        }
+
       /*  if (event.key == '37') {
 =======
         if (event.key == 's' || event.key == 'S') {
@@ -158,7 +163,11 @@ function startGame() {
             isWPressed = false;
            //   console.log(" w false");
         }
-<<<<<<< HEAD
+        if (event.key == 's' || event.key == 'S') {
+            isSPressed = false;
+           //   console.log(" w false");
+        }
+
        /*if (event.key == '37') {
 =======
         if (event.key == 's' || event.key == 'S') {
@@ -225,41 +234,36 @@ function createDragon() {
     	
     	if(isAPressed)
     	{
-<<<<<<< HEAD
-    	    dragon.position.x += -1;
+
+    	    dragon.position.x -= 2;
     	   // console.log("x :" + dragon.position.x)
 
     	}
-    	if (isDPressed) {
-    	    dragon.position.x += 1;
-    	    //console.log("x :" + dragon.position.x)
-
-    	}
-       if (isWPressed) {
+    
+       /*if (isWPressed) {
            //  dragon.position.z += -1;
            // dragon.moveWithCollisions(dragon.frontVector.multiplyByFloats(1, 1, 1));
 
            //dragon.frontVector.z--;
          //  console.log(dragon.frontVector.z * Math.cos(dragon.rotation.y)*-1 );
           // console.log(dragon.frontVector.z * Math.cos(dragon.rotation.y) * -1);
-           dragon.position.x +=  dragon.frontVector.x /* * Math.cos(dragon.rotation.y) */ *-1;
-           dragon.position.z += dragon.frontVector.z /* * Math.cos(dragon.rotation.y)*/  * -1;
-           console.log("x :" + dragon.position.x + "       Z:" + dragon.position.z)
-           console.log("Front vector x :" + dragon.frontVector.x + "       Z:" + dragon.frontVector.z)
+           dragon.position.x +=  dragon.frontVector.x /* * Math.cos(dragon.rotation.y) */ 
+           //dragon.position.z += dragon.frontVector.z /* * Math.cos(dragon.rotation.y)*/  * -1;
+           //console.log("x :" + dragon.position.x + "       Z:" + dragon.position.z)
+          // console.log("Front vector x :" + dragon.frontVector.x + "       Z:" + dragon.frontVector.z)
 
 
-=======
+    		//dragon.position.x += 2;
+    	//}
+    	if (isDPressed) {
     		dragon.position.x += 2;
     	}
-    	if (isDPressed) {
-    		dragon.position.x -= 2;
-    	}
        if (isWPressed) {
-             dragon.position.z -= 2;
+             dragon.position.z += 2;
        }
        if (isSPressed) {
-             dragon.position.z += 2;
->>>>>>> e53ff8e2582be527437cb6f8818ce07ee3aedab3
+             dragon.position.z -= 2;
+
        }
        if (isLeftPressed)
        {
@@ -288,14 +292,14 @@ function createDragon() {
        if (dragon.position.z >= 500)
            dragon.position.z = 500;
        if (dragon.position.z <= -475)
-<<<<<<< HEAD
+{
            dragon.position.z = -475
      //  dragon.frontVector.x = Math.sin(dragon.rotation.y) * -1;
         // dragon.frontVector.z = Math.cos(dragon.rotation.y) * -1;
-=======
-           dragon.position.z = -475;
 
->>>>>>> e53ff8e2582be527437cb6f8818ce07ee3aedab3
+           dragon.position.z = -475;
+}
+
     }
 
 
@@ -337,4 +341,17 @@ function createConfiguredGround()
     }
 
     return ground;
+}
+
+function loadCoins() {
+    BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
+
+    function onCoinLoaded(newMeshes, particleSystems, skeletons) {
+        newMeshes[0].position = new BABYLON.Vector3(0, 30, 300);
+        newMeshes[0].scaling = new BABYLON.Vector3(0.25, 0.25, 0.25);
+        newMeshes[0].material = new BABYLON.StandardMaterial("coinMat", scene);
+        newMeshes[0].material.diffuseColor = new BABYLON.Color3.Yellow();
+        newMeshes[0].rotation.x = Math.PI / 2;
+
+}
 }
