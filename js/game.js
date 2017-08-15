@@ -14,6 +14,7 @@ var dragon;
 var isAPressed = false;
 var isDPressed = false;
 var isWPressed = false;
+var isSPressed = false;
 var isLeftPressed = false;
 var isRightPressed = false;
 
@@ -48,6 +49,11 @@ function startGame() {
             console.log(" W true");
 
         }
+        if (event.key == 's' || event.key == 'S') {
+            isWPressed = true;
+            console.log(" S true");
+
+        }
         if (event.key == '37') {
             isLeftPressed = true;
             
@@ -76,6 +82,10 @@ function startGame() {
         }
         if (event.key == 'w' || event.key == 'W') {
             isWPressed = false;
+              console.log(" w false");
+        }
+        if (event.key == 's' || event.key == 'S') {
+            isSPressed = false;
               console.log(" w false");
         }
        if (event.key == '37') {
@@ -138,10 +148,13 @@ function createDragon() {
     		dragon.position.x += 1;
     	}
     	if (isDPressed) {
-    		dragon.position.x += -1;
+    		dragon.position.x -= 1;
     	}
        if (isWPressed) {
-             dragon.position.z += -1;
+             dragon.position.z += 1;
+       }
+       if (isSPressed) {
+             dragon.position.z -= 1;
        }
        if (isLeftPressed)
        {
