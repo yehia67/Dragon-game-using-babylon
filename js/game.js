@@ -50,7 +50,7 @@ function startGame() {
 
         }
         if (event.key == 's' || event.key == 'S') {
-            isWPressed = true;
+            isSPressed = true;
             console.log(" S true");
 
         }
@@ -86,7 +86,7 @@ function startGame() {
         }
         if (event.key == 's' || event.key == 'S') {
             isSPressed = false;
-              console.log(" w false");
+              console.log(" S false");
         }
        if (event.key == '37') {
             isLeftPressed = false;
@@ -145,16 +145,16 @@ function createDragon() {
     	
     	if(isAPressed)
     	{
-    		dragon.position.x += 1;
+    		dragon.position.x += 2;
     	}
     	if (isDPressed) {
-    		dragon.position.x -= 1;
+    		dragon.position.x -= 2;
     	}
        if (isWPressed) {
-             dragon.position.z += 1;
+             dragon.position.z -= 2;
        }
        if (isSPressed) {
-             dragon.position.z -= 1;
+             dragon.position.z += 2;
        }
        if (isLeftPressed)
        {
@@ -165,13 +165,13 @@ function createDragon() {
            dragon.rotation.y += .1 * 0.4;
        }
        if (dragon.position.x>=500  )
-           dragon.position.x = 500
+           dragon.position.x = 500;
        if (dragon.position.x <= -500)
-           dragon.position.x = -500
+           dragon.position.x = -500;
        if (dragon.position.z >= 500)
-           dragon.position.z = 500
+           dragon.position.z = 500;
        if (dragon.position.z <= -475)
-           dragon.position.z = -475
+           dragon.position.z = -475;
 
     }
 
