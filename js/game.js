@@ -10,7 +10,7 @@ var camera;
 
 var currentLevel;
 var dragon;
-
+var coin = [];
 var isAPressed = false;
 var isDPressed = false;
 var isWPressed = false;
@@ -215,12 +215,12 @@ function loadScene() {
 }
 
 function createDragon() {
-	BABYLON.SceneLoader.ImportMesh("", "scenes/", "dragon.babylon", scene, onDragonLoaded);
+	BABYLON.SceneLoader.ImportMesh("", "scenes/", "alduin-dragon.babylon", scene, onDragonLoaded);
 
 	function onDragonLoaded(newMeshes, particleSystems, skeletons) {
-	 	dragon = newMeshes[1];
+	 	dragon = newMeshes[0];
 	 	dragon.position = new BABYLON.Vector3(0, 30, -1);
-	 	dragon.scaling = new BABYLON.Vector3(3, 3, 3);
+	 	dragon.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05);
 	 	dragon.frontVector = new BABYLON.Vector3(0, 0, -1);
 	 	dragon.rotation.y = 3.14;
         camera.lockedTarget = dragon;
@@ -240,14 +240,14 @@ function createDragon() {
 
     	}
     
-       /*if (isWPressed) {
+       if (isWPressed) {
            //  dragon.position.z += -1;
-           // dragon.moveWithCollisions(dragon.frontVector.multiplyByFloats(1, 1, 1));
+           //dragon.moveWithCollisions(dragon.frontVector.multiplyByFloats(1, 1, 1));
 
            //dragon.frontVector.z--;
          //  console.log(dragon.frontVector.z * Math.cos(dragon.rotation.y)*-1 );
           // console.log(dragon.frontVector.z * Math.cos(dragon.rotation.y) * -1);
-           dragon.position.x +=  dragon.frontVector.x /* * Math.cos(dragon.rotation.y) */ 
+           //dragon.position.x +=  dragon.frontVector.x /* * Math.cos(dragon.rotation.y) */ 
            //dragon.position.z += dragon.frontVector.z /* * Math.cos(dragon.rotation.y)*/  * -1;
            //console.log("x :" + dragon.position.x + "       Z:" + dragon.position.z)
           // console.log("Front vector x :" + dragon.frontVector.x + "       Z:" + dragon.frontVector.z)
@@ -258,8 +258,8 @@ function createDragon() {
     	if (isDPressed) {
     		dragon.position.x += 2;
     	}
-       if (isWPressed) {
-             dragon.position.z += 2;
+      /* if (isWPressed) {
+             dragon.position.z += 2;*/
        }
        if (isSPressed) {
              dragon.position.z -= 2;
@@ -345,13 +345,18 @@ function createConfiguredGround()
 
 function loadCoins() {
     BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
-
+var zrand;
     function onCoinLoaded(newMeshes, particleSystems, skeletons) {
-        newMeshes[0].position = new BABYLON.Vector3(0, 30, 300);
-        newMeshes[0].scaling = new BABYLON.Vector3(0.25, 0.25, 0.25);
-        newMeshes[0].material = new BABYLON.StandardMaterial("coinMat", scene);
-        newMeshes[0].material.diffuseColor = new BABYLON.Color3.Yellow();
-        newMeshes[0].rotation.x = Math.PI / 2;
+         for (var i = 0; i < 4; i++) {
+              zrand  = Math.floor(Math.random() * 501);
+              newMeshes[0].position = new BABYLON.Vector3(0, 30, zrand);
+              newMeshes[0].scaling = new BABYLON.Vector3(0.25, 0.25, 0.25);
+              newMeshes[0].material = new BABYLON.StandardMaterial("coinMat", scene);
+              newMeshes[0].material.diffuseColor = new BABYLON.Color3.Yellow();
+              newMeshes[0].rotation.x = Math.PI / 2;
+              coin[i] = newMeshes[0];
+            }   
 
 }
+
 }
