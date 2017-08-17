@@ -10,7 +10,8 @@ var camera;
 
 var currentLevel;
 var dragon;
-var coin = [];
+var coins = [];
+
 var isAPressed = false;
 var isDPressed = false;
 var isWPressed = false;
@@ -25,8 +26,10 @@ function startGame() {
     canvas = document.getElementById("renderCanvas");
     engine = new BABYLON.Engine(canvas);
     currentLevel = 0;
+
     loadScene();
-    loadCoins();
+    scene.collisionsEnabled = true;
+
     var skybox = BABYLON.Mesh.CreateBox("skyBox", 10000.0, scene);
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
@@ -42,6 +45,7 @@ function startGame() {
             if(dragon) {
                 applyMovement();
             }
+            applyCoinsMovement();
         }
     });
 }
@@ -194,6 +198,8 @@ function createDragon() {
     dragon = new BABYLON.Mesh.CreateBox("dragonBox", 2, scene);
 
     dragon.checkCollisions = true;
+    dragon.ellipsoid = new BABYLON.Vector3(1.0, 1.0, 1.0);
+    dragon.ellipsoidOffset = new BABYLON.Vector3(1.0, 1.0, 1.0);
 
     dragon.material = new BABYLON.StandardMaterial("dragonMaterial", scene);
     dragon.material.diffuseColor = new BABYLON.Color3.Red();
@@ -208,13 +214,9 @@ function createDragon() {
 function applyMovement(){
     dragon.frontVector.x = Math.sin(dragon.rotation.y) * -1;
     dragon.frontVector.z = Math.cos(dragon.rotation.y) * -1;
-   if(isAPressed)
-   {
-      // dragon.frontVector.x += -1;
-       //dragon.moveWithCollisions(dragon.frontVector.multiplyByFloats(0, 0, 0));
-       dragon.position.x += Math.cos(dragon.rotation.y);
-       dragon.position.z += Math.sin(dragon.rotation.y)*-1 ;
-      
+    if(isAPressed) {
+        var direction = new BABYLON.Vector3(Math.cos(dragon.rotation.y), 0, Math.sin(dragon.rotation.y)*-1);
+        dragon.moveWithCollisions(direction);
     }
 
     if (isWPressed) {
@@ -222,11 +224,8 @@ function applyMovement(){
     }
 
     if (isDPressed) {
-        //var xpos = Math.cos(dragon.rotation.y) * -1;
-       // var left = new BABYLON.Vector3(xpos, 0, 0);
-        // dragon.moveWithCollisions(left);
-        dragon.position.x += Math.cos(dragon.rotation.y)*-1;
-        dragon.position.z += Math.sin(dragon.rotation.y) ;
+        var direction = new BABYLON.Vector3(Math.cos(dragon.rotation.y) * -1, 0, Math.sin(dragon.rotation.y));
+        dragon.moveWithCollisions(direction);
     }
 
     if (isSPressed) {
@@ -249,12 +248,14 @@ function applyMovement(){
 
     if (isUpPressed)
     {
-        dragon.position.y += 1 ;
+        var up = new BABYLON.Vector3(0, 1, 0);
+        dragon.moveWithCollisions(up);
     }
 
     if (isDownPressed)
     {
-        dragon.position.y -= 1;
+        var down = new BABYLON.Vector3(0, -1, 0);
+        dragon.moveWithCollisions(down);
     }
 
     if (dragon.position.x>=scenesize/2)
@@ -287,6 +288,7 @@ function levelZero() {
     camera = new BABYLON.FollowCamera("dragonCamera", new BABYLON.Vector3.Zero(), scene);
 
     createDragon();
+    loadCoins(10);
 
     camera.attachControl(canvas, true);
 
@@ -318,18 +320,68 @@ function createConfiguredGround()
     return ground;
 }
 
-function loadCoins() {
+function loadCoins(numberOfCoins) {
     BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
-    var zrand;
+
     function onCoinLoaded(newMeshes, particleSystems, skeletons) {
-        for (var i = 0; i < 4; i++) {
-            zrand  = Math.floor(Math.random() * 501);
-            newMeshes[0].position = new BABYLON.Vector3(0, 30, zrand);
-            newMeshes[0].scaling = new BABYLON.Vector3(0.25, 0.25, 0.25);
-            newMeshes[0].material = new BABYLON.StandardMaterial("coinMat", scene);
-            newMeshes[0].material.diffuseColor = new BABYLON.Color3.Yellow();
-            newMeshes[0].rotation.x = Math.PI / 2;
-            coin[i] = newMeshes[0];
+        coins[0] = newMeshes[0];
+
+        coins[0].position = new BABYLON.Vector3(0, 10, 30);
+
+        coins[0].scaling = new BABYLON.Vector3(0.15, 0.15, 0.15);
+
+        coins[0].material = new BABYLON.StandardMaterial("coinMat", scene);
+        coins[0].material.diffuseColor = new BABYLON.Color3.Yellow();
+
+        coins[0].rotation.x = Math.PI / 2;
+
+        for(var i = 1; i < numberOfCoins; i++) {
+            coins[i] = cloneModel(coins[0], "coins_" + i);
+            coins[i].position = new BABYLON.Vector3(0, 10, (i * 30) + 30);
+            if(i % 2 == 0) {
+                coins[i].position.x = 60;
+            }
+
+            coins[i].scaling = new BABYLON.Vector3(0.15, 0.15, 0.15);
+            coins[i].material = new BABYLON.StandardMaterial("coinMat", scene);
+            coins[i].material.diffuseColor = new BABYLON.Color3.Yellow();
+            coins[i].rotation.x = Math.PI / 2;
         }
+    }
+}
+
+function cloneModel(model,name) {
+    console.log("in cloneModel");
+    var tempClone;
+    tempClone = model.clone("clone_" + name);
+    //tempClone.bounder = model.bounder.clone("bounder_custom" + name);
+    tempClone.skeletons = [];
+
+    if(model.skeletons) {
+        for (var i = 0; i < model.skeletons.length; i += 1) {
+            tempClone.skeletons[i] = model.skeletons[i].clone("skeleton clone #" + name +  i);
+            scene.beginAnimation(tempClone.skeletons[i],0, 120, 1.0, true);
+        }
+    }
+
+    if (model._children) {
+        //model is a parent mesh with multiple _children.
+        for (var i = 0; i < model._children.length; i += 1) {
+            if (tempClone.skeletons.length > 1) //Mostlikely a seperate skeleton for each child mesh..
+                tempClone._children[i].skeleton = tempClone.skeletons[i];
+            else //Mostlikely a single skeleton for all child meshes.
+                tempClone._children[i].skeleton = tempClone.skeletons[0];
+        }
+    } else {
+        tempClone.skeleton = tempClone.skeletons[0];
+    }
+
+    return tempClone;
+
+}
+
+function applyCoinsMovement() {
+    for(var i = 0; i < coins.length; i++) {
+        coins[i].rotation.y += 0.05;
     }
 }
