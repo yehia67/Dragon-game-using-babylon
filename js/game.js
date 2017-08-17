@@ -19,7 +19,7 @@ var isLeftPressed = false;
 var isRightPressed = false;
 var isUpPressed = false;
 var isDownPressed = false;
-
+var scenesize = 2000;
 
 function startGame() {
     canvas = document.getElementById("renderCanvas");
@@ -27,6 +27,14 @@ function startGame() {
     currentLevel = 0;
     loadScene();
     loadCoins();
+    var skybox = BABYLON.Mesh.CreateBox("skyBox", 10000.0, scene);
+    var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+    skyboxMaterial.backFaceCulling = false;
+    skyboxMaterial.disableLighting = true;
+    skybox.material = skyboxMaterial;
+    skybox.infiniteDistance = true;
+    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("scenes/sky/sky", scene);
+    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
 
     engine.runRenderLoop(function() {
         if(scene) {
@@ -199,7 +207,7 @@ function createDragon() {
 
 function applyMovement(){
 
-    /*if(isAPressed)
+   /*if(isAPressed)
     {
         dragon.moveWithCollisions(dragon.frontVector.multiplyByFloats(-1, 0, 1));
     }*/
@@ -242,22 +250,22 @@ function applyMovement(){
         dragon.position.y -= 1;
     }
 
-    if (dragon.position.x>=500)
-        dragon.position.x = 500;
+    if (dragon.position.x>=scenesize/2)
+        dragon.position.x = scenesize / 2;
 
-    if (dragon.position.x <= -500)
-        dragon.position.x = -500;
+    if (dragon.position.x <= -scenesize / 2)
+        dragon.position.x = -scenesize / 2;
 
-    if (dragon.position.z >= 500)
-        dragon.position.z = 500;
+    if (dragon.position.z >= scenesize / 2)
+        dragon.position.z = scenesize / 2;
 
-    if (dragon.position.z <= -475)
+    if (dragon.position.z <= -scenesize / 2)
     {
-        dragon.position.z = -475
+        dragon.position.z = -scenesize / 2;
         //  dragon.frontVector.x = Math.sin(dragon.rotation.y) * -1;
         // dragon.frontVector.z = Math.cos(dragon.rotation.y) * -1;
 
-        dragon.position.z = -475;
+       // dragon.position.z = -475;
     }
 
 }
@@ -284,10 +292,11 @@ function levelZero() {
 function createConfiguredGround()
 {
     var ground = new BABYLON.Mesh.CreateGroundFromHeightMap
-    ("ground", "scenes/lake.png", 1000, 1000,
-    50,-50, 100, scene, false, onGroundCreated);
+    ("ground", "scenes/lake.png", scenesize, scenesize,
+    50,-150, 100, scene, false, onGroundCreated);
 
     var groundMaterial = new BABYLON.StandardMaterial("m1", scene);
+
     // groundMaterial.ambientColor = new BABYLON.Color3(1, 0, 0);
     // groundMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
     groundMaterial.diffuseTexture = new BABYLON.Texture("scenes/RockMountain.jpg", scene);
