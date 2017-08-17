@@ -198,7 +198,7 @@ function createDragon() {
     dragon.material = new BABYLON.StandardMaterial("dragonMaterial", scene);
     dragon.material.diffuseColor = new BABYLON.Color3.Red();
     dragon.position = new BABYLON.Vector3(0, 20, 500);
-
+    dragon.rotation.y = 3.14;
     dragon.frontVector = new BABYLON.Vector3(0, 0, -1);
 
     camera.lockedTarget = dragon;
@@ -206,21 +206,28 @@ function createDragon() {
 
 
 function applyMovement(){
-
-   /*if(isAPressed)
-    {
-        dragon.moveWithCollisions(dragon.frontVector.multiplyByFloats(-1, 0, 1));
-    }*/
+    dragon.frontVector.x = Math.sin(dragon.rotation.y) * -1;
+    dragon.frontVector.z = Math.cos(dragon.rotation.y) * -1;
+   if(isAPressed)
+   {
+      // dragon.frontVector.x += -1;
+       //dragon.moveWithCollisions(dragon.frontVector.multiplyByFloats(0, 0, 0));
+       dragon.position.x += Math.cos(dragon.rotation.y);
+       dragon.position.z += Math.sin(dragon.rotation.y)*-1 ;
+      
+    }
 
     if (isWPressed) {
         dragon.moveWithCollisions(dragon.frontVector.multiplyByFloats(1, 1, 1));
     }
 
-    /*if (isDPressed) {
-        var xpos = Math.cos(dragon.rotation.y) * -1;
-        var left = new BABYLON.Vector3(xpos, 0, 0);
-        dragon.moveWithCollisions(left);
-    }*/
+    if (isDPressed) {
+        //var xpos = Math.cos(dragon.rotation.y) * -1;
+       // var left = new BABYLON.Vector3(xpos, 0, 0);
+        // dragon.moveWithCollisions(left);
+        dragon.position.x += Math.cos(dragon.rotation.y)*-1;
+        dragon.position.z += Math.sin(dragon.rotation.y) ;
+    }
 
     if (isSPressed) {
         dragon.moveWithCollisions(dragon.frontVector.multiplyByFloats(-1, 1, -1));
@@ -229,15 +236,15 @@ function applyMovement(){
     if (isLeftPressed)
     {
         dragon.rotation.y -= .1 * 0.4;
-        dragon.frontVector.x  =  Math.sin(dragon.rotation.y) * -1;
-        dragon.frontVector.z  = Math.cos(dragon.rotation.y) * -1;
+     //   dragon.frontVector.x  =  Math.sin(dragon.rotation.y) * -1;
+     //   dragon.frontVector.z  = Math.cos(dragon.rotation.y) * -1;
     }
 
     if (isRightPressed)
     {
         dragon.rotation.y += .1 * 0.4;
-        dragon.frontVector.x = Math.sin(dragon.rotation.y) * -1;
-        dragon.frontVector.z = Math.cos(dragon.rotation.y) * -1;
+      //  dragon.frontVector.x = Math.sin(dragon.rotation.y) * -1;
+       // dragon.frontVector.z = Math.cos(dragon.rotation.y) * -1;
     }
 
     if (isUpPressed)
