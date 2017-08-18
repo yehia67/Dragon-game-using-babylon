@@ -31,16 +31,15 @@ function startGame() {
     loadScene();
     scene.collisionsEnabled = true;
 
-    //var skybox = BABYLON.Mesh.CreateBox("skyBox", 10000.0, scene);
-    //var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
-    //skyboxMaterial.backFaceCulling = false;
-    //skyboxMaterial.disableLighting = true;
-    //skybox.material = skyboxMaterial;
-    //skybox.infiniteDistance = true;
-    //skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("scenes/sky/sky", scene);
-   // skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-    createDragon();
-    createRocks();
+    var skybox = BABYLON.Mesh.CreateBox("skyBox", 10000.0, scene);
+    var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+    skyboxMaterial.backFaceCulling = false;
+    skyboxMaterial.disableLighting = true;
+    skybox.material = skyboxMaterial;
+    skybox.infiniteDistance = true;
+    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("scenes/sky/sky", scene);
+    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+
     engine.runRenderLoop(function() {
         if(scene) {
             scene.render();
@@ -195,9 +194,13 @@ function createDragon() {
         camera.lockedTarget = dragon;
         camera.heightOffset = 20;
         camera.radius = 60;
+
+        dragon.checkCollisions = true;
+
+        onCollision(coins);
     }
 
-    dragon = new BABYLON.Mesh.CreateBox("dragonBox", 2, scene);
+    /*dragon = new BABYLON.Mesh.CreateBox("dragonBox", 2, scene);
 
     dragon.checkCollisions = true;
     dragon.ellipsoid = new BABYLON.Vector3(0.5, 0.5, 0.5);
@@ -209,7 +212,7 @@ function createDragon() {
     dragon.rotation.y = 3.14;
     dragon.frontVector = new BABYLON.Vector3(0, 0, -1);
 
-    camera.lockedTarget = dragon;
+    camera.lockedTarget = dragon;*/
 }
 function createRocks(){
 //var sphere = BABYLON.Mesh.CreateSphere("sphere", 10.0, 10.0, scene);
@@ -355,8 +358,11 @@ function levelZero() {
     //Scene camera
     camera = new BABYLON.FollowCamera("dragonCamera", new BABYLON.Vector3.Zero(), scene);
 
-    createDragon();
+
     loadCoins(10);
+    createDragon();
+    createRocks();
+
 
     camera.attachControl(canvas, true);
 
@@ -427,12 +433,11 @@ function loadCoins(numberOfCoins) {
 
             coins[i].bounder.position = coins[i].position;
         }
-
-        onCollision(coins);
     }
 }
 
 function onCollision(array) {
+    console.log("in onCollision");
     dragon.actionManager = new BABYLON.ActionManager(scene);
     array.forEach(function(element) {
         dragon.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger : BABYLON.ActionManager.OnIntersectionEnterTrigger, 
