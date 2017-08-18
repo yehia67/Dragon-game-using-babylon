@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <title>Babylon.js sample code</title>
+        <!-- Babylon.js -->
+        <script src="https://www.babylonjs.com/hand.minified-1.2.js"></script>
+        <script src="https://preview.babylonjs.com/cannon.js"></script>
+        <script src="https://preview.babylonjs.com/oimo.js"></script>
+        <script src="https://preview.babylonjs.com/babylon.js"></script>
+        <style>
+            html, body {
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            #renderCanvas {
+                width: 100%;
+                height: 100%;
+                touch-action: none;
+            }
+        </style>
+    </head>
+<body>
+    <div id="canvasZone">
+        <canvas id="renderCanvas"></canvas>
+    </div>
+    <script>
+        var canvas = document.getElementById("renderCanvas");
+        var engine = new BABYLON.Engine(canvas, true);
+
+        var createScene = function () {
+            var scene = new BABYLON.Scene(engine);
+        
+            // Setup environment
+            var light0 = new BABYLON.PointLight("Omni", new BABYLON.Vector3(0, 2, 8), scene);
+            var camera = new BABYLON.ArcRotateCamera("ArcRotateCamera", 1, 0.8, 20, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.attachControl(canvas, true);
+        
+            // Fountain object
+            var fountain = BABYLON.Mesh.CreateBox("foutain", 2.0, scene);
+        
+            // Ground
+            var ground = BABYLON.Mesh.CreatePlane("ground", 50.0, scene);
+            ground.position = new BABYLON.Vector3(0, -10, 0);
+            ground.rotation = new BABYLON.Vector3(Math.PI / 2, 0, 0);
+        
+            ground.material = new BABYLON.StandardMaterial("groundMat", scene);
+            ground.material.backFaceCulling = false;
+            ground.material.diffuseColor = new BABYLON.Color3(0.3, 0.3, 1);
+        	
+        	
+        	//Smoke
+        	var smokeSystem = new BABYLON.ParticleSystem("particles", 1000, scene);
+        	smokeSystem.particleTexture = new BABYLON.Texture("textures/flare.png", scene);
+        	smokeSystem.emitter = fountain; // the starting object, the emitter
+            smokeSystem.minEmitBox = new BABYLON.Vector3(-0.5, 1, -0.5); // Starting all from
+            smokeSystem.maxEmitBox = new BABYLON.Vector3(0.5, 1, 0.5); // To...
+        	
+        	smokeSystem.color1 = new BABYLON.Color4(0.1, 0.1, 0.1, 1.0);
+            smokeSystem.color2 = new BABYLON.Color4(0.1, 0.1, 0.1, 1.0);
+            smokeSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0.0);
+        	
+        	smokeSystem.minSize = 0.3;
+            smokeSystem.maxSize = 1;
+        
+            smokeSystem.minLifeTime = 0.3;
+            smokeSystem.maxLifeTime = 1.5;
+        
+            smokeSystem.emitRate = 350;
+        
+            // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
+            smokeSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+        
+            smokeSystem.gravity = new BABYLON.Vector3(0, 0, 0);
+        
+            smokeSystem.direction1 = new BABYLON.Vector3(-1.5, 8, -1.5);
+            smokeSystem.direction2 = new BABYLON.Vector3(1.5, 8, 1.5);
+        
+            smokeSystem.minAngularSpeed = 0;
+        	   smokeSystem.maxAngularSpeed = Math.PI;
+        
+            smokeSystem.minEmitPower = 0.5;
+            smokeSystem.maxEmitPower = 1.5;
+            smokeSystem.updateSpeed = 0.005;
+        
+            smokeSystem.start();
+        	
+        	
+        	
+            // Create a particle system
+            var fireSystem = new BABYLON.ParticleSystem("particles", 2000, scene);
+        
+            //Texture of each particle
+            fireSystem.particleTexture = new BABYLON.Texture("textures/flare.png", scene);
+        
+            // Where the particles come from
+            fireSystem.emitter = fountain; // the starting object, the emitter
+            fireSystem.minEmitBox = new BABYLON.Vector3(-0.5, 1, -0.5); // Starting all from
+            fireSystem.maxEmitBox = new BABYLON.Vector3(0.5, 1, 0.5); // To...
+        
+            // Colors of all particles
+            fireSystem.color1 = new BABYLON.Color4(1, 0.5, 0, 1.0);
+            fireSystem.color2 = new BABYLON.Color4(1, 0.5, 0, 1.0);
+            fireSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0.0);
+        
+            // Size of each particle (random between...
+            fireSystem.minSize = 0.3;
+            fireSystem.maxSize = 1;
+        
+            // Life time of each particle (random between...
+            fireSystem.minLifeTime = 0.2;
+            fireSystem.maxLifeTime = 0.4;
+        
+            // Emission rate
+            fireSystem.emitRate = 600;
+        
+            // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
+            fireSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+        
+            // Set the gravity of all particles
+            fireSystem.gravity = new BABYLON.Vector3(0, 0, 0);
+        
+            // Direction of each particle after it has been emitted
+            fireSystem.direction1 = new BABYLON.Vector3(0, 4, 0);
+            fireSystem.direction2 = new BABYLON.Vector3(0, 4, 0);
+        
+            // Angular speed, in radians
+            fireSystem.minAngularSpeed = 0;
+            fireSystem.maxAngularSpeed = Math.PI;
+        
+            // Speed
+            fireSystem.minEmitPower = 1;
+            fireSystem.maxEmitPower = 3;
+            fireSystem.updateSpeed = 0.007;
+        
+            // Start the particle system
+            fireSystem.start();
+        	
+        
+            return scene;
+        }
+        
+        
+        var scene = createScene();
+
+        engine.runRenderLoop(function () {
+            scene.render();
+        });
+
+        // Resize
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+    </script>
+</body>
+</html>
