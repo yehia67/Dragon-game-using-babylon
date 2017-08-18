@@ -40,6 +40,10 @@ function startGame() {
     skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("scenes/sky/sky", scene);
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
 
+    var textPlaneTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
+    textPlaneTexture.drawText("Score : ", 700, 500, "bold 140px verdana", "red", "transparent");
+    textPlaneTexture.hasAlpha = true;
+
     engine.runRenderLoop(function() {
         if(scene) {
             scene.render();
@@ -198,22 +202,37 @@ function createDragon() {
         dragon.checkCollisions = true;
 
         onCollision(coins);
+
+        createHealthBar();
     }
-
-    /*dragon = new BABYLON.Mesh.CreateBox("dragonBox", 2, scene);
-
-    dragon.checkCollisions = true;
-    dragon.ellipsoid = new BABYLON.Vector3(0.5, 0.5, 0.5);
-    dragon.ellipsoidOffset = new BABYLON.Vector3(0.0, 1.0, 0.0);
-
-    dragon.material = new BABYLON.StandardMaterial("dragonMaterial", scene);
-    dragon.material.diffuseColor = new BABYLON.Color3.Red();
-    dragon.position = new BABYLON.Vector3(0, 20, 500);
-    dragon.rotation.y = 3.14;
-    dragon.frontVector = new BABYLON.Vector3(0, 0, -1);
-
-    camera.lockedTarget = dragon;*/
 }
+
+function createHealthBar() {
+    var healthBarMaterial = new BABYLON.StandardMaterial("hb1mat", scene);
+    healthBarMaterial.diffuseColor = new BABYLON.Color3.Green();
+    healthBarMaterial.backFaceCulling = false;
+
+    var healthBarContainerMaterial = new BABYLON.StandardMaterial("hb2mat", scene);
+    healthBarContainerMaterial.diffuseColor = new BABYLON.Color3.Blue();
+    healthBarContainerMaterial.backFaceCulling = false;
+
+    //var player = BABYLON.MeshBuilder.CreateBox("player", { width: 5, height: 4, depth: 3 }, scene);     
+    var healthBar = BABYLON.MeshBuilder.CreatePlane("hb1", {width:30, height:3, subdivisions:4}, scene);        
+    var healthBarContainer = BABYLON.MeshBuilder.CreatePlane("hb2", {width:30, height:3, subdivisions:4}, scene);       
+
+    healthBar.position = new BABYLON.Vector3(0, 0, -.01);           // Move in front of container slightly.  Without this there is flickering.
+    healthBarContainer.position = new BABYLON.Vector3(0, 35, 0);     // Position above player.
+
+    healthBar.parent = healthBarContainer;
+    healthBarContainer.parent = dragon;
+
+    healthBar.material = healthBarMaterial;
+    healthBarContainer.material = healthBarContainerMaterial;
+
+    healthBarContainer.rotation.y = Math.PI;
+    healthBar.rotation.y = Math.PI;
+}
+
 function createRocks(){
 //var sphere = BABYLON.Mesh.CreateSphere("sphere", 10.0, 10.0, scene);
     var fountain = BABYLON.Mesh.CreateSphere("foutain", 10.0, scene);
