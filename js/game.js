@@ -11,6 +11,7 @@ var camera;
 var currentLevel;
 var dragon;
 var coins = [];
+var score = 0;
 
 var isAPressed = false;
 var isDPressed = false;
@@ -198,8 +199,8 @@ function createDragon() {
     dragon = new BABYLON.Mesh.CreateBox("dragonBox", 2, scene);
 
     dragon.checkCollisions = true;
-    dragon.ellipsoid = new BABYLON.Vector3(1.0, 1.0, 1.0);
-    dragon.ellipsoidOffset = new BABYLON.Vector3(1.0, 1.0, 1.0);
+    dragon.ellipsoid = new BABYLON.Vector3(0.5, 0.5, 0.5);
+    dragon.ellipsoidOffset = new BABYLON.Vector3(0.0, 1.0, 0.0);
 
     dragon.material = new BABYLON.StandardMaterial("dragonMaterial", scene);
     dragon.material.diffuseColor = new BABYLON.Color3.Red();
@@ -248,13 +249,13 @@ function applyMovement(){
 
     if (isUpPressed)
     {
-        var up = new BABYLON.Vector3(0, 1, 0);
+        var up = new BABYLON.Vector3(0, 0.5, 0);
         dragon.moveWithCollisions(up);
     }
 
     if (isDownPressed)
     {
-        var down = new BABYLON.Vector3(0, -1, 0);
+        var down = new BABYLON.Vector3(0, -0.5, 0);
         dragon.moveWithCollisions(down);
     }
 
@@ -282,6 +283,7 @@ function applyMovement(){
 
 function levelZero() {
     scene = new BABYLON.Scene(engine);
+    score = 0;
     currentLevel = 0;
 
     //Scene camera
@@ -320,11 +322,19 @@ function createConfiguredGround()
     return ground;
 }
 
+//Coins Functions
+
 function loadCoins(numberOfCoins) {
     BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
 
     function onCoinLoaded(newMeshes, particleSystems, skeletons) {
         coins[0] = newMeshes[0];
+
+        var boundingBox = calculateBoundingBoxOfCompositeMeshes(newMeshes);
+        coins[0].bounder = boundingBox.boxMesh;
+        coins[0].bounder.coin = coins[0];
+        coins[0].bounder.ellipsoidOffset.y += 3;
+        //coins[0].position = coins[0].bounder.position;
 
         coins[0].position = new BABYLON.Vector3(0, 10, 30);
 
@@ -334,6 +344,8 @@ function loadCoins(numberOfCoins) {
         coins[0].material.diffuseColor = new BABYLON.Color3.Yellow();
 
         coins[0].rotation.x = Math.PI / 2;
+
+        coins[0].bounder.position = coins[0].position;
 
         for(var i = 1; i < numberOfCoins; i++) {
             coins[i] = cloneModel(coins[0], "coins_" + i);
@@ -346,15 +358,34 @@ function loadCoins(numberOfCoins) {
             coins[i].material = new BABYLON.StandardMaterial("coinMat", scene);
             coins[i].material.diffuseColor = new BABYLON.Color3.Yellow();
             coins[i].rotation.x = Math.PI / 2;
+
+            coins[i].bounder.position = coins[i].position;
         }
+
+        onCollision(coins);
     }
+}
+
+function onCollision(array) {
+    dragon.actionManager = new BABYLON.ActionManager(scene);
+    array.forEach(function(element) {
+        dragon.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger : BABYLON.ActionManager.OnIntersectionEnterTrigger, 
+            parameter : element.bounder}, function () {
+                element.bounder.dispose();
+                element.dispose();
+                console.log("score : " + (++score));
+            }));
+    });
 }
 
 function cloneModel(model,name) {
     console.log("in cloneModel");
     var tempClone;
     tempClone = model.clone("clone_" + name);
-    //tempClone.bounder = model.bounder.clone("bounder_custom" + name);
+
+    tempClone.bounder = model.bounder.clone("bounder");
+    tempClone.bounder.coin = tempClone;
+
     tempClone.skeletons = [];
 
     if(model.skeletons) {
@@ -384,4 +415,57 @@ function applyCoinsMovement() {
     for(var i = 0; i < coins.length; i++) {
         coins[i].rotation.y += 0.05;
     }
+}
+
+function calculateBoundingBoxOfCompositeMeshes(newMeshes) {
+    var minx = 10000; var miny = 10000; var minz = 10000; var maxx = -10000; var maxy = -10000; var maxz = -10000;
+
+    for (var i = 0 ; i < 1 ; i++) {
+        console.log("here");
+        var positions = new BABYLON.VertexData.ExtractFromGeometry(newMeshes[i]).positions;
+       // newMeshes[i].checkCollisions = true;
+        if (!positions) continue;
+        var index = 0;
+
+        for (var j = index ; j < positions.length ; j += 3) {
+            if (positions[j] < minx)
+                minx = positions[j];
+            if (positions[j] > maxx)
+                maxx = positions[j];
+        }
+        index = 1;
+
+        for (var j = index ; j < positions.length ; j += 3) {
+            if (positions[j] < miny)
+                miny = positions[j];
+            if (positions[j] > maxy)
+                maxy = positions[j];
+        }
+        index = 2;
+        for (var j = index ; j < positions.length ; j += 3) {
+            if (positions[j] < minz)
+                minz = positions[j];
+            if (positions[j] > maxz)
+                maxz = positions[j];
+        }
+
+    }
+
+    var _lengthX = (minx * maxx > 1) ? Math.abs(maxx - minx) : Math.abs(minx * -1 + maxx);
+    var _lengthY = (miny * maxy > 1) ? Math.abs(maxy - miny) : Math.abs(miny * -1 + maxy);
+    var _lengthZ = (minz * maxz > 1) ? Math.abs(maxz - minz) : Math.abs(minz * -1 + maxz);
+    var _center = new BABYLON.Vector3((minx + maxx) / 2.0, (miny + maxy) / 2.0, (minz + maxz) / 2.0);
+
+    var _boxMesh = BABYLON.Mesh.CreateBox("bounder", 1, scene);
+    _boxMesh.scaling.x = _lengthX / 10.0;
+    _boxMesh.scaling.y = _lengthY + 10;
+    _boxMesh.scaling.z = _lengthZ / 5.5;
+    _boxMesh.position.y += .5; // if I increase this, the dude gets higher in the skyyyyy
+    _boxMesh.checkCollisions = true;
+    _boxMesh.material = new BABYLON.StandardMaterial("alpha", scene);
+    _boxMesh.material.alpha = .2;
+    _boxMesh.isVisible = false;
+
+    return { min: { x: minx, y: miny, z: minz }, max: { x: maxx, y: maxy, z: maxz }, lengthX: _lengthX, lengthY: _lengthY, lengthZ: _lengthZ, center: _center, boxMesh: _boxMesh };
+
 }
