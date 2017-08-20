@@ -10,8 +10,13 @@ var camera;
 
 var currentLevel;
 var dragon;
+var dragonHealth;
 var coins = [];
 var score = 0;
+var healthBar, healthBarContainer;
+
+var meteorFlag = false;
+var updateCollisionFlag = false;
 
 var isAPressed = false;
 var isDPressed = false;
@@ -40,15 +45,25 @@ function startGame() {
     skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("scenes/sky/sky", scene);
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
 
-    var textPlaneTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
-    textPlaneTexture.drawText("Score : ", 700, 500, "bold 140px verdana", "red", "transparent");
-    textPlaneTexture.hasAlpha = true;
-
     engine.runRenderLoop(function() {
         if(scene) {
             scene.render();
             if(dragon) {
                 applyMovement();
+                if(!meteorFlag) {
+                    meteorFlag = true;
+                    setTimeout(function() {
+                        createRocks();
+                        createRocks();
+                        createRocks();
+                        meteorFlag = false;
+                    }, 1000);
+                }
+
+                if(updateCollisionFlag) {
+                    onCollision(coins);
+                    updateCollisionFlag = false;
+                }
             }
             applyCoinsMovement();
         }
@@ -191,7 +206,7 @@ function createDragon() {
 
     function onDragonLoaded(newMeshes, particleSystems, skeletons) {
         dragon = newMeshes[0];
-        dragon.position = new BABYLON.Vector3(0, 30, -1);
+        dragon.position = new BABYLON.Vector3(0, 70, 30);
         dragon.scaling = new BABYLON.Vector3(0.51, 0.51, 0.51);
         dragon.frontVector = new BABYLON.Vector3(0, 0, -1);
         dragon.rotation.y = 3.14;
@@ -201,9 +216,20 @@ function createDragon() {
 
         dragon.checkCollisions = true;
 
-        onCollision(coins);
-
         createHealthBar();
+
+        onCollision(coins);
+    }
+}
+
+function updateHealth() {
+    if(dragonHealth > 0) {
+        healthBar.scaling.x = dragonHealth / 100;
+        healthBar.position.x = (15 - (dragonHealth / 100)) * -1;
+    } else {
+        dragonHealth = 0;
+        healthBar.scaling.x = dragonHealth / 100;
+        healthBar.position.x = (15 - (dragonHealth / 100)) * -1;
     }
 }
 
@@ -217,8 +243,8 @@ function createHealthBar() {
     healthBarContainerMaterial.backFaceCulling = false;
 
     //var player = BABYLON.MeshBuilder.CreateBox("player", { width: 5, height: 4, depth: 3 }, scene);     
-    var healthBar = BABYLON.MeshBuilder.CreatePlane("hb1", {width:30, height:3, subdivisions:4}, scene);        
-    var healthBarContainer = BABYLON.MeshBuilder.CreatePlane("hb2", {width:30, height:3, subdivisions:4}, scene);       
+    healthBar = BABYLON.MeshBuilder.CreatePlane("hb1", {width:30, height:3, subdivisions:4}, scene);        
+    healthBarContainer = BABYLON.MeshBuilder.CreatePlane("hb2", {width:30, height:3, subdivisions:4}, scene);       
 
     healthBar.position = new BABYLON.Vector3(0, 0, -.01);           // Move in front of container slightly.  Without this there is flickering.
     healthBarContainer.position = new BABYLON.Vector3(0, 35, 0);     // Position above player.
@@ -234,13 +260,20 @@ function createHealthBar() {
 }
 
 function createRocks(){
-//var sphere = BABYLON.Mesh.CreateSphere("sphere", 10.0, 10.0, scene);
-    var fountain = BABYLON.Mesh.CreateSphere("foutain", 10.0, scene);
+    var fountain = BABYLON.Mesh.CreateSphere("foutain", 10, 10, scene, false);
+    var xPos = (Math.random() * 1000) - 500;
+    var zPos = (Math.random() * 1000) - 500;
+    fountain.position = new BABYLON.Vector3(xPos, 500, zPos);
+    fountain.material = new BABYLON.StandardMaterial("emitterMat", scene);
+    fountain.material.diffuseColor = new BABYLON.Color3(98/256, 93/256, 93/256);
+    fountain.physicsImpostor = new BABYLON.PhysicsImpostor(fountain, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+    fountain.checkCollisions = true;
+
     var smokeSystem = new BABYLON.ParticleSystem("particles", 1000, scene);
-    smokeSystem.particleTexture = new BABYLON.Texture("textures/flare.png", scene);
+    smokeSystem.particleTexture = new BABYLON.Texture("js/textures/flare.png", scene);
     smokeSystem.emitter = fountain; // the starting object, the emitter
-    smokeSystem.minEmitBox = new BABYLON.Vector3(-0.5, 1, -0.5); // Starting all from
-    smokeSystem.maxEmitBox = new BABYLON.Vector3(2, 1, 2); // To...
+    smokeSystem.minEmitBox = new BABYLON.Vector3(-5, -5, -5); // Starting all from
+    smokeSystem.maxEmitBox = new BABYLON.Vector3(5, 5, 5); // To...
     smokeSystem.color1 = new BABYLON.Color4(0.1, 0.1, 0.1, 1.0);
     smokeSystem.color2 = new BABYLON.Color4(0.1, 0.1, 0.1, 1.0);
     smokeSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0.0);
@@ -249,25 +282,24 @@ function createRocks(){
     smokeSystem.minLifeTime = 0.3;
     smokeSystem.maxLifeTime = 1.5;
     smokeSystem.emitRate = 350;
-// Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
-   smokeSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-   smokeSystem.gravity = new BABYLON.Vector3(0, 0, 0);
-   smokeSystem.direction1 = new BABYLON.Vector3(-1.5, 8, -1.5);
-   smokeSystem.direction2 = new BABYLON.Vector3(1.5, 8, 1.5);
-   smokeSystem.minAngularSpeed = 0;
-   smokeSystem.maxAngularSpeed = Math.PI;
-   smokeSystem.minEmitPower = 0.5;
-   smokeSystem.maxEmitPower = 1.5;
-   smokeSystem.updateSpeed = 0.005;
-   smokeSystem.start();
+    smokeSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+    smokeSystem.gravity = new BABYLON.Vector3(0, 0, 0);
+    smokeSystem.direction1 = new BABYLON.Vector3(-1.5, 8, -1.5);
+    smokeSystem.direction2 = new BABYLON.Vector3(1.5, 8, 1.5);
+    smokeSystem.minAngularSpeed = 0;
+    smokeSystem.maxAngularSpeed = Math.PI;
+    smokeSystem.minEmitPower = 0.5;
+    smokeSystem.maxEmitPower = 1.5;
+    smokeSystem.updateSpeed = 0.005;
+    smokeSystem.start();
      // Create a particle system
     var fireSystem = new BABYLON.ParticleSystem("particles", 2000, scene);
     //Texture of each particle
-    fireSystem.particleTexture = new BABYLON.Texture("textures/flare.png", scene);
+    fireSystem.particleTexture = new BABYLON.Texture("js/textures/flare.png", scene);
     // Where the particles come from
     fireSystem.emitter = fountain; // the starting object, the emitter
-    fireSystem.minEmitBox = new BABYLON.Vector3(-0.5, 1, -0.5); // Starting all from
-    fireSystem.maxEmitBox = new BABYLON.Vector3(2, 1, 2); // To...
+    fireSystem.minEmitBox = new BABYLON.Vector3(-5, -5, -5); // Starting all from
+    fireSystem.maxEmitBox = new BABYLON.Vector3(5, 5, 5); // To...
     // Colors of all particles
     fireSystem.color1 = new BABYLON.Color4(1, 0.5, 0, 1.0);
     fireSystem.color2 = new BABYLON.Color4(1, 0.5, 0, 1.0);
@@ -295,8 +327,23 @@ function createRocks(){
     fireSystem.maxEmitPower = 3;
     fireSystem.updateSpeed = 0.007;
     // Start the particle system
-    fireSystem.start();         
+    fireSystem.start();
 
+    fountain.actionManager = new BABYLON.ActionManager(scene);
+    fountain.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger : BABYLON.ActionManager.OnIntersectionEnterTrigger, 
+            parameter : dragon}, function () {
+                dragonHealth -= 40;
+                updateHealth();
+                console.log("health decreased");
+            }));
+
+    setTimeout(function() {
+        fireSystem.stop();
+        setTimeout(function() {
+            smokeSystem.stop();
+            fountain.dispose();
+        }, 1000);
+    }, 5000); 
 }
 
 
@@ -373,29 +420,30 @@ function levelZero() {
     scene = new BABYLON.Scene(engine);
     score = 0;
     currentLevel = 0;
+    dragonHealth = 100;
+
+    var gravityVector = new BABYLON.Vector3(0, -10, 0);
+    var physicsPlugin = new BABYLON.CannonJSPlugin();
+    scene.enablePhysics(gravityVector, physicsPlugin);
 
     //Scene camera
     camera = new BABYLON.FollowCamera("dragonCamera", new BABYLON.Vector3.Zero(), scene);
-
-
-    loadCoins(10);
-    createDragon();
-    createRocks();
-
-
-    camera.attachControl(canvas, true);
 
     //Scene light
     var light = new BABYLON.HemisphericLight("MainLevelLight", new BABYLON.Vector3(0, 10, 0), scene);
 
     var ground = createConfiguredGround();
+
+    camera.attachControl(canvas, true);
+
+    loadCoins(10);
+    createDragon();
 }
 
 function createConfiguredGround()
 {
-    var ground = new BABYLON.Mesh.CreateGroundFromHeightMap
-    ("ground", "scenes/lake.png", scenesize, scenesize,
-    50,-150, 100, scene, false, onGroundCreated);
+    var ground = new BABYLON.Mesh.CreateGroundFromHeightMap("ground", "scenes/lake.png", scenesize, scenesize,
+    50, 0, 200, scene, false, onGroundCreated);
 
     var groundMaterial = new BABYLON.StandardMaterial("m1", scene);
 
@@ -408,6 +456,8 @@ function createConfiguredGround()
     function onGroundCreated() {
         ground.material = groundMaterial;
         ground.checkCollisions = true;
+        ground.physicsImpostor =  new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.HeightmapImpostor,
+            { mass: 0, friction: 10, restitution: .2 }, scene);
     }
 
     return ground;
@@ -427,7 +477,7 @@ function loadCoins(numberOfCoins) {
         coins[0].bounder.ellipsoidOffset.y += 3;
         //coins[0].position = coins[0].bounder.position;
 
-        coins[0].position = new BABYLON.Vector3(0, 10, 30);
+        coins[0].position = new BABYLON.Vector3(0, 50, 30);
 
         coins[0].scaling = new BABYLON.Vector3(0.15, 0.15, 0.15);
 
@@ -440,7 +490,7 @@ function loadCoins(numberOfCoins) {
 
         for(var i = 1; i < numberOfCoins; i++) {
             coins[i] = cloneModel(coins[0], "coins_" + i);
-            coins[i].position = new BABYLON.Vector3(0, 10, (i * 30) + 30);
+            coins[i].position = new BABYLON.Vector3(0, 50, (i * 30) + 30);
             if(i % 2 == 0) {
                 coins[i].position.x = 60;
             }
@@ -456,14 +506,16 @@ function loadCoins(numberOfCoins) {
 }
 
 function onCollision(array) {
-    console.log("in onCollision");
     dragon.actionManager = new BABYLON.ActionManager(scene);
     array.forEach(function(element) {
         dragon.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger : BABYLON.ActionManager.OnIntersectionEnterTrigger, 
             parameter : element.bounder}, function () {
                 element.bounder.dispose();
                 element.dispose();
-                console.log("score : " + (++score));
+                array.splice(array.indexOf(element), 1);
+                score++;
+                console.log("score : " + score);
+                updateCollisionFlag = true;
             }));
     });
 }
