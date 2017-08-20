@@ -54,54 +54,56 @@ function startGame() {
                     meteorFlag = true;
                     setTimeout(function() {
                         createRocks();
-                        createRocks();
-                        createRocks();
                         meteorFlag = false;
-                    }, 1000);
+                    }, 300);
+
                 }
 
                 if(updateCollisionFlag) {
                     onCollision(coins);
                     updateCollisionFlag = false;
                 }
+
+                //console.log("frontVector : " + dragon.frontVector);
             }
             applyCoinsMovement();
         }
     });
 }
-document.addEventListener("click", function () {
+
+function addListenerToDragonFire() {
+    document.addEventListener("click", function () {
     
-    var fireSystem = new BABYLON.ParticleSystem("particles", 2000, scene)
-    fireSystem.particleTexture = new BABYLON.Texture("js/textures/flare.png", scene);
-    fireSystem.emitter = dragon; 
-    fireSystem.minEmitBox = new BABYLON.Vector3(0, 0, 0); 
-    fireSystem.maxEmitBox = new BABYLON.Vector3(55, 55, -55); 
-    fireSystem.color1 = new BABYLON.Color4(1, 0.5, 0, 1.0);
-    fireSystem.color2 = new BABYLON.Color4(1, 0.5, 0, 1.0);
-    fireSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0.0);
-    fireSystem.minSize = 0.3;
-    fireSystem.maxSize = 70;    
-    fireSystem.minLifeTime = 0.2;
-    fireSystem.maxLifeTime = 0.4;
-    fireSystem.emitRate = 600;
-    fireSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-    fireSystem.gravity = new BABYLON.Vector3(0, 0, 0);
-    fireSystem.direction1 = new BABYLON.Vector3(0, 4, 0);
-    fireSystem.direction2 = new BABYLON.Vector3(0, 4, 0);
-    fireSystem.minAngularSpeed = 0;
-    fireSystem.maxAngularSpeed = Math.PI;
-    fireSystem.minEmitPower = 1;
-    fireSystem.maxEmitPower = 3;
-    fireSystem.updateSpeed = 0.007;
-    fireSystem.start();
-    setTimeout(function () {
-               fireSystem.stop();
-                
-            }, 1000);
+        var fireSystem = new BABYLON.ParticleSystem("particles", 2000, scene)
+        fireSystem.particleTexture = new BABYLON.Texture("js/textures/flare.png", scene);
+        console.log(dragon.position.add(dragon.frontVector.multiplyByFloats(1, 1, 1)));
+        fireSystem.emitter = dragon;
+        console.log(fireSystem.emitter);
+        fireSystem.minEmitBox = new BABYLON.Vector3(0, 15, -50); 
+        fireSystem.maxEmitBox = new BABYLON.Vector3(0, 30, -100); 
+        fireSystem.color1 = new BABYLON.Color4(1, 0.5, 0, 1.0);
+        fireSystem.color2 = new BABYLON.Color4(1, 0.5, 0, 1.0);
+        fireSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0.0);
+        fireSystem.minSize = 0.3;
+        fireSystem.maxSize = 50;    
+        fireSystem.minLifeTime = 0.2;
+        fireSystem.maxLifeTime = 0.4;
+        fireSystem.emitRate = 600;
+        fireSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+        fireSystem.gravity = new BABYLON.Vector3(0, 0, 0);
+        fireSystem.direction1 = dragon.frontVector;
+        fireSystem.direction2 = dragon.frontVector;
+        fireSystem.minEmitPower = 1;
+        fireSystem.maxEmitPower = 10;
+        fireSystem.updateSpeed = 0.007;
+        fireSystem.start();
+        setTimeout(function () {
+                   fireSystem.stop();
+                    
+                }, 1000);
 
-})
-        
-
+    });
+}
 
 document.addEventListener("keydown", function (event) {
 
@@ -253,17 +255,19 @@ function createDragon() {
         createHealthBar();
 
         onCollision(coins);
+
+        addListenerToDragonFire();
     }
 }
 
 function updateHealth() {
     if(dragonHealth > 0) {
         healthBar.scaling.x = dragonHealth / 100;
-        healthBar.position.x = (15 - (dragonHealth / 100)) * -1;
+        healthBar.position.x = ((15 - ((dragonHealth / 200) * 15)) * -1) + ((dragonHealth / 200) * 15);
     } else {
         dragonHealth = 0;
         healthBar.scaling.x = dragonHealth / 100;
-        healthBar.position.x = (15 - (dragonHealth / 100)) * -1;
+        healthBar.position.x = healthBar.parent.position.x - 12;
     }
 }
 
@@ -276,7 +280,6 @@ function createHealthBar() {
     healthBarContainerMaterial.diffuseColor = new BABYLON.Color3.Blue();
     healthBarContainerMaterial.backFaceCulling = false;
 
-    //var player = BABYLON.MeshBuilder.CreateBox("player", { width: 5, height: 4, depth: 3 }, scene);     
     healthBar = BABYLON.MeshBuilder.CreatePlane("hb1", {width:30, height:3, subdivisions:4}, scene);        
     healthBarContainer = BABYLON.MeshBuilder.CreatePlane("hb2", {width:30, height:3, subdivisions:4}, scene);       
 
