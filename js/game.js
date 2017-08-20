@@ -76,9 +76,7 @@ function addListenerToDragonFire() {
     
         var fireSystem = new BABYLON.ParticleSystem("particles", 2000, scene)
         fireSystem.particleTexture = new BABYLON.Texture("js/textures/flare.png", scene);
-        console.log(dragon.position.add(dragon.frontVector.multiplyByFloats(1, 1, 1)));
         fireSystem.emitter = dragon;
-        console.log(fireSystem.emitter);
         fireSystem.minEmitBox = new BABYLON.Vector3(0, 15, -50); 
         fireSystem.maxEmitBox = new BABYLON.Vector3(0, 30, -100); 
         fireSystem.color1 = new BABYLON.Color4(1, 0.5, 0, 1.0);
@@ -267,7 +265,7 @@ function updateHealth() {
     } else {
         dragonHealth = 0;
         healthBar.scaling.x = dragonHealth / 100;
-        healthBar.position.x = healthBar.parent.position.x - 12;
+        healthBar.position.x = ((15 - ((dragonHealth / 200) * 15)) * -1) + ((dragonHealth / 200) * 15);
     }
 }
 
