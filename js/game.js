@@ -69,6 +69,40 @@ function startGame() {
         }
     });
 }
+document.addEventListener("click", function () {
+    
+    var fireSystem = new BABYLON.ParticleSystem("particles", 2000, scene)
+    fireSystem.particleTexture = new BABYLON.Texture("js/textures/flare.png", scene);
+    fireSystem.emitter = dragon; 
+    fireSystem.minEmitBox = new BABYLON.Vector3(0, 0, 0); 
+    fireSystem.maxEmitBox = new BABYLON.Vector3(55, 55, -55); 
+    fireSystem.color1 = new BABYLON.Color4(1, 0.5, 0, 1.0);
+    fireSystem.color2 = new BABYLON.Color4(1, 0.5, 0, 1.0);
+    fireSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0.0);
+    fireSystem.minSize = 0.3;
+    fireSystem.maxSize = 70;    
+    fireSystem.minLifeTime = 0.2;
+    fireSystem.maxLifeTime = 0.4;
+    fireSystem.emitRate = 600;
+    fireSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+    fireSystem.gravity = new BABYLON.Vector3(0, 0, 0);
+    fireSystem.direction1 = new BABYLON.Vector3(0, 4, 0);
+    fireSystem.direction2 = new BABYLON.Vector3(0, 4, 0);
+    fireSystem.minAngularSpeed = 0;
+    fireSystem.maxAngularSpeed = Math.PI;
+    fireSystem.minEmitPower = 1;
+    fireSystem.maxEmitPower = 3;
+    fireSystem.updateSpeed = 0.007;
+    fireSystem.start();
+    setTimeout(function () {
+               fireSystem.stop();
+                
+            }, 1000);
+
+})
+        
+
+
 document.addEventListener("keydown", function (event) {
 
     if (event.key == 'a' || event.key == 'A') {
@@ -258,7 +292,7 @@ function createHealthBar() {
     healthBarContainer.rotation.y = Math.PI;
     healthBar.rotation.y = Math.PI;
 }
-
+ 
 function createRocks(){
     var fountain = BABYLON.Mesh.CreateSphere("foutain", 10, 10, scene, false);
     var xPos = (Math.random() * 1000) - 500;
@@ -438,6 +472,7 @@ function levelZero() {
 
     loadCoins(10);
     createDragon();
+   
 }
 
 function createConfiguredGround()
