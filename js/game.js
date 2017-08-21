@@ -293,7 +293,7 @@ function createHealthBar() {
     healthBarContainer.rotation.y = Math.PI;
     healthBar.rotation.y = Math.PI;
 }
- 
+                 
 function createRocks(){
     var fountain = BABYLON.Mesh.CreateSphere("foutain", 10, 10, scene, false);
     var xPos = (Math.random() * 1000) - 500;
@@ -308,12 +308,12 @@ function createRocks(){
     smokeSystem.particleTexture = new BABYLON.Texture("js/textures/flare.png", scene);
     smokeSystem.emitter = fountain; // the starting object, the emitter
     smokeSystem.minEmitBox = new BABYLON.Vector3(-5, -5, -5); // Starting all from
-    smokeSystem.maxEmitBox = new BABYLON.Vector3(5, 5, 5); // To...
+    smokeSystem.maxEmitBox = new BABYLON.Vector3(25, 25, 25); // To...
     smokeSystem.color1 = new BABYLON.Color4(0.1, 0.1, 0.1, 1.0);
     smokeSystem.color2 = new BABYLON.Color4(0.1, 0.1, 0.1, 1.0);
     smokeSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0.0);
     smokeSystem.minSize = 0.3;
-    smokeSystem.maxSize = 5;
+    smokeSystem.maxSize = 50;
     smokeSystem.minLifeTime = 0.3;
     smokeSystem.maxLifeTime = 1.5;
     smokeSystem.emitRate = 350;
