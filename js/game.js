@@ -7,7 +7,7 @@ var canvas;
 var engine;
 var scene;
 var camera;
-
+var Enemybox 
 var currentLevel;
 var dragon;
 var enemy;
@@ -84,12 +84,12 @@ function addListenerToDragonFire() {
         fireSystem.color2 = new BABYLON.Color4(1, 0.5, 0, 1.0);
         fireSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0.0);
         fireSystem.minSize = 0.3;
-        fireSystem.maxSize = 50;    
+        fireSystem.maxSize = 90;    
         fireSystem.minLifeTime = 0.2;
         fireSystem.maxLifeTime = 0.4;
         fireSystem.emitRate = 600;
         fireSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-        fireSystem.gravity = new BABYLON.Vector3(0, 0, 0);
+        fireSystem.gravity = new BABYLON.Vector3(5, 5, 5);
         fireSystem.direction1 = dragon.frontVector;
         fireSystem.direction2 = dragon.frontVector;
         fireSystem.minEmitPower = 1;
@@ -102,7 +102,30 @@ function addListenerToDragonFire() {
                 }, 1000);
 
     });
+      //dragon.isPickable = false;
+     var forward = new BABYLON.Vector3(0,0,1);        
+      forward = vecToLocal(forward, dragon.position);
+     var direction = forward.subtract(dragon);
+         direction = BABYLON.Vector3.Normalize(direction);
+        var ray = new BABYLON.Ray(dragon.position,direction,10000);
+        var hit = scene.pickWithRay(ray);
+        var rayHelper = new BABYLON.RayHelper(ray);
+                rayHelper.show(scene);
+    
+      if(hit.pickedMesh){
+         console,log("sha3'ala");
+         enemy.dispose();
+        
+      }
+     ;
+//https://www.babylonjs-playground.com/#KNE0O#17
 }
+
+function vecToLocal(vector, mesh){
+        var m = mesh.getWorldMatrix();
+        var v = BABYLON.Vector3.TransformCoordinates(vector, m);
+        return v;        
+    }
 
 document.addEventListener("keydown", function (event) {
 
@@ -386,7 +409,9 @@ function createEnemy() {
     BABYLON.SceneLoader.ImportMesh("", "scenes/", "archer_version_3.babylon", scene, onEnemyLoaded);
     function onEnemyLoaded(newMeshes, particleSystems, skeletons) {
         enemy = newMeshes[0];
-        enemy.position = new BABYLON.Vector3(40, 22, 50);
+        enemy.position = new BABYLON.Vector3(40, 30, 50);
+       //  Enemybox = calculateBoundingBoxOfCompositeMeshes(enemy);
+         enemy.checkCollisions = true;
     }
 }
 
