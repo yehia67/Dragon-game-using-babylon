@@ -563,7 +563,8 @@ function applyMovement(){
 
        // dragon.position.z = -475;
     }
-
+    if (dragon.position.y >= 300)
+        dragon.position.y = 300;
 }
 
 
