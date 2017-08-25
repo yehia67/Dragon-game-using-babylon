@@ -73,7 +73,7 @@ function startGame() {
 
                 updateEnemyOrientationAndFire();
 
-                updateArrow();
+                updateArrows();
             }
             applyCoinsMovement();
         }
@@ -453,22 +453,39 @@ function importArrow() {
 
     function onArrowLoaded(newMeshes, particleSystems, skeletons) {
         arrow = newMeshes[0];
-        arrow.position = new BABYLON.Vector3(0, 70, 30);
-        arrow.scaling = new BABYLON.Vector3(50, 50, 50);
         var boundingBox = calculateBoundingBoxOfCompositeMeshes(newMeshes, 2);
         arrow.bounder = boundingBox.boxMesh;
         arrow.bounder.arrow = arrow;
-        arrow.bounder.position = arrow.position;
-        //arrow.parent = arrow.bounder;
-        arrow.bounder.lookAt(dragon.position);
-        arrow.lookAt(arrow.bounder.position);
+        arrow.skeletons = [];
+
+        for(var i = 0; i < skeletons.length; i++) {
+            arrow.skeletons[i] = skeletons[i];
+        }
+
+        fireArrows();
     }
 }
 
-function updateArrow() {
+function fireArrows() {
     if(arrow) {
-        arrow.bounder.lookAt(dragon.position);
-        arrow.lookAt(arrow.bounder.position);
+        for(var i = 0; i < enemies.length; i++) {
+            arrows[i] = cloneModel(arrow, "arrows_" + i);
+            arrows[i].position = enemies[i].position.add(enemies[i].frontVector.normalize().multiplyByFloats(10, 0, 10));
+            arrows[i].bounder.position = arrows[i];
+            arrows[i].scaling = new BABYLON.Vector3(10, 10, 10);
+            arrows[i].checkCollisions = true;
+            arrows[i].lookAt(dragon.position);
+            arrows[i].rotation.y += Math.PI / 2;
+        }
+    }
+}
+
+function updateArrows() {
+    if(arrow) {
+        for(var i = 0; i < arrows.length; i++) {
+            arrows[i].lookAt(dragon.position);
+            arrows[i].rotation.y += Math.PI / 2;
+        }
     }
 }
 
