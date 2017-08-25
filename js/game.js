@@ -72,6 +72,8 @@ function startGame() {
                 }
 
                 updateEnemyOrientationAndFire();
+
+                updateArrow();
             }
             applyCoinsMovement();
         }
@@ -441,6 +443,32 @@ function importEnemy() {
             enemies[i].bounder.position = enemies[i].position;
             scene.beginAnimation(enemies[i].skeletons[0], 43, 51, 1.0, true);
         }
+
+        importArrow();
+    }
+}
+
+function importArrow() {
+    BABYLON.SceneLoader.ImportMesh("", "scenes/", "arrow2.babylon", scene, onArrowLoaded);
+
+    function onArrowLoaded(newMeshes, particleSystems, skeletons) {
+        arrow = newMeshes[0];
+        arrow.position = new BABYLON.Vector3(0, 70, 30);
+        arrow.scaling = new BABYLON.Vector3(50, 50, 50);
+        var boundingBox = calculateBoundingBoxOfCompositeMeshes(newMeshes, 2);
+        arrow.bounder = boundingBox.boxMesh;
+        arrow.bounder.arrow = arrow;
+        arrow.bounder.position = arrow.position;
+        //arrow.parent = arrow.bounder;
+        arrow.bounder.lookAt(dragon.position);
+        arrow.lookAt(arrow.bounder.position);
+    }
+}
+
+function updateArrow() {
+    if(arrow) {
+        arrow.bounder.lookAt(dragon.position);
+        arrow.lookAt(arrow.bounder.position);
     }
 }
 
@@ -721,12 +749,16 @@ function calculateBoundingBoxOfCompositeMeshes(newMeshes, flag) {
         _boxMesh.scaling.x = 10;
         _boxMesh.scaling.y = 30;
         _boxMesh.scaling.z = 10;
+    } else if(flag === 2) {
+        _boxMesh.scaling.x = 30;
+        _boxMesh.scaling.y = 5;
+        _boxMesh.scaling.z = 5;
     }
     _boxMesh.position.y += .5; // if I increase this, the dude gets higher in the skyyyyy
     _boxMesh.checkCollisions = true;
     _boxMesh.material = new BABYLON.StandardMaterial("alpha", scene);
     _boxMesh.material.alpha = .2;
-    _boxMesh.isVisible = false;
+    _boxMesh.isVisible = true;
 
     return { min: { x: minx, y: miny, z: minz }, max: { x: maxx, y: maxy, z: maxz }, lengthX: _lengthX, lengthY: _lengthY, lengthZ: _lengthZ, center: _center, boxMesh: _boxMesh };
 
