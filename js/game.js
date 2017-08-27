@@ -486,13 +486,13 @@ function importArrow() {
 
         for(var i = 0; i < enemies.length; i++) {
             arrows[i] = cloneModel(arrow, "arrows_" + i);
-            arrows[i].position = enemies[i].bounder.position.add(enemies[i].frontVector.normalize().multiplyByFloats(30, 5, 30));
-            arrows[i].bounder.position = arrows[i].position;
+            arrows[i].bounder.position = enemies[i].bounder.position.add(enemies[i].frontVector.normalize().multiplyByFloats(30, 5, 30));
             arrows[i].scaling = new BABYLON.Vector3(15, 15, 15);
             //arrows[i].checkCollisions = true;
             arrows[i].isVisible = false;
             arrows[i].frontVector = dragon.position.subtract(arrows[i].position);
             arrows[i].lookAt(dragon.position);
+            arrows[i].bounder.lookAt(dragon.position);
             arrows[i].rotation.y += Math.PI / 2;
         }
     }
@@ -547,26 +547,33 @@ function fireArrows() {
         console.log("vist : " + vist.length);
         for(var i = 0; i < arrows.length; i++) {
             if(vist[i] === 1){
-                console.log("arrow : " + arrows[i].position);
+                //console.log("arrow : " + arrows[i].position);
                 arrows[i].isVisible = true;
                 arrows[i].position = enemies[i].bounder.position.add(enemies[i].frontVector.normalize().multiplyByFloats(30, 5, 30));
                 arrows[i].bounder.position = arrows[i].position;
                 arrows[i].frontVector = dragon.position.subtract(arrows[i].position);
                 arrows[i].lookAt(dragon.position);
                 arrows[i].rotation.y += Math.PI / 2;
+                arrows[i].rotation.y += Math.PI / 6;
+                arrows[i].bounder.rotation.y = arrows[i].rotation;
                 indicies.push(i);
-
                 var index = i;
-                setTimeout(function() {
-                    arrows[index].isVisible = false;
-                    arrows[index].position = enemies[index].bounder.position.add(enemies[index].frontVector.normalize().multiplyByFloats(30, 5, 30));
-                    arrows[index].bounder.position = arrows[index].position;
-                    indicies.splice(indicies.indexOf(index), 1);
-                }, 4000);
+                console.log("was at : " + i);
+
+                resetArrow(i);
             }
         }
     }
+}
 
+function resetArrow(index) {
+    setTimeout(function() {
+        console.log("now at : " + index);
+        arrows[index].isVisible = false;
+        arrows[index].position = enemies[index].bounder.position.add(enemies[index].frontVector.normalize().multiplyByFloats(30, 5, 30));
+        arrows[index].bounder.position = arrows[index].position;
+        indicies.splice(indicies.indexOf(index), 1);
+    }, 3000);
 }
 
 function updateArrows() {
@@ -774,7 +781,7 @@ function onCollision(array) {
 }
 
 function cloneModel(model,name) {
-    console.log("in cloneModel");
+    //console.log("in cloneModel");
     var tempClone;
     tempClone = model.clone("clone_" + name);
     
@@ -782,7 +789,7 @@ function cloneModel(model,name) {
     tempClone.bounder.tempClone = tempClone;
     tempClone.bounder.name = name + "_bounder";
 
-    console.log("bounder done");
+    //console.log("bounder done");
 
     tempClone.skeletons = [];
 
