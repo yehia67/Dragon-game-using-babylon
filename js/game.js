@@ -2,7 +2,7 @@
 /// <reference path="cannon.max.js" />
 
 document.addEventListener("DOMContentLoaded", startGame, false);
-
+var door;
 var canvas;
 var engine;
 var scene;
@@ -57,6 +57,10 @@ function startGame() {
     engine.runRenderLoop(function() {
         if(scene) {
             scene.render();
+            if(score > 2)
+            {
+                door.isVisible = true;
+            }
             if(dragon) {
                 applyMovement();
                 if(!meteorFlag) {
@@ -91,32 +95,33 @@ function startGame() {
 
 function addListenerToDragonFire() {
     document.addEventListener("click", function () {
-    
+        var direction = new BABYLON.Vector3(dragon.frontVector.x, -0.5, dragon.frontVector.z);
+        direction.normalize;
         var fireSystem = new BABYLON.ParticleSystem("particles", 2000, scene)
         fireSystem.particleTexture = new BABYLON.Texture("js/textures/flare.png", scene);
         fireSystem.emitter = dragon;
         fireSystem.minEmitBox = new BABYLON.Vector3(0, 15, -30); 
-        fireSystem.maxEmitBox = new BABYLON.Vector3(0, 30, -100); 
+        fireSystem.maxEmitBox = new BABYLON.Vector3(0, -300,-100); 
         fireSystem.color1 = new BABYLON.Color4(1, 0.5, 0, 1.0);
         fireSystem.color2 = new BABYLON.Color4(1, 0.5, 0, 1.0);
         fireSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0.0);
         fireSystem.minSize = 0.3;
-        fireSystem.maxSize = 50;    
+        fireSystem.maxSize = 30;    
         fireSystem.minLifeTime = 0.2;
         fireSystem.maxLifeTime = 0.4;
-        fireSystem.emitRate = 600;
+        fireSystem.emitRate = 800;
         fireSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
         fireSystem.gravity = new BABYLON.Vector3(0, 0, 0);
-        fireSystem.direction1 = dragon.frontVector;
-        fireSystem.direction2 = dragon.frontVector;
+        fireSystem.direction1 = direction;
+        fireSystem.direction2 = direction;
         fireSystem.minEmitPower = 1;
         fireSystem.maxEmitPower = 10;
         fireSystem.updateSpeed = 0.007;
         fireSystem.start();
 
-        var origin = new BABYLON.Vector3(dragon.position.x, dragon.position.y, dragon.position.z);
-        var direction = dragon.frontVector;
-        direction.normalize;
+        var origin = new BABYLON.Vector3(dragon.position.x, dragon.position.y+10, dragon.position.z);
+     
+        
         var length = 1000;
 
         var ray = new BABYLON.Ray(origin, direction, length);
@@ -682,7 +687,7 @@ function levelZero() {
 
     loadCoins(10);
     createDragon();
-   
+   createDoor();
 }
 
 function createConfiguredGround()
@@ -875,4 +880,22 @@ function calculateBoundingBoxOfCompositeMeshes(newMeshes, flag) {
 
     return { min: { x: minx, y: miny, z: minz }, max: { x: maxx, y: maxy, z: maxz }, lengthX: _lengthX, lengthY: _lengthY, lengthZ: _lengthZ, center: _center, boxMesh: _boxMesh };
 
+}
+function createDoor() {
+    BABYLON.SceneLoader.ImportMesh("", "scenes/", "low-poly-wooden-door.babylon", scene, onDoorLoaded);
+     console.log("create door");
+    function onDoorLoaded(newMeshes, particleSystems, skeletons) {
+        door = newMeshes[0];
+        door.position = new BABYLON.Vector3(0, 70, 30);
+        door.scaling = new BABYLON.Vector3(51, 51, 51);
+        door.frontVector = new BABYLON.Vector3(0, 0, -1);
+        door.rotation.y = 3.14;
+        door.checkCollisions = true;
+        door.isVisible = false;
+        if(door.intersectsMesh(dragon,false))
+        {
+            console.log("next level");
+        }
+      
+    }
 }
