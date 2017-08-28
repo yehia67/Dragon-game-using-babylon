@@ -530,18 +530,21 @@ function fireArrows() {
 
 function stopAnimation(index) {
     setTimeout(function() {
-        scene.beginAnimation(enemies[index].skeletons[0], 43, 51, 0.8, true);
+        if(enemies[index])
+            scene.beginAnimation(enemies[index].skeletons[0], 43, 51, 0.8, true);
     }, 700);
 }
 
 function resetArrow(index) {
     setTimeout(function() {
         console.log("now at : " + index);
-        arrows[index].isVisible = false;
-        arrows[index].position = enemies[index].bounder.position.add(BABYLON.Vector3.Zero().add(enemies[index].frontVector.normalize().multiplyByFloats(20, 5, 20)));
-        arrows[index].bounder.position = arrows[index].position;
-       // arrows[index].hitdragon = false;
-        indicies.splice(indicies.indexOf(index), 1);
+        if(arrows[index]) {
+            arrows[index].isVisible = false;
+            arrows[index].position = enemies[index].bounder.position.add(BABYLON.Vector3.Zero().add(enemies[index].frontVector.normalize().multiplyByFloats(20, 5, 20)));
+            arrows[index].bounder.position = arrows[index].position;
+           // arrows[index].hitdragon = false;
+            indicies.splice(indicies.indexOf(index), 1);
+        }
     }, 3000);
 }
 
