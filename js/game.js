@@ -723,7 +723,7 @@ function loadCoins(numberOfCoins) {
         coins[0].bounder.ellipsoidOffset.y += 3;
         //coins[0].position = coins[0].bounder.position;
 
-        coins[0].position = new BABYLON.Vector3(0, 50, 30);
+        coins[0].position = new BABYLON.Vector3(0, -200, 30);
 
         coins[0].scaling = new BABYLON.Vector3(0.15, 0.15, 0.15);
 
@@ -736,7 +736,7 @@ function loadCoins(numberOfCoins) {
 
         for(var i = 1; i < numberOfCoins; i++) {
             coins[i] = cloneModel(coins[0], "coins_" + i);
-            coins[i].position = new BABYLON.Vector3(0, 50, (i * 30) + 30);
+            coins[i].position = new BABYLON.Vector3(0, -200, (i * 30) + 30);
             if(i % 2 == 0) {
                 coins[i].position.x = 60;
             }
