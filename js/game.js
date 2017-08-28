@@ -59,13 +59,13 @@ function startGame() {
             scene.render();
             if(dragon) {
                 applyMovement();
-                /*if(!meteorFlag) {
+                if(!meteorFlag) {
                     meteorFlag = true;
                     setTimeout(function() {
                         createRocks();
                         meteorFlag = false;
                     }, 700);
-                }*/
+                }
 
                 if(updateCollisionFlag) {
                     onCollision(coins);
@@ -136,9 +136,14 @@ function addListenerToDragonFire() {
         if(hit.pickedMesh) {
             console.log("hey you");
             scene.beginAnimation(hit.pickedMesh.tempClone.skeletons[0], 51, 72, 0.7, true);
-            setTimeout(function() { 
+            setTimeout(function() {
+                var index = enemies.indexOf(hit.pickedMesh.tempClone);
                 hit.pickedMesh.tempClone.dispose();
                 hit.pickedMesh.dispose();
+                enemies.splice(index, 1);
+                arrows[index].bounder.dispose();
+                arrows[index].dispose();
+                arrows.splice(index, 1);
             }, 800);
         }
 
@@ -486,9 +491,8 @@ function importArrow() {
 
         for(var i = 0; i < enemies.length; i++) {
             arrows[i] = cloneModel(arrow, "arrows_" + i);
-            arrows[i].bounder.position = enemies[i].bounder.position.add(enemies[i].frontVector.normalize().multiplyByFloats(30, 5, 30));
+            arrows[i].bounder.position = enemies[i].bounder.position.add(BABYLON.Vector3.Zero().add(enemies[i].frontVector.normalize().multiplyByFloats(0, 5, 20)));
             arrows[i].scaling = new BABYLON.Vector3(15, 15, 15);
-            //arrows[i].checkCollisions = true;
             arrows[i].isVisible = false;
             arrows[i].frontVector = dragon.position.subtract(arrows[i].position);
             arrows[i].lookAt(dragon.position);
@@ -499,57 +503,13 @@ function importArrow() {
 }
 
 function fireArrows() {
-/*var prev =0 ;
-             
- var current= date.getTime();
-  if (current-prev >= 5000){
-    if(arrow) {
-   for (var i = 0 ;i< arrows.length;)
-    {console.log("Disposed");
-                    arrows[i].bounder.dispose();
-                    arrows[i].dispose();
-                    arrows.splice(i, 1);
-                    
-                }
-                console.log("out of disposal loop");
-          console.log(arrows.length);
-        for(var i = 0; i < vist.length; i++) {
-            if(vist[i] == 1){
-                arrows.push(cloneModel(arrow, "arrows_" + arrows.length-1));
-                arrows[arrows.length-1].position = enemies[i].position.add(enemies[i].frontVector.normalize().multiplyByFloats(10, 0, 10));
-                arrows[arrows.length-1].bounder.position = arrows[arrows.length-1];
-                arrows[arrows.length-1].frontVector = dragon.position.subtract(arrows[arrows.length-1].position);
-                arrows[arrows.length-1].scaling = new BABYLON.Vector3(10, 10, 10);
-                arrows[arrows.length-1].checkCollisions = true;
-                arrows[arrows.length-1].lookAt(dragon.position);
-                arrows[arrows.length-1].rotation.y += Math.PI / 2;
-                console.log("LOL");
-               
-
-
-                
-                }
-                console.log("out of firing loop");
-          console.log(arrows.length);
-                                //enemies[i].beginAnimation(enemies[i].skeletons[0], 131, 163, 1.0, true);
-                setTimeout(function() {
-                    arrows[arrows.length-1].bounder.dispose();
-                    arrows[arrows.length-1].dispose();
-                    arrows.splice(arrows.length - 1, 1);
-                }, 3000);
-            }
-        }
-  
-  prev = current ;
-}*/
-    //console.log("henaaaa");
     if(arrow) {
         console.log("vist : " + vist.length);
         for(var i = 0; i < arrows.length; i++) {
             if(vist[i] === 1){
                 //console.log("arrow : " + arrows[i].position);
                 arrows[i].isVisible = true;
-                arrows[i].position = enemies[i].bounder.position.add(enemies[i].frontVector.normalize().multiplyByFloats(30, 5, 30));
+                arrows[i].position = enemies[i].bounder.position.add(BABYLON.Vector3.Zero().add(enemies[i].frontVector.normalize().multiplyByFloats(0, 5, 20)));
                 arrows[i].bounder.position = arrows[i].position;
                 arrows[i].frontVector = dragon.position.subtract(arrows[i].position);
                 arrows[i].lookAt(dragon.position);
@@ -570,7 +530,7 @@ function resetArrow(index) {
     setTimeout(function() {
         console.log("now at : " + index);
         arrows[index].isVisible = false;
-        arrows[index].position = enemies[index].bounder.position.add(enemies[index].frontVector.normalize().multiplyByFloats(30, 5, 30));
+        arrows[index].position = enemies[index].bounder.position.add(BABYLON.Vector3.Zero().add(enemies[index].frontVector.normalize().multiplyByFloats(0, 5, 20)));
         arrows[index].bounder.position = arrows[index].position;
        // arrows[index].hitdragon = false;
         indicies.splice(indicies.indexOf(index), 1);
@@ -603,7 +563,7 @@ function updateEnemyOrientationAndFire() {
         for(var i = 0; i < enemies.length; i++) {
             var target = new BABYLON.Vector3(dragon.position.x, enemies[i].position.y, dragon.position.z);
             enemies[i].lookAt(target);
-            enemies[i].frontVector = dragon.position.subtract(enemy.position);
+            enemies[i].frontVector = dragon.position.subtract(enemies[i].position);
 
             if (BABYLON.Vector3.Distance(dragon.position,enemies[i].position) <= enemyRange )
             {
@@ -612,12 +572,6 @@ function updateEnemyOrientationAndFire() {
             else
             {
                 vist[i] = 0;
-            }
-            if (enemies[i].dead)
-            {
-                console.log("Hit");
-                enemies.splice(i, 1);
-                arrows.splice(i, 1);
             }
         }
     }
