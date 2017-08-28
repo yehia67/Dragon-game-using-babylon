@@ -26,7 +26,7 @@ var meteorFlag = false;
 var updateCollisionFlag = false;
 var fireFlag = false;
 var NEG_Z_VECTOR = new BABYLON.Vector3(0, -1, -1);
-
+var maxheigth = 150;
 var isAPressed = false;
 var isDPressed = false;
 var isWPressed = false;
@@ -35,7 +35,7 @@ var isLeftPressed = false;
 var isRightPressed = false;
 var isUpPressed = false;
 var isDownPressed = false;
-var scenesize = 2000;
+var scenesize = 4000;
 
 function startGame() {
     canvas = document.getElementById("renderCanvas");
@@ -293,7 +293,7 @@ function createDragon() {
 
     function onDragonLoaded(newMeshes, particleSystems, skeletons) {
         dragon = newMeshes[0];
-        dragon.position = new BABYLON.Vector3(0, 70, 30);
+        dragon.position = new BABYLON.Vector3(0, -100, 30);
         dragon.scaling = new BABYLON.Vector3(0.51, 0.51, 0.51);
         dragon.frontVector = new BABYLON.Vector3(0, 0, -1);
         dragon.rotation.y = 3.14;
@@ -450,16 +450,19 @@ function importEnemy() {
         enemy.bounder = boundingBox.boxMesh;
         enemy.bounder.enemy = enemy;
         enemy.skeletons = [];
+        enemy.position = new BABYLON.Vector3((Math.random() * 1000) - 500, -150, (Math.random() * 1000) - 500);
         enemy.dead = false;
+        enemy.isVisible = false;
         for(var i = 0; i < skeletons.length; i++) {
             enemy.skeletons[i] = skeletons[i];
         }
 
         for(var i = 0; i < 10; i++) {
             enemies[i] = cloneModel(enemy, "enemies_" + i);
-            enemies[i].position = new BABYLON.Vector3((Math.random() * 1000) - 500, 23, (Math.random() * 1000) - 500);
+            enemies[i].position = new BABYLON.Vector3((Math.random() * 1000) - 500, -260, (Math.random() * 1000) - 500);
             //enemies[i].checkCollisions = true;
             enemies[i].bounder.position = enemies[i].position;
+            enemies[i].isVisible = true;
             scene.beginAnimation(enemies[i].skeletons[0], 43, 51, 1.0, true);
             enemies[i].frontVector = dragon.position.subtract(enemies[i].position);
         }
@@ -650,8 +653,8 @@ function applyMovement(){
 
        // dragon.position.z = -475;
     }
-    if (dragon.position.y >= 300)
-        dragon.position.y = 300;
+    if (dragon.position.y >= maxheigth)
+        dragon.position.y = maxheigth;
 }
 
 
@@ -685,8 +688,8 @@ function levelZero() {
 
 function createConfiguredGround()
 {
-    ground = new BABYLON.Mesh.CreateGroundFromHeightMap("ground", "scenes/lake.png", scenesize, scenesize,
-    50, 0, 200, scene, false, onGroundCreated);
+    ground = new BABYLON.Mesh.CreateGroundFromHeightMap("ground", "scenes/lake2.png", scenesize, scenesize,
+    50, -300, 200, scene, false, onGroundCreated);
 
     var groundMaterial = new BABYLON.StandardMaterial("m1", scene);
 
