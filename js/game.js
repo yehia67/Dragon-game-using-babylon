@@ -477,7 +477,7 @@ function importArrow() {
         arrow.bounder.arrow = arrow;
         arrow.position = arrow.bounder.position;
         arrow.skeletons = [];
-        arrow.hitdragon = false;
+       // arrow.hitdragon = false;
         for(var i = 0; i < skeletons.length; i++) {
             arrow.skeletons[i] = skeletons[i];
         }
