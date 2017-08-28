@@ -123,9 +123,9 @@ function addListenerToDragonFire() {
         //var rayHelper = new BABYLON.RayHelper(ray);
         //rayHelper.show(scene);
 
-        setTimeout(function () {
+        /*setTimeout(function () {
             rayHelper.hide();
-        }, 500);
+        }, 500);*/
 
         var hit = scene.pickWithRay(ray, function(mesh) {
             if(mesh.name.startsWith("enemies")) {
@@ -418,13 +418,13 @@ function createRocks(){
     // Start the particle system
     fireSystem.start();
 
-    fountain.actionManager = new BABYLON.ActionManager(scene);
+    /*fountain.actionManager = new BABYLON.ActionManager(scene);
     fountain.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger : BABYLON.ActionManager.OnIntersectionEnterTrigger, 
             parameter : dragon}, function () {
                 dragonHealth -= 40;
                 updateHealth();
                 console.log("health decreased");
-            }));
+            }));*/
 
     setTimeout(function() {
         fireSystem.stop();
@@ -444,7 +444,7 @@ function importEnemy() {
         enemy.bounder = boundingBox.boxMesh;
         enemy.bounder.enemy = enemy;
         enemy.skeletons = [];
-
+        enemy.dead = false;
         for(var i = 0; i < skeletons.length; i++) {
             enemy.skeletons[i] = skeletons[i];
         }
@@ -477,7 +477,7 @@ function importArrow() {
         arrow.bounder.arrow = arrow;
         arrow.position = arrow.bounder.position;
         arrow.skeletons = [];
-
+        arrow.hitdragon = false;
         for(var i = 0; i < skeletons.length; i++) {
             arrow.skeletons[i] = skeletons[i];
         }
@@ -572,15 +572,29 @@ function resetArrow(index) {
         arrows[index].isVisible = false;
         arrows[index].position = enemies[index].bounder.position.add(enemies[index].frontVector.normalize().multiplyByFloats(30, 5, 30));
         arrows[index].bounder.position = arrows[index].position;
+       // arrows[index].hitdragon = false;
         indicies.splice(indicies.indexOf(index), 1);
     }, 3000);
 }
 
 function updateArrows() {
-    if(arrow) {
-        for(var i = 0; i < indicies.length; i++) {
-            arrows[indicies[i]].bounder.moveWithCollisions(arrows[indicies[i]].frontVector.multiplyByFloats(0.009, 0.009, 0.009));
-        }
+    if (arrow) {
+        for (var i = 0; i < indicies.length; i++) {
+           // if (!arrows[indicies[i]].hitdragon) {
+                if (arrows[indicies[i]].intersectsMesh(dragon, false)) {
+                    //    dragon.dragonHealth -= 40;
+                    dragonHealth -= 10;
+                  
+                    updateHealth();
+                    resetArrow(indicies[i]);
+                    indicies.splice(i, 1);
+                    console.log("dam");
+                  //  arrows[indicies[i]].hitdragon = true;
+                }
+                else
+                    arrows[indicies[i]].bounder.moveWithCollisions(arrows[indicies[i]].frontVector.multiplyByFloats(0.009, 0.009, 0.009));
+            }
+       // }
     }
 }
 
@@ -598,6 +612,12 @@ function updateEnemyOrientationAndFire() {
             else
             {
                 vist[i] = 0;
+            }
+            if (enemies[i].dead)
+            {
+                console.log("Hit");
+                enemies.splice(i, 1);
+                arrows.splice(i, 1);
             }
         }
     }
@@ -886,7 +906,7 @@ function calculateBoundingBoxOfCompositeMeshes(newMeshes, flag) {
     _boxMesh.checkCollisions = true;
     _boxMesh.material = new BABYLON.StandardMaterial("alpha", scene);
     _boxMesh.material.alpha = .2;
-    _boxMesh.isVisible = true;
+    _boxMesh.isVisible = false;
 
     return { min: { x: minx, y: miny, z: minz }, max: { x: maxx, y: maxy, z: maxz }, lengthX: _lengthX, lengthY: _lengthY, lengthZ: _lengthZ, center: _center, boxMesh: _boxMesh };
 
