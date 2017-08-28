@@ -2,7 +2,7 @@
 /// <reference path="cannon.max.js" />
 
 document.addEventListener("DOMContentLoaded", startGame, false);
-
+var door;
 var canvas;
 var engine;
 var scene;
@@ -57,6 +57,10 @@ function startGame() {
     engine.runRenderLoop(function() {
         if(scene) {
             scene.render();
+            if(score > 2)
+            {
+                door.isVisible = true;
+            }
             if(dragon) {
                 applyMovement();
                 if(!meteorFlag) {
@@ -680,7 +684,7 @@ function levelZero() {
 
     loadCoins(10);
     createDragon();
-   
+   createDoor();
 }
 
 function createConfiguredGround()
@@ -873,4 +877,22 @@ function calculateBoundingBoxOfCompositeMeshes(newMeshes, flag) {
 
     return { min: { x: minx, y: miny, z: minz }, max: { x: maxx, y: maxy, z: maxz }, lengthX: _lengthX, lengthY: _lengthY, lengthZ: _lengthZ, center: _center, boxMesh: _boxMesh };
 
+}
+function createDoor() {
+    BABYLON.SceneLoader.ImportMesh("", "scenes/", "low-poly-wooden-door.babylon", scene, onDoorLoaded);
+     console.log("create door");
+    function onDoorLoaded(newMeshes, particleSystems, skeletons) {
+        door = newMeshes[0];
+        door.position = new BABYLON.Vector3(0, 70, 30);
+        door.scaling = new BABYLON.Vector3(51, 51, 51);
+        door.frontVector = new BABYLON.Vector3(0, 0, -1);
+        door.rotation.y = 3.14;
+        door.checkCollisions = true;
+        door.isVisible = false;
+        if(door.intersectsMesh(dragon,false))
+        {
+            console.log("next level");
+        }
+      
+    }
 }
