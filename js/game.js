@@ -2,31 +2,41 @@
 /// <reference path="cannon.max.js" />
 
 document.addEventListener("DOMContentLoaded", startGame, false);
+
 var door;
 var canvas;
 var engine;
 var scene;
 var camera;
+var assetsManager;
+
 var enemyRange = 200;
 var currentLevel;
 var dragon;
 var enemy;
 var dragonHealth;
+
+var Game = {};
+Game.scenes = [];
+Game.activeScene = 0;
+
 var coins = [];
 var arrows = [];
 var enemies = [];
 var vist = [];
 var indicies = [];
+
 var score = 0;
 var healthBar, healthBarContainer;
 var arrow;
 var ground;
-var date = new Date();
+
 var meteorFlag = false;
 var updateCollisionFlag = false;
 var fireFlag = false;
 var NEG_Z_VECTOR = new BABYLON.Vector3(0, -1, -1);
 var maxheigth = 150;
+
 var isAPressed = false;
 var isDPressed = false;
 var isWPressed = false;
@@ -35,6 +45,7 @@ var isLeftPressed = false;
 var isRightPressed = false;
 var isUpPressed = false;
 var isDownPressed = false;
+
 var scenesize = 4000;
 
 function startGame() {
@@ -59,7 +70,7 @@ function startGame() {
             scene.render();
             if(score > 2)
             {
-                door.isVisible = true;
+                //door.isVisible = true;
             }
             if(dragon) {
                 applyMovement();
@@ -293,6 +304,7 @@ function loadScene() {
 }
 
 function createDragon() {
+
     BABYLON.SceneLoader.ImportMesh("", "scenes/", "BGE_Dragon_2.5_Blender_Game_Engine.blend.babylon", scene, onDragonLoaded);
 
     function onDragonLoaded(newMeshes, particleSystems, skeletons) {
@@ -380,7 +392,7 @@ function createRocks(){
     smokeSystem.maxSize = 50;
     smokeSystem.minLifeTime = 0.3;
     smokeSystem.maxLifeTime = 1.5;
-    smokeSystem.emitRate = 350;
+    smokeSystem.emitRate = 50;
     smokeSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
     smokeSystem.gravity = new BABYLON.Vector3(0, 0, 0);
     smokeSystem.direction1 = new BABYLON.Vector3(-1.5, 8, -1.5);
@@ -410,7 +422,7 @@ function createRocks(){
     fireSystem.minLifeTime = 0.2;
     fireSystem.maxLifeTime = 0.4;
     // Emission rate
-    fireSystem.emitRate = 600;
+    fireSystem.emitRate = 150;
    // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
     fireSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
     // Set the gravity of all particles
@@ -428,13 +440,13 @@ function createRocks(){
     // Start the particle system
     fireSystem.start();
 
-    /*fountain.actionManager = new BABYLON.ActionManager(scene);
+    fountain.actionManager = new BABYLON.ActionManager(scene);
     fountain.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger : BABYLON.ActionManager.OnIntersectionEnterTrigger, 
             parameter : dragon}, function () {
                 dragonHealth -= 40;
                 updateHealth();
                 console.log("health decreased");
-            }));*/
+            }));
 
     setTimeout(function() {
         fireSystem.stop();
@@ -445,7 +457,7 @@ function createRocks(){
     }, 5000); 
 }
 
-function importEnemy() {
+function importEnemy(numOfEnemies) {
     BABYLON.SceneLoader.ImportMesh("", "scenes/", "archer_version_3.babylon", scene, onEnemyLoaded);
 
     function onEnemyLoaded(newMeshes, particleSystems, skeletons) {
@@ -454,14 +466,15 @@ function importEnemy() {
         enemy.bounder = boundingBox.boxMesh;
         enemy.bounder.enemy = enemy;
         enemy.skeletons = [];
-        enemy.position = new BABYLON.Vector3((Math.random() * 1000) - 500, -150, (Math.random() * 1000) - 500);
+        //enemy.position = new BABYLON.Vector3((Math.random() * 1000) - 500, -150, (Math.random() * 1000) - 500);
         enemy.dead = false;
         enemy.isVisible = false;
+        enemy.bounder.isVisible = false;
         for(var i = 0; i < skeletons.length; i++) {
             enemy.skeletons[i] = skeletons[i];
         }
 
-        for(var i = 0; i < 10; i++) {
+        for(var i = 0; i < numOfEnemies; i++) {
             enemies[i] = cloneModel(enemy, "enemies_" + i);
             enemies[i].position = new BABYLON.Vector3((Math.random() * 1000) - 500, -260, (Math.random() * 1000) - 500);
             //enemies[i].checkCollisions = true;
@@ -490,6 +503,8 @@ function importArrow() {
         arrow.bounder.arrow = arrow;
         arrow.position = arrow.bounder.position;
         arrow.skeletons = [];
+        arrow.speed = 0.009;
+        arrow.isVisible = false;
        // arrow.hitdragon = false;
         for(var i = 0; i < skeletons.length; i++) {
             arrow.skeletons[i] = skeletons[i];
@@ -690,7 +705,30 @@ function levelZero() {
 
     loadCoins(10);
     createDragon();
-   createDoor();
+    //createDoor();
+}
+
+function levelOne() {
+    //Dispose last scene
+    scene.dispose();
+
+    scene = new BABYLON.Scene(engine);
+    score = 0;
+    currentLevel = 1;
+    dragonHealth = 100;
+
+    var gravityVector = new BABYLON.Vector3(0, -10, 0);
+    var physicsPlugin = new BABYLON.CannonJSPlugin();
+    scene.enablePhysics(gravityVector, physicsPlugin);
+
+    camera = new BABYLON.FollowCamera("dragonCamera", new BABYLON.Vector3.Zero(), scene);
+
+    var light = new BABYLON.HemisphericLight("MainLevelLight", new BABYLON.Vector3(0, 10, 0), scene);
+
+    createConfiguredGround();
+
+    createDragon();
+    importEnemy(30);
 }
 
 function createConfiguredGround()
