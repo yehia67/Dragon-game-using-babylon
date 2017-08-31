@@ -148,9 +148,9 @@ function applyMovement(dragon){
         dragon.bounder.moveWithCollisions(direction);
     }
 
-    if (isSPressed) {
+   /* if (isSPressed) {
         dragon.bounder.moveWithCollisions(dragon.frontVector.multiplyByFloats(-1, 1, -1));
-    }
+    }*/
 
     if (isLeftPressed)
     {
@@ -202,7 +202,20 @@ function createEnemies(scene, newMeshes, skeletons, numOfEnemies) {
 
     enemies[index].skeletons = [];
 
-    enemies[index].position = new BABYLON.Vector3(0, -100, -100);
+    enemies[index].position = new BABYLON.Vector3(0, 0, 0);
+    var direction = new BABYLON.Vector3(0, -1, 0);
+    var ray = new BABYLON.Ray(enemies[index].position, direction, 1000);
+
+    var hit = scene.pickWithRay(ray, function (mesh) {
+        if (mesh.name.startsWith("ground")) {
+            return true;
+        }
+    });
+    if (hit.pickedMesh)
+    {
+        enemies[index].position = hit.pickedPoint;
+        enemies[index].position.y += 10;
+    }
     enemies[index].bounder.position = enemies[index].position;
     enemies[index].bounder.name = "enemies_0";
 
@@ -217,9 +230,23 @@ function createEnemies(scene, newMeshes, skeletons, numOfEnemies) {
     for(var i = 0; i < numOfEnemies - 1; i++) {
     	index = enemies.push(cloneModel(enemies[0], "enemies_" + i)) - 1;
 
-    	enemies[index].bounder.position = new BABYLON.Vector3((Math.random() * 500), -100, (Math.random() * 500));
-    	enemies[index].position = enemies[index].bounder.position;
+    	enemies[index].bounder.position = new BABYLON.Vector3((Math.random() * 500), hit.pickedPoint.y, (Math.random() * 500));
 
+    	enemies[index].position = enemies[index].bounder.position;
+    	/* direction = new BABYLON.Vector3(0,- 1, 0);
+    	var ray = new BABYLON.Ray(enemies[index].position, direction, 1000);
+
+    	var hit = scene.pickWithRay(ray, function (mesh) {
+    	    if (mesh.name.startsWith("ground")) {
+    	        return true;
+    	    }
+    	});
+    	if (hit.pickedMesh) {
+    	    enemies[index].position = hit.pickedPoint;
+    	    enemies[index].position.y += 10;
+    	}
+    	enemies[index].bounder.position = enemies[index].position;*/
+    
     	scene.beginAnimation(enemies[index].skeletons[0], 43, 51, 0.8, true);
     }
 }
@@ -348,11 +375,11 @@ function updateArrows(dragon) {
 
 function createConfiguredGround(scene)
 {
-    var ground = new BABYLON.Mesh.CreateGroundFromHeightMap("ground", "scenes/lake2.png", 1000, 5000,
+    var ground = new BABYLON.Mesh.CreateGroundFromHeightMap("ground", "scenes/lake3.png", scenesize, scenesize,
     50, -150, 200, scene, false, onGroundCreated);
 
     var groundMaterial = new BABYLON.StandardMaterial("m1", scene);
-
+    ground.name = "ground";
     // groundMaterial.ambientColor = new BABYLON.Color3(1, 0, 0);
     // groundMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
     groundMaterial.diffuseTexture = new BABYLON.Texture("scenes/RockMountain.jpg", scene);
@@ -464,7 +491,7 @@ function calculateBoundingBoxOfCompositeMeshes(scene, newMeshes, flag) {
     _boxMesh.checkCollisions = true;
     _boxMesh.material = new BABYLON.StandardMaterial("alpha", scene);
     _boxMesh.material.alpha = .2;
-    _boxMesh.isVisible = true;
+    _boxMesh.isVisible = false;
 
     return { min: { x: minx, y: miny, z: minz }, max: { x: maxx, y: maxy, z: maxz }, lengthX: _lengthX, lengthY: _lengthY, lengthZ: _lengthZ, center: _center, boxMesh: _boxMesh };
 }
