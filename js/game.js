@@ -708,29 +708,6 @@ function levelZero() {
     //createDoor();
 }
 
-function levelOne() {
-    //Dispose last scene
-    scene.dispose();
-
-    scene = new BABYLON.Scene(engine);
-    score = 0;
-    currentLevel = 1;
-    dragonHealth = 100;
-
-    var gravityVector = new BABYLON.Vector3(0, -10, 0);
-    var physicsPlugin = new BABYLON.CannonJSPlugin();
-    scene.enablePhysics(gravityVector, physicsPlugin);
-
-    camera = new BABYLON.FollowCamera("dragonCamera", new BABYLON.Vector3.Zero(), scene);
-
-    var light = new BABYLON.HemisphericLight("MainLevelLight", new BABYLON.Vector3(0, 10, 0), scene);
-
-    createConfiguredGround();
-
-    createDragon();
-    importEnemy(30);
-}
-
 function createConfiguredGround()
 {
     ground = new BABYLON.Mesh.CreateGroundFromHeightMap("ground", "scenes/lake2.png", scenesize, scenesize,
