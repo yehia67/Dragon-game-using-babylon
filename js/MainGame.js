@@ -5,7 +5,7 @@ var engine;
 
 var Game = {};
 Game.scenes = [];
-Game.activeScene = 0;
+Game.activeScene = 1;
 
 var assetsManager;
 
@@ -32,6 +32,7 @@ function startGame() {
 	canvas = document.getElementById("renderCanvas");
 	engine = new BABYLON.Engine(canvas);
 	Game.createLevelOne();
+	Game.createLevelTwo();
 
 	assetsManager.load();
 
@@ -45,15 +46,22 @@ function startGame() {
 Game.createLevelOne = function() {
 	var dragon;
 
-	var meteorFlag = false;
 	var fireFlag = false;
-	var score = 0;
 
 	var enemyRange = 200;
 
 	var scene = new BABYLON.Scene(engine);
 
 	assetsManager = new BABYLON.AssetsManager(scene);
+
+	var skybox = BABYLON.Mesh.CreateBox("skyBox", 10000.0, scene);
+    var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+    skyboxMaterial.backFaceCulling = false;
+    skyboxMaterial.disableLighting = true;
+    skybox.material = skyboxMaterial;
+    skybox.infiniteDistance = true;
+    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("scenes/sky/sky", scene);
+    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
 
 	scene.collisionsEnabled = true;
 	scene.gravity = new BABYLON.Vector3(0, -10, 0);
@@ -121,7 +129,7 @@ Game.createLevelOne = function() {
 			}, 5000);
 		}
 
-		this.updateActiveScene(dragon);
+		//this.updateActiveScene(dragon);
 		this.updateCoins();
 		this.updateArrowsPos(dragon);
 		this.updateEnemy(dragon, enemyRange);
@@ -131,6 +139,109 @@ Game.createLevelOne = function() {
 	}
 
 	return scene;
+}
+
+Game.createLevelTwo = function() {
+	var dragon;
+
+	var fireFlag = false;
+	var meteorFlag = false;
+
+	var enemyRange = 200;
+
+	var scene = new BABYLON.Scene(engine);
+
+	assetsManager = new BABYLON.AssetsManager(scene);
+
+	var skybox = BABYLON.Mesh.CreateBox("skyBox", 10000.0, scene);
+    var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+    skyboxMaterial.backFaceCulling = false;
+    skyboxMaterial.disableLighting = true;
+    skybox.material = skyboxMaterial;
+    skybox.infiniteDistance = true;
+    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("scenes/sky/sky", scene);
+    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+
+	scene.collisionsEnabled = true;
+	scene.gravity = new BABYLON.Vector3(0, -10, 0);
+	scene.enablePhysics(scene.gravity, new BABYLON.CannonJSPlugin());
+
+	//Scene Camera
+	var camera = new BABYLON.FollowCamera("dragonCamera", new BABYLON.Vector3.Zero(), scene);
+
+	var light = new BABYLON.HemisphericLight("MainLevelLight", new BABYLON.Vector3(0, 10, 0), scene);
+
+	createConfiguredGround(scene);
+
+	var sceneIndex = Game.scenes.push(scene) - 1;
+
+	var dragonTask = assetsManager.addMeshTask("Dragon Task", "", "scenes/", "dragon8.babylon");
+	dragonTask.onSuccess = function(task) {
+		dragon = createDragon(task.loadedMeshes, task.loadedSkeletons, scene, camera);
+	}
+
+	var enemiesTask = assetsManager.addMeshTask("Enemies Task", "", "scenes/", "archer_version_3.babylon");
+	enemiesTask.onSuccess = function(task) {
+		createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, 10);
+
+		createArrows(scene);
+
+		createCoins(scene, dragon);
+	}
+
+	Game.scenes[sceneIndex].applyDragonMovement = function(dragon) {
+		applyMovement(dragon);
+	}
+
+	Game.scenes[sceneIndex].fireDragon = function(scene, dragon) {
+		fire(scene, dragon);
+	}
+
+	Game.scenes[sceneIndex].enemiesFire = function(scene, dragon) {
+		fireArrows(scene, dragon)
+	}
+
+	Game.scenes[sceneIndex].updateEnemy = function(dragon, enemyRange) {
+		updateEnemyOrientationAndFire(dragon, enemyRange);
+	}
+
+	Game.scenes[sceneIndex].updateArrowsPos = function(dragon) {
+		updateArrows(dragon);
+	}
+
+	Game.scenes[sceneIndex].updateCoins = function() {
+		updateCoinsRotation();
+	}
+
+	Game.scenes[sceneIndex].createMeteors = function(scene, dragon) {
+		createRocks(scene, dragon);
+	}
+
+	Game.scenes[sceneIndex].renderLoop = function() {
+		if(!fireFlag) {
+			fireFlag = true;
+			setTimeout(function() {
+				Game.scenes[sceneIndex].enemiesFire(scene, dragon);
+				fireFlag = false;
+			}, 5000);
+		}
+
+		if(!meteorFlag) {
+            meteorFlag = true;
+            setTimeout(function() {
+                Game.scenes[sceneIndex].createMeteors(scene, dragon);
+                meteorFlag = false;
+            }, 700);
+        }
+
+		//this.updateActiveScene(dragon);
+		this.updateCoins();
+		this.updateArrowsPos(dragon);
+		this.updateEnemy(dragon, enemyRange);
+		this.applyDragonMovement(dragon);
+		this.fireDragon(scene, dragon);
+		this.render();
+	}
 }
 
 function createDragon(newMeshes, skeletons, scene, camera) {
@@ -147,6 +258,9 @@ function createDragon(newMeshes, skeletons, scene, camera) {
     dragon.bounder = boundingBox.boxMesh;
     dragon.bounder.position = new BABYLON.Vector3(0, 70, 30);
     dragon.position = dragon.bounder.position;
+
+    dragon.score = 0;
+    dragon.health = 100;
 
     return dragon;
 }
@@ -220,6 +334,7 @@ function applyMovement(dragon){
 	    		dragon.score++;
 	    		coins[i].bounder.dispose();
 	    		coins[i].dispose();
+	    		coins[i] = null;
 	    	}
 	    }
     }
@@ -290,7 +405,7 @@ function fire(scene, dragon) {
 
 	            coins[index].isVisible = true;
 	            coins[index].bounder.checkCollisions = true;
-	        }, 800);
+	        }, 900);
 	    }
 
 	    setTimeout(function () {
@@ -542,9 +657,97 @@ function createCoins(scene, dragon) {
 
 function updateCoinsRotation() {
 	for(var i = 0; i < coins.length; i++) {
-		if(coins[i].isVisible === true)
-			coins[i].rotation.y += 0.05;
+		if(coins[i])
+			if(coins[i].isVisible === true)
+				coins[i].rotation.y += 0.05;
 	}
+}
+
+function createRocks(scene, dragon){
+    var fountain = BABYLON.Mesh.CreateSphere("foutain", 10, 10, scene, false);
+    var xPos = (Math.random() * 1000) - 500;
+    var zPos = (Math.random() * 1000) - 500;
+    fountain.position = new BABYLON.Vector3(xPos, 500, zPos);
+    fountain.material = new BABYLON.StandardMaterial("emitterMat", scene);
+    fountain.material.diffuseColor = new BABYLON.Color3(98/256, 93/256, 93/256);
+    fountain.physicsImpostor = new BABYLON.PhysicsImpostor(fountain, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+    fountain.checkCollisions = true;
+
+    var smokeSystem = new BABYLON.ParticleSystem("particles", 1000, scene);
+    smokeSystem.particleTexture = new BABYLON.Texture("js/textures/flare.png", scene);
+    smokeSystem.emitter = fountain; // the starting object, the emitter
+    smokeSystem.minEmitBox = new BABYLON.Vector3(-5, -5, -5); // Starting all from
+    smokeSystem.maxEmitBox = new BABYLON.Vector3(25, 25, 25); // To...
+    smokeSystem.color1 = new BABYLON.Color4(0.1, 0.1, 0.1, 1.0);
+    smokeSystem.color2 = new BABYLON.Color4(0.1, 0.1, 0.1, 1.0);
+    smokeSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0.0);
+    smokeSystem.minSize = 0.3;
+    smokeSystem.maxSize = 50;
+    smokeSystem.minLifeTime = 0.3;
+    smokeSystem.maxLifeTime = 1.5;
+    smokeSystem.emitRate = 50;
+    smokeSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+    smokeSystem.gravity = new BABYLON.Vector3(0, 0, 0);
+    smokeSystem.direction1 = new BABYLON.Vector3(-1.5, 8, -1.5);
+    smokeSystem.direction2 = new BABYLON.Vector3(1.5, 8, 1.5);
+    smokeSystem.minAngularSpeed = 0;
+    smokeSystem.maxAngularSpeed = Math.PI;
+    smokeSystem.minEmitPower = 0.5;
+    smokeSystem.maxEmitPower = 1.5;
+    smokeSystem.updateSpeed = 0.005;
+    smokeSystem.start();
+     // Create a particle system
+    var fireSystem = new BABYLON.ParticleSystem("particles", 2000, scene);
+    //Texture of each particle
+    fireSystem.particleTexture = new BABYLON.Texture("js/textures/flare.png", scene);
+    // Where the particles come from
+    fireSystem.emitter = fountain; // the starting object, the emitter
+    fireSystem.minEmitBox = new BABYLON.Vector3(-5, -5, -5); // Starting all from
+    fireSystem.maxEmitBox = new BABYLON.Vector3(5, 5, 5); // To...
+    // Colors of all particles
+    fireSystem.color1 = new BABYLON.Color4(1, 0.5, 0, 1.0);
+    fireSystem.color2 = new BABYLON.Color4(1, 0.5, 0, 1.0);
+    fireSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0.0);
+     // Size of each particle (random between...
+    fireSystem.minSize = 0.3;
+    fireSystem.maxSize = 5;    
+    // Life time of each particle (random between...
+    fireSystem.minLifeTime = 0.2;
+    fireSystem.maxLifeTime = 0.4;
+    // Emission rate
+    fireSystem.emitRate = 150;
+   // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
+    fireSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+    // Set the gravity of all particles
+    fireSystem.gravity = new BABYLON.Vector3(0, 0, 0);
+    // Direction of each particle after it has been emitted
+    fireSystem.direction1 = new BABYLON.Vector3(0, 4, 0);
+    fireSystem.direction2 = new BABYLON.Vector3(0, 4, 0);
+    // Angular speed, in radians
+    fireSystem.minAngularSpeed = 0;
+    fireSystem.maxAngularSpeed = Math.PI;
+    // Speed
+    fireSystem.minEmitPower = 1;
+    fireSystem.maxEmitPower = 3;
+    fireSystem.updateSpeed = 0.007;
+    // Start the particle system
+    fireSystem.start();
+
+    fountain.actionManager = new BABYLON.ActionManager(scene);
+    fountain.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger : BABYLON.ActionManager.OnIntersectionEnterTrigger, 
+            parameter : dragon.bounder}, function () {
+                dragon.health -= 40;
+                console.log("health decreased");
+                console.log("dragon health : " + dragon.health);
+            }));
+
+    setTimeout(function() {
+        fireSystem.stop();
+        setTimeout(function() {
+            smokeSystem.stop();
+            fountain.dispose();
+        }, 1000);
+    }, 5000); 
 }
 
 function createConfiguredGround(scene)
@@ -557,6 +760,7 @@ function createConfiguredGround(scene)
     // groundMaterial.ambientColor = new BABYLON.Color3(1, 0, 0);
     // groundMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
     groundMaterial.diffuseTexture = new BABYLON.Texture("scenes/RockMountain.jpg", scene);
+    groundMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
     groundMaterial.diffuseTexture.uScale = 10;
     groundMaterial.diffuseTexture.vScale = 10;
 
