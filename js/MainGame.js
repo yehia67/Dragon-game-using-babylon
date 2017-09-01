@@ -549,7 +549,7 @@ function updateCoinsRotation() {
 
 function createConfiguredGround(scene)
 {
-    var ground = new BABYLON.Mesh.CreateGroundFromHeightMap("ground", "scenes/lake.png", 2000, scenesize,
+    var ground = new BABYLON.Mesh.CreateGroundFromHeightMap("ground", "scenes/lake3.png", scenesize, scenesize,
     50, 0, 500, scene, false, onGroundCreated);
 
     var groundMaterial = new BABYLON.StandardMaterial("m1", scene);
