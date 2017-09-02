@@ -328,13 +328,15 @@ function applyMovement(dragon){
     //Coins collision
     for(var i = 0; i < coins.length; i++) {
     	if(coins[i]) {
-	    	if(coins[i].bounder.intersectsMesh(dragon.bounder, false)) {
-	    		console.log("score : " + dragon.score);
+	    	if(coins[i].bounder.intersectsMesh(dragon.bounder, false)&& coins[i].isVisible) {
+	    	    dragon.score++;
+
+	    	    console.log("score : " + dragon.score);
 	    		console.log("da5alt hena");
-	    		dragon.score++;
 	    		coins[i].bounder.dispose();
 	    		coins[i].dispose();
-	    		coins[i] = null;
+	    	    //coins[i] = null;
+	    		coins.splice(i, 1);
 	    	}
 	    }
     }
@@ -390,19 +392,20 @@ function fire(scene, dragon) {
 
 	    if(hit.pickedMesh) {
 	    	console.log("pickedMesh : " + hit.pickedMesh.name);
-	        scene.beginAnimation(hit.pickedMesh.tempClone.skeletons[0], 51, 72, 0.7, true);
+	       scene.beginAnimation(hit.pickedMesh.tempClone.skeletons[0], 51, 72, 0.7, true);
 	        setTimeout(function() {
 	            var index = enemies.indexOf(hit.pickedMesh.tempClone);
 
 	            console.log("index : " + index);
 	            hit.pickedMesh.tempClone.dispose();
 	            hit.pickedMesh.dispose();
-	            enemies[index] = null;
+	            //  enemies[index] = null;
+	            enemies.splice(index, 1);
 	            arrows[index].bounder.dispose();
 	            arrows[index].dispose();
-	            arrows[index] = null;
+	           // arrows[index] = null;
 	            indicies.splice(indicies.indexOf(index), 1);
-
+	            arrows.splice(index, 1);
 	            coins[index].isVisible = true;
 	            coins[index].bounder.checkCollisions = true;
 	        }, 900);
