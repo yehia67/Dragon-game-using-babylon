@@ -230,7 +230,7 @@ Game.createLevelTwo = function() {
 			setTimeout(function() {
 				Game.scenes[sceneIndex].enemiesFire(scene, dragon);
 				fireFlag = false;
-			}, 5000);
+			}, 6000);
 		}
 
 		if(!meteorFlag) {
@@ -448,10 +448,11 @@ function fire(scene, dragon) {
 			    hit.pickedMesh.dispose();
 			    //  enemies[index] = null;
 			    enemies.splice(index, 1);
+			    arrows[index].move = false;
 			    arrows[index].bounder.dispose();
 			    arrows[index].dispose();
 			   // arrows[index] = null;
-			    indicies.splice(indicies.indexOf(index), 1);
+			    //indicies.splice(indicies.indexOf(arrows[index]), 1);
 			    arrows.splice(index, 1);
 			    coins[index].isVisible = true;
 			    coins[index].bounder.checkCollisions = true;
@@ -612,11 +613,13 @@ function fireArrows(scene, dragon) {
             arrows[i].rotation.y += Math.PI / 2;
             arrows[i].rotation.y += Math.PI / 6;
             arrows[i].isVisible = true;
-            indicies.push(i);
+            arrows[i].move = true;
             var index = i;
 
             resetArrow(i);
             stopAnimation(i);
+        } else {
+        	arrows[i].move = false;
         }
     }
 
@@ -628,7 +631,7 @@ function fireArrows(scene, dragon) {
 	            arrows[index].position = enemies[index].bounder.position.add(BABYLON.Vector3.Zero().add(enemies[index].frontVector.normalize().multiplyByFloats(20, 5, 20)));
 	            arrows[index].bounder.position = arrows[index].position;
 
-	            indicies.splice(indicies.indexOf(index), 1);
+	            arrows[index].move = false;
 	        }
 	    }, 4000);
 	}
@@ -642,23 +645,22 @@ function fireArrows(scene, dragon) {
 }
 
 function updateArrows(dragon) {
-    for (var i = 0; i < indicies.length; i++) {
+    for (var i = 0; i < arrows.length; i++) {
 
-    	if(arrows[indicies[i]]) {
-	        if (arrows[indicies[i]].bounder.intersectsMesh(dragon.bounder, false)) {
+    	if(arrows[i].move) {
+	        if (arrows[i].bounder.intersectsMesh(dragon.bounder, false)) {
 
-	        	arrows[indicies[i]].isVisible = false;
-	            arrows[indicies[i]].position = enemies[indicies[i]].bounder.position.add(BABYLON.Vector3.Zero().add(enemies[indicies[i]].frontVector.normalize().multiplyByFloats(20, 5, 20)));
-	            arrows[indicies[i]].bounder.position = arrows[indicies[i]].position;
-
-	            indicies.splice(i, 1);
+	        	arrows[i].isVisible = false;
+	           	arrows[i].position = enemies[i].bounder.position.add(BABYLON.Vector3.Zero().add(enemies[i].frontVector.normalize().multiplyByFloats(20, 5, 20)));
+	            arrows[i].bounder.position = arrows[i].position;
+	            arrows[i].move = false;
 
 	            dragon.health -= 10;
 	            updateHealth(dragon);
+	        } else {
+	            arrows[i].bounder.moveWithCollisions(arrows[i].frontVector.multiplyByFloats(arrows[i].speed, 
+	            	arrows[i].speed, arrows[i].speed));
 	        }
-	        else
-	            arrows[indicies[i]].bounder.moveWithCollisions(arrows[indicies[i]].frontVector.multiplyByFloats(arrows[indicies[i]].speed, 
-	            	arrows[indicies[i]].speed, arrows[indicies[i]].speed));
 	    }
     }
 }
