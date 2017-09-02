@@ -5,7 +5,7 @@ var engine;
 
 var Game = {};
 Game.scenes = [];
-Game.activeScene = 1;
+Game.activeScene = 0;
 
 var assetsManager;
 
@@ -32,7 +32,7 @@ function startGame() {
 	canvas = document.getElementById("renderCanvas");
 	engine = new BABYLON.Engine(canvas);
 	Game.createLevelOne();
-	Game.createLevelTwo();
+	//Game.createLevelTwo();
 
 	assetsManager.load();
 
@@ -45,7 +45,7 @@ function startGame() {
 
 Game.createLevelOne = function() {
 	var dragon;
-
+	var enemyCount = 50;
 	var fireFlag = false;
 
 	var enemyRange = 200;
@@ -83,7 +83,7 @@ Game.createLevelOne = function() {
 
 	var enemiesTask = assetsManager.addMeshTask("Enemies Task", "", "scenes/", "archer_version_3.babylon");
 	enemiesTask.onSuccess = function(task) {
-		createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, 10);
+		createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, enemyCount);
 
 		createArrows(scene);
 
@@ -143,7 +143,7 @@ Game.createLevelOne = function() {
 
 Game.createLevelTwo = function() {
 	var dragon;
-
+    
 	var fireFlag = false;
 	var meteorFlag = false;
 
@@ -399,10 +399,11 @@ function fire(scene, dragon) {
 	            console.log("index : " + index);
 	            hit.pickedMesh.tempClone.dispose();
 	            hit.pickedMesh.dispose();
-	            //  enemies[index] = null;
-	            enemies.splice(index, 1);
 	            arrows[index].bounder.dispose();
 	            arrows[index].dispose();
+	      
+	            //  enemies[index] = null;
+	            enemies.splice(index, 1);
 	           // arrows[index] = null;
 	            indicies.splice(indicies.indexOf(index), 1);
 	            arrows.splice(index, 1);
@@ -423,7 +424,7 @@ function fire(scene, dragon) {
 
 function createEnemies(scene, newMeshes, skeletons, numOfEnemies) {
     var index = enemies.push(newMeshes[0]) - 1;
-
+    var enemyDistance = 75;
     var boundingBox = calculateBoundingBoxOfCompositeMeshes(scene, newMeshes, 1);
     enemies[index].bounder = boundingBox.boxMesh;
     enemies[index].bounder.tempClone = enemies[index];
@@ -444,14 +445,13 @@ function createEnemies(scene, newMeshes, skeletons, numOfEnemies) {
         }
     });
 
-    if (hit.pickedMesh)
-    {
+    if (hit.pickedMesh) {
         enemies[index].position = hit.pickedPoint;
         enemies[index].position.y += 10;
     }
 
 
-    for(var i = 0; i < skeletons.length; i++) {
+    for (var i = 0; i < skeletons.length; i++) {
         enemies[index].skeletons[i] = skeletons[i];
     }
 
@@ -461,31 +461,42 @@ function createEnemies(scene, newMeshes, skeletons, numOfEnemies) {
     enemies[index].frontVector = new BABYLON.Vector3(0, 0, -1);
 
     scene.beginAnimation(enemies[index].skeletons[0], 43, 51, 0.8, true);
+    xPos= -550;
 
-    for(var i = 0; i < numOfEnemies - 1; i++) {
-    	index = enemies.push(cloneModel(enemies[0], "enemies_" + i)) - 1;
+    for (var i = 0; i < numOfEnemies - 1; i++) {
+        index = enemies.push(cloneModel(enemies[0], "enemies_" + i)) - 1;
 
-    	xPos = (Math.random() * 2000) - 1000;
-	    zPos = (Math.random() * 2000) - 1000;
+       // xPos = (Math.random() * 2000) - 1000;
+        //zPos = (Math.random() * 2000) - 1000;
 
-	    ray = new BABYLON.Ray(new BABYLON.Vector3(xPos, 500, zPos), direction, 1000);
+        zPos = -200 + enemyDistance * (i % 10);
+        if (i%10===0 && i!=0) {
+            xPos += enemyDistance;
+        }
+       // console.log("Z": + zpos)
+        ray = new BABYLON.Ray(new BABYLON.Vector3(xPos, 500, zPos), direction, 1000);
 
-	    hit = scene.pickWithRay(ray, function (mesh) {
-	        if (mesh.name.startsWith("ground")) {
-	            return true;
-	        }
-	    });
+        hit = scene.pickWithRay(ray, function (mesh) {
+            if (mesh.name.startsWith("ground")) {
+                return true;
+            }
+        });
 
-	    if (hit.pickedMesh)
-	    {
-	        enemies[index].position = hit.pickedPoint;
-	        enemies[index].position.y += 10;
-	    }
+        if (hit.pickedMesh) {
+            enemies[index].position = hit.pickedPoint;
+            enemies[index].position.y += 10;
+        }
 
-    	enemies[index].bounder.position = enemies[index].position;
-    
-    	scene.beginAnimation(enemies[index].skeletons[0], 43, 51, 0.8, true);
+        enemies[index].bounder.position = enemies[index].position;
+
+        scene.beginAnimation(enemies[index].skeletons[0], 43, 51, 0.8, true);
     }
+   enemies[0].position.x = xPos;
+   enemies[0].position.z = -200 + enemyDistance * 9;
+   /*for (var i = 0; i < numOfEnemies - 1; i++) {
+       enemies[i].position.x = 10 * i;
+       enemies[i].position.z = 10;
+    }*/
 }
 
 function updateEnemyOrientationAndFire(dragon, range) {
