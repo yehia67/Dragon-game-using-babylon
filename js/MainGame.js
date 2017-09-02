@@ -31,6 +31,10 @@ var maxheight = 300;
 function startGame() {
 	canvas = document.getElementById("renderCanvas");
 	engine = new BABYLON.Engine(canvas);
+	window.addEventListener('resize', function () {
+        engine.resize();
+    });
+
 	Game.createLevelOne();
 	//Game.createLevelTwo();
 
@@ -84,8 +88,9 @@ Game.createLevelOne = function() {
 	var enemiesTask = assetsManager.addMeshTask("Enemies Task", "", "scenes/", "archer_version_3.babylon");
 	enemiesTask.onSuccess = function(task) {
 		createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, enemyCount);
+		
 
-		createArrows(scene);
+		createArrows(scene, 0.009);
 
 		createCoins(scene, dragon);
 	}
@@ -162,11 +167,14 @@ Game.createLevelTwo = function() {
     skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("scenes/sky/sky", scene);
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
 
+    scene.fogMode = BABYLON.Scene.FOGMODE_EXP
+    scene.fogDensity = 0.002;
+    scene.fogColor = new BABYLON.Color3(0.9, 0.9, 0.85);
+
 	scene.collisionsEnabled = true;
 	scene.gravity = new BABYLON.Vector3(0, -10, 0);
 	scene.enablePhysics(scene.gravity, new BABYLON.CannonJSPlugin());
 
-	//Scene Camera
 	var camera = new BABYLON.FollowCamera("dragonCamera", new BABYLON.Vector3.Zero(), scene);
 
 	var light = new BABYLON.HemisphericLight("MainLevelLight", new BABYLON.Vector3(0, 10, 0), scene);
@@ -184,7 +192,7 @@ Game.createLevelTwo = function() {
 	enemiesTask.onSuccess = function(task) {
 		createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, 10);
 
-		createArrows(scene);
+		createArrows(scene, 0.015);
 
 		createCoins(scene, dragon);
 	}
@@ -262,7 +270,45 @@ function createDragon(newMeshes, skeletons, scene, camera) {
     dragon.score = 0;
     dragon.health = 100;
 
+    createHealthBar(scene, dragon);
+
     return dragon;
+}
+
+function createHealthBar(scene, dragon) {
+    var healthBarMaterial = new BABYLON.StandardMaterial("hb1mat", scene);
+    healthBarMaterial.diffuseColor = new BABYLON.Color3.Green();
+    healthBarMaterial.backFaceCulling = false;
+
+    var healthBarContainerMaterial = new BABYLON.StandardMaterial("hb2mat", scene);
+    healthBarContainerMaterial.diffuseColor = new BABYLON.Color3.Blue();
+    healthBarContainerMaterial.backFaceCulling = false;
+
+    healthBar = BABYLON.MeshBuilder.CreatePlane("hb1", {width:30, height:3, subdivisions:4}, scene);        
+    healthBarContainer = BABYLON.MeshBuilder.CreatePlane("hb2", {width:30, height:3, subdivisions:4}, scene);       
+
+    healthBar.position = new BABYLON.Vector3(0, 0, -.01);           // Move in front of container slightly.  Without this there is flickering.
+    healthBarContainer.position = new BABYLON.Vector3(0, 35, 0);     // Position above player.
+
+    healthBar.parent = healthBarContainer;
+    healthBarContainer.parent = dragon;
+
+    healthBar.material = healthBarMaterial;
+    healthBarContainer.material = healthBarContainerMaterial;
+
+    healthBarContainer.rotation.y = Math.PI;
+    healthBar.rotation.y = Math.PI;
+}
+
+function updateHealth(dragon) {
+    if(dragon.health > 0) {
+        healthBar.scaling.x = dragon.health / 100;
+        healthBar.position.x = ((15 - ((dragon.health / 200) * 15)) * -1) + ((dragon.health / 200) * 15);
+    } else {
+        dragon.health = 0;
+        healthBar.scaling.x = dragon.health / 100;
+        healthBar.position.x = ((15 - ((dragon.health / 200) * 15)) * -1) + ((dragon.health / 200) * 15);
+    }
 }
 
 function applyMovement(dragon){
@@ -328,7 +374,7 @@ function applyMovement(dragon){
     //Coins collision
     for(var i = 0; i < coins.length; i++) {
     	if(coins[i]) {
-	    	if(coins[i].bounder.intersectsMesh(dragon.bounder, false)&& coins[i].isVisible) {
+	    	if(coins[i].bounder.intersectsMesh(dragon.bounder, false) && coins[i].isVisible) {
 	    	    dragon.score++;
 
 	    	    console.log("score : " + dragon.score);
@@ -344,43 +390,44 @@ function applyMovement(dragon){
 
 function fire(scene, dragon) {
 	if(isSpacePressed) {
-		var direction = new BABYLON.Vector3(dragon.frontVector.x, -0.5, dragon.frontVector.z);
+		var direction = new BABYLON.Vector3(dragon.frontVector.x, -0.45, dragon.frontVector.z);
 	    direction.normalize;
 	    var fireSystem = new BABYLON.ParticleSystem("particles", 2000, scene)
 	    fireSystem.particleTexture = new BABYLON.Texture("js/textures/flare.png", scene);
 	    fireSystem.emitter = dragon;
-	    fireSystem.minEmitBox = new BABYLON.Vector3(0, 15, -30); 
-	    fireSystem.maxEmitBox = new BABYLON.Vector3(0, -300,-100); 
+	    fireSystem.minEmitBox = new BABYLON.Vector3(0, 20, -30); 
+	    fireSystem.maxEmitBox = new BABYLON.Vector3(0, -15,-150); 
 	    fireSystem.color1 = new BABYLON.Color4(1, 0.5, 0, 1.0);
 	    fireSystem.color2 = new BABYLON.Color4(1, 0.5, 0, 1.0);
 	    fireSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0.0);
 	    fireSystem.minSize = 0.3;
 	    fireSystem.maxSize = 30;    
 	    fireSystem.minLifeTime = 0.2;
-	    fireSystem.maxLifeTime = 0.4;
+	    fireSystem.maxLifeTime = 1.0;
 	    fireSystem.emitRate = 800;
 	    fireSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
 	    fireSystem.gravity = new BABYLON.Vector3(0, 0, 0);
-	    fireSystem.direction1 = direction;
-	    fireSystem.direction2 = direction;
+	    fireSystem.direction1 = new BABYLON.Vector3(0, -10, -10);
+	    fireSystem.direction2 = new BABYLON.Vector3(0, -10, -10);
 	    fireSystem.minEmitPower = 1;
 	    fireSystem.maxEmitPower = 10;
 	    fireSystem.updateSpeed = 0.007;
-	    fireSystem.gravity = new BABYLON.Vector3(0, 0, -10);
+	    fireSystem.gravity = new BABYLON.Vector3(0, -10, -10);
 	    fireSystem.start();
 
-	    var origin = new BABYLON.Vector3(dragon.position.x, dragon.position.y+10, dragon.position.z);
+	    var origin = new BABYLON.Vector3(dragon.position.x, dragon.position.y+15, dragon.position.z);
 	 
 	    
 	    var length = 1000;
 
 	    var ray = new BABYLON.Ray(origin, direction, length);
-	    //var rayHelper = new BABYLON.RayHelper(ray);
-	    //rayHelper.show(scene);
 
-	    /*setTimeout(function () {
+	    var rayHelper = new BABYLON.RayHelper(ray);
+	    rayHelper.show(scene);
+
+	    setTimeout(function () {
 	        rayHelper.hide();
-	    }, 500);*/
+	    }, 500);
 
 	    var hit = scene.pickWithRay(ray, function(mesh) {
 	        if(mesh.name.startsWith("enemies")) {
@@ -390,7 +437,7 @@ function fire(scene, dragon) {
 	        }
 	    });
 
-	    if(hit.pickedMesh) {
+	    if(hit.pickedMesh && !hit.pickedMesh.tempClone.isDead) {
 	    	console.log("pickedMesh : " + hit.pickedMesh.name);
 	       scene.beginAnimation(hit.pickedMesh.tempClone.skeletons[0], 51, 72, 0.7, true);
 	        setTimeout(function() {
@@ -410,6 +457,7 @@ function fire(scene, dragon) {
 	            coins[index].isVisible = true;
 	            coins[index].bounder.checkCollisions = true;
 	        }, 900);
+
 	    }
 
 	    setTimeout(function () {
@@ -431,13 +479,18 @@ function createEnemies(scene, newMeshes, skeletons, numOfEnemies) {
 
     enemies[index].skeletons = [];
 
-    enemies[index].position = new BABYLON.Vector3(0, 0, 0);
+    enemies[index].isDead = false;
+
+    for(var i = 0; i < skeletons.length; i++) {
+        enemies[index].skeletons[i] = skeletons[i];
+    }
+
     var direction = new BABYLON.Vector3(0, -1, 0);
 
     var xPos = (Math.random() * 2001) - 1000;
     var zPos = (Math.random() * 2001) - 1000;
 
-    var ray = new BABYLON.Ray(new BABYLON.Vector3(xPos, 600, zPos), direction, 1000);
+    var ray = new BABYLON.Ray(new BABYLON.Vector3(xPos, 505, zPos), direction, 1000);
 
     var hit = scene.pickWithRay(ray, function (mesh) {
         if (mesh.name.startsWith("ground")) {
@@ -454,6 +507,7 @@ function createEnemies(scene, newMeshes, skeletons, numOfEnemies) {
     for (var i = 0; i < skeletons.length; i++) {
         enemies[index].skeletons[i] = skeletons[i];
     }
+
 
     enemies[index].bounder.position = enemies[index].position;
     enemies[index].bounder.name = "enemies_0_bounder";
@@ -521,7 +575,7 @@ function updateEnemyOrientationAndFire(dragon, range) {
     }
 }
 
-function createArrows(scene) {
+function createArrows(scene, speed) {
 	BABYLON.SceneLoader.ImportMesh("", "scenes/", "arrow2.babylon", scene, onArrowLoaded);
 
     function onArrowLoaded(newMeshes, particleSystems, skeletons) {
@@ -534,7 +588,7 @@ function createArrows(scene) {
 
         arrows[index].skeletons = [];
 
-        arrows[index].speed = 0.009;
+        arrows[index].speed = speed;
 
         arrows[index].isVisible = false;
 
@@ -608,7 +662,7 @@ function fireArrows(scene, dragon) {
 function updateArrows(dragon) {
     for (var i = 0; i < indicies.length; i++) {
 
-    	if(arrows[indicies]) {
+    	if(arrows[indicies[i]]) {
 	        if (arrows[indicies[i]].bounder.intersectsMesh(dragon.bounder, false)) {
 
 	        	arrows[indicies[i]].isVisible = false;
@@ -616,10 +670,13 @@ function updateArrows(dragon) {
 	            arrows[indicies[i]].bounder.position = arrows[indicies[i]].position;
 
 	            indicies.splice(i, 1);
-	            console.log("dam");
+
+	            dragon.health -= 10;
+	            updateHealth(dragon);
 	        }
 	        else
-	            arrows[indicies[i]].bounder.moveWithCollisions(arrows[indicies[i]].frontVector.multiplyByFloats(0.009, 0.009, 0.009));
+	            arrows[indicies[i]].bounder.moveWithCollisions(arrows[indicies[i]].frontVector.multiplyByFloats(arrows[indicies[i]].speed, 
+	            	arrows[indicies[i]].speed, arrows[indicies[i]].speed));
 	    }
     }
 }
@@ -648,10 +705,12 @@ function createCoins(scene, dragon) {
         coins[index].bounder.position = coins[index].position;
 
         coins[index].isVisible = false;
+        coins[index].bounder.checkCollisions = false;
 
         for(var i = 1; i < enemies.length; i++) {
             index = coins.push(cloneModel(coins[index], "coins_" + i)) - 1;
             coins[index].position = enemies[index].position;
+            coins[index].bounder.position = coins[index].position;
 
             console.log("created coins : " + coins[index].position);
             coins[index].scaling = new BABYLON.Vector3(0.15, 0.15, 0.15);
@@ -659,12 +718,8 @@ function createCoins(scene, dragon) {
             coins[index].material.diffuseColor = new BABYLON.Color3.Yellow();
             coins[index].rotation.x = Math.PI / 2;
 
-            coins[index].bounder.position = coins[index].position;
-
             coins[index].isVisible = false;
-
-            coins[index].checkCollisions = false;
-            console.log("im here");
+            coins[index].bounder.checkCollisions = false;
         }
     }
 }
@@ -687,7 +742,7 @@ function createRocks(scene, dragon){
     fountain.physicsImpostor = new BABYLON.PhysicsImpostor(fountain, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
     fountain.checkCollisions = true;
 
-    var smokeSystem = new BABYLON.ParticleSystem("particles", 1000, scene);
+    var smokeSystem = new BABYLON.ParticleSystem("particles", 100, scene);
     smokeSystem.particleTexture = new BABYLON.Texture("js/textures/flare.png", scene);
     smokeSystem.emitter = fountain; // the starting object, the emitter
     smokeSystem.minEmitBox = new BABYLON.Vector3(-5, -5, -5); // Starting all from
@@ -729,7 +784,7 @@ function createRocks(scene, dragon){
     fireSystem.minLifeTime = 0.2;
     fireSystem.maxLifeTime = 0.4;
     // Emission rate
-    fireSystem.emitRate = 150;
+    fireSystem.emitRate = 200;
    // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
     fireSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
     // Set the gravity of all particles
@@ -883,7 +938,7 @@ function calculateBoundingBoxOfCompositeMeshes(scene, newMeshes, flag) {
     _boxMesh.checkCollisions = true;
     _boxMesh.material = new BABYLON.StandardMaterial("alpha", scene);
     _boxMesh.material.alpha = .2;
-    _boxMesh.isVisible = false;
+    _boxMesh.isVisible = true;
 
     return { min: { x: minx, y: miny, z: minz }, max: { x: maxx, y: maxy, z: maxz }, lengthX: _lengthX, lengthY: _lengthY, lengthZ: _lengthZ, center: _center, boxMesh: _boxMesh };
 }
