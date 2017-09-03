@@ -18,7 +18,7 @@ var isRightPressed = false;
 var isUpPressed = false;
 var isDownPressed = false;
 var isSpacePressed = false;
-var coinModel;
+
 var enemies = [];
 var arrows = [];
 var coins = [];
@@ -34,9 +34,10 @@ function startGame() {
 	window.addEventListener('resize', function () {
         engine.resize();
     });
+
 	Game.createLevelOne();
-    //Game.createLevelTwo();
-	//Game.createLevelThree();
+	//Game.createLevelTwo();
+
 	assetsManager.load();
 
 	assetsManager.onFinish = function(tasks) {
@@ -48,7 +49,7 @@ function startGame() {
 
 Game.createLevelOne = function() {
 	var dragon;
-	var enemyCount = 40;
+	var enemyCount = 50;
 	var fireFlag = false;
 
 	var enemyRange = 200;
@@ -57,29 +58,6 @@ Game.createLevelOne = function() {
 
 	assetsManager = new BABYLON.AssetsManager(scene);
 
-	BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
-
-	function onCoinLoaded(newMeshes, particleSystems, skeletons) {
-	    coinModel = newMeshes[0];
-
-	    var boundingBox = calculateBoundingBoxOfCompositeMeshes(scene, newMeshes, 0);
-	    coinModel.bounder = boundingBox.boxMesh;
-	    coinModel.bounder.tempClone = coinModel;
-	    coinModel.bounder.ellipsoidOffset.y += 3;
-	    coinModel.position = new BABYLON.Vector3(0, 0, 0);
-
-	    coinModel.scaling = new BABYLON.Vector3(0.15, 0.15, 0.15);
-
-	    coinModel.material = new BABYLON.StandardMaterial("coinMat", scene);
-	    coinModel.material.diffuseColor = new BABYLON.Color3.Yellow();
-
-	    coinModel.rotation.x = Math.PI / 2;
-
-	    coinModel.bounder.position = coinModel.position;
-
-	    coinModel.isVisible = false;
-	    coinModel.bounder.checkCollisions = false;
-	}
 	var skybox = BABYLON.Mesh.CreateBox("skyBox", 10000.0, scene);
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
@@ -114,7 +92,7 @@ Game.createLevelOne = function() {
 
 		createArrows(scene, 0.009);
 
-		//createCoins(scene, dragon);
+		createCoins(scene, dragon);
 	}
 
 	Game.scenes[sceneIndex].applyDragonMovement = function(dragon) {
@@ -170,38 +148,16 @@ Game.createLevelOne = function() {
 
 Game.createLevelTwo = function() {
 	var dragon;
-	var enemyCount = 50;
+    
 	var fireFlag = false;
 	var meteorFlag = false;
 
-	var enemyRange = 250;
+	var enemyRange = 200;
 
 	var scene = new BABYLON.Scene(engine);
 
 	assetsManager = new BABYLON.AssetsManager(scene);
-	BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
 
-	function onCoinLoaded(newMeshes, particleSystems, skeletons) {
-	    coinModel = newMeshes[0];
-
-	    var boundingBox = calculateBoundingBoxOfCompositeMeshes(scene, newMeshes, 0);
-	    coinModel.bounder = boundingBox.boxMesh;
-	    coinModel.bounder.tempClone = coinModel;
-	    coinModel.bounder.ellipsoidOffset.y += 3;
-	    coinModel.position = new BABYLON.Vector3(0, 0, 0);
-
-	    coinModel.scaling = new BABYLON.Vector3(0.15, 0.15, 0.15);
-
-	    coinModel.material = new BABYLON.StandardMaterial("coinMat", scene);
-	    coinModel.material.diffuseColor = new BABYLON.Color3.Yellow();
-
-	    coinModel.rotation.x = Math.PI / 2;
-
-	    coinModel.bounder.position = coinModel.position;
-
-	    coinModel.isVisible = false;
-	    coinModel.bounder.checkCollisions = false;
-	}
 	var skybox = BABYLON.Mesh.CreateBox("skyBox", 10000.0, scene);
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
@@ -234,11 +190,11 @@ Game.createLevelTwo = function() {
 
 	var enemiesTask = assetsManager.addMeshTask("Enemies Task", "", "scenes/", "archer_version_3.babylon");
 	enemiesTask.onSuccess = function(task) {
-		createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, enemyCount);
+		createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, 10);
 
 		createArrows(scene, 0.015);
 
-		//createCoins(scene, dragon);
+		createCoins(scene, dragon);
 	}
 
 	Game.scenes[sceneIndex].applyDragonMovement = function(dragon) {
@@ -275,7 +231,7 @@ Game.createLevelTwo = function() {
 			setTimeout(function() {
 				Game.scenes[sceneIndex].enemiesFire(scene, dragon);
 				fireFlag = false;
-			}, 6000);
+			}, 5000);
 		}
 
 		if(!meteorFlag) {
@@ -295,133 +251,6 @@ Game.createLevelTwo = function() {
 		this.render();
 	}
 }
-Game.createLevelThree = function () {
-    var dragon;
-    var enemyCount = 60;
-    var fireFlag = false;
-    var meteorFlag = false;
-
-    var enemyRange = 300;
-
-    var scene = new BABYLON.Scene(engine);
-
-    assetsManager = new BABYLON.AssetsManager(scene);
-    BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
-
-    function onCoinLoaded(newMeshes, particleSystems, skeletons) {
-        coinModel = newMeshes[0];
-
-        var boundingBox = calculateBoundingBoxOfCompositeMeshes(scene, newMeshes, 0);
-        coinModel.bounder = boundingBox.boxMesh;
-        coinModel.bounder.tempClone = coinModel;
-        coinModel.bounder.ellipsoidOffset.y += 3;
-        coinModel.position = new BABYLON.Vector3(0, 0, 0);
-
-        coinModel.scaling = new BABYLON.Vector3(0.15, 0.15, 0.15);
-
-        coinModel.material = new BABYLON.StandardMaterial("coinMat", scene);
-        coinModel.material.diffuseColor = new BABYLON.Color3.Yellow();
-
-        coinModel.rotation.x = Math.PI / 2;
-
-        coinModel.bounder.position = coinModel.position;
-
-        coinModel.isVisible = false;
-        coinModel.bounder.checkCollisions = false;
-    }
-    var skybox = BABYLON.Mesh.CreateBox("skyBox", 10000.0, scene);
-    var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
-    skyboxMaterial.backFaceCulling = false;
-    skyboxMaterial.disableLighting = true;
-    skybox.material = skyboxMaterial;
-    skybox.infiniteDistance = true;
-    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("scenes/sky/sky", scene);
-    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-
-    scene.fogMode = BABYLON.Scene.FOGMODE_EXP
-    scene.fogDensity = 0.002;
-    scene.fogColor = new BABYLON.Color3(0.9, 0.9, 0.85);
-
-    scene.collisionsEnabled = true;
-    scene.gravity = new BABYLON.Vector3(0, -10, 0);
-    scene.enablePhysics(scene.gravity, new BABYLON.CannonJSPlugin());
-
-    var camera = new BABYLON.FollowCamera("dragonCamera", new BABYLON.Vector3.Zero(), scene);
-
-    var light = new BABYLON.HemisphericLight("MainLevelLight", new BABYLON.Vector3(0, 10, 0), scene);
-
-    createConfiguredGround(scene);
-
-    var sceneIndex = Game.scenes.push(scene) - 1;
-
-    var dragonTask = assetsManager.addMeshTask("Dragon Task", "", "scenes/", "dragon8.babylon");
-    dragonTask.onSuccess = function (task) {
-        dragon = createDragon(task.loadedMeshes, task.loadedSkeletons, scene, camera);
-    }
-
-    var enemiesTask = assetsManager.addMeshTask("Enemies Task", "", "scenes/", "archer_version_3.babylon");
-    enemiesTask.onSuccess = function (task) {
-        createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, enemyCount);
-
-        createArrows(scene, 0.015);
-
-       // createCoins(scene, dragon);
-    }
-
-    Game.scenes[sceneIndex].applyDragonMovement = function (dragon) {
-        applyMovement(dragon);
-    }
-
-    Game.scenes[sceneIndex].fireDragon = function (scene, dragon) {
-        fire(scene, dragon);
-    }
-
-    Game.scenes[sceneIndex].enemiesFire = function (scene, dragon) {
-        fireArrows(scene, dragon)
-    }
-
-    Game.scenes[sceneIndex].updateEnemy = function (dragon, enemyRange) {
-        updateEnemyOrientationAndFire(dragon, enemyRange);
-    }
-
-    Game.scenes[sceneIndex].updateArrowsPos = function (dragon) {
-        updateArrows(dragon);
-    }
-
-    Game.scenes[sceneIndex].updateCoins = function () {
-        updateCoinsRotation();
-    }
-
-    Game.scenes[sceneIndex].createMeteors = function (scene, dragon) {
-        createRocks(scene, dragon);
-    }
-
-    Game.scenes[sceneIndex].renderLoop = function () {
-        if (!fireFlag) {
-            fireFlag = true;
-            setTimeout(function () {
-                Game.scenes[sceneIndex].enemiesFire(scene, dragon);
-                fireFlag = false;
-            }, 6000);
-        }
-
-        if (!meteorFlag) {
-            meteorFlag = true;
-            setTimeout(function () {
-                Game.scenes[sceneIndex].createMeteors(scene, dragon);
-                meteorFlag = false;
-            }, 700);
-        }
-
-        //this.updateActiveScene(dragon);
-        this.updateCoins();
-        this.updateArrowsPos(dragon);
-        this.updateEnemy(dragon, enemyRange);
-        this.applyDragonMovement(dragon);
-        this.fireDragon(scene, dragon);
-        this.render();
-    }
-}
 
 function createDragon(newMeshes, skeletons, scene, camera) {
     var dragon = newMeshes[0];
@@ -435,7 +264,7 @@ function createDragon(newMeshes, skeletons, scene, camera) {
 
     var boundingBox = calculateBoundingBoxOfCompositeMeshes(scene, newMeshes, 3);
     dragon.bounder = boundingBox.boxMesh;
-    dragon.bounder.position = new BABYLON.Vector3(300, 70, 30);
+    dragon.bounder.position = new BABYLON.Vector3(0, 70, 30);
     dragon.position = dragon.bounder.position;
 
     dragon.score = 0;
@@ -547,11 +376,12 @@ function applyMovement(dragon){
     	if(coins[i]) {
 	    	if(coins[i].bounder.intersectsMesh(dragon.bounder, false) && coins[i].isVisible) {
 	    	    dragon.score++;
-	    	    console.log("hiii :(");
+
+	    	    console.log("score : " + dragon.score);
+	    		console.log("da5alt hena");
 	    		coins[i].bounder.dispose();
 	    		coins[i].dispose();
 	    	    //coins[i] = null;
-	    		document.getElementById("scoreLabel").textContent = "x " + dragon.score;
 	    		coins.splice(i, 1);
 	    	}
 	    }
@@ -609,46 +439,25 @@ function fire(scene, dragon) {
 
 	    if(hit.pickedMesh && !hit.pickedMesh.tempClone.isDead) {
 	    	console.log("pickedMesh : " + hit.pickedMesh.name);
-			scene.beginAnimation(hit.pickedMesh.tempClone.skeletons[0], 51, 72, 0.7, true);
-			hit.pickedMesh.tempClone.isDead = true;
+	       scene.beginAnimation(hit.pickedMesh.tempClone.skeletons[0], 51, 72, 0.7, true);
+	        setTimeout(function() {
+	            var index = enemies.indexOf(hit.pickedMesh.tempClone);
 
-			{
-			    var coin = cloneModel(coinModel, "coins_");
-			    coins.push(coin) ;
-			    coin.position = hit.pickedMesh.position;
-			    coin.bounder.position = coin.position;
+	            console.log("index : " + index);
+	            hit.pickedMesh.tempClone.dispose();
+	            hit.pickedMesh.dispose();
+	            arrows[index].bounder.dispose();
+	            arrows[index].dispose();
+	      
+	            //  enemies[index] = null;
+	            enemies.splice(index, 1);
+	           // arrows[index] = null;
+	            indicies.splice(indicies.indexOf(index), 1);
+	            arrows.splice(index, 1);
+	            coins[index].isVisible = true;
+	            coins[index].bounder.checkCollisions = true;
+	        }, 900);
 
-			    //console.log("created coins : " + coins[index].position);
-			    coin.scaling = new BABYLON.Vector3(0.15, 0.15, 0.15);
-			    coin.material = new BABYLON.StandardMaterial("coinMat", scene);
-			    coin.material.diffuseColor = new BABYLON.Color3.Yellow();
-			    coin.rotation.x = Math.PI / 2;
-
-			    coin.isVisible = true;
-			    coin.bounder.checkCollisions = true;
-			}
-
-
-			setTimeout(function() {
-				console.log("heeeeeeeenaaaaaaaaaa");
-			    var index = enemies.indexOf(hit.pickedMesh.tempClone);
-
-			    console.log("index : " + index);
-			    hit.pickedMesh.tempClone.dispose();
-			    hit.pickedMesh.dispose();
-			    //  enemies[index] = null;
-			    enemies.splice(index, 1);
-			    arrows[index].move = false;
-			    arrows[index].bounder.dispose();
-			    arrows[index].dispose();
-			   // arrows[index] = null;
-			    //indicies.splice(indicies.indexOf(arrows[index]), 1);
-			    arrows.splice(index, 1);
-			    console.log("index again : " + index);
-			   // coins[index].isVisible = true;
-			   // console.log("coins[ " + index + "] : " + coins[index].isVisible);
-			    //coins[index].bounder.checkCollisions = true;
-			}, 900);
 	    }
 
 	    setTimeout(function () {
@@ -738,18 +547,6 @@ function createEnemies(scene, newMeshes, skeletons, numOfEnemies) {
     }
    enemies[0].position.x = xPos;
    enemies[0].position.z = -200 + enemyDistance * 9;
-   ray = new BABYLON.Ray(new BABYLON.Vector3(enemies[0].position.x, 505, enemies[0].position.z), direction, 1000);
-
-    hit = scene.pickWithRay(ray, function (mesh) {
-       if (mesh.name.startsWith("ground")) {
-           return true;
-       }
-   });
-
-   if (hit.pickedMesh) {
-       enemies[0].position = hit.pickedPoint;
-       enemies[0].position.y += 10;
-   }
    /*for (var i = 0; i < numOfEnemies - 1; i++) {
        enemies[i].position.x = 10 * i;
        enemies[i].position.z = 10;
@@ -833,13 +630,11 @@ function fireArrows(scene, dragon) {
             arrows[i].rotation.y += Math.PI / 2;
             arrows[i].rotation.y += Math.PI / 6;
             arrows[i].isVisible = true;
-            arrows[i].move = true;
+            indicies.push(i);
             var index = i;
 
             resetArrow(i);
             stopAnimation(i);
-        } else {
-        	arrows[i].move = false;
         }
     }
 
@@ -851,7 +646,7 @@ function fireArrows(scene, dragon) {
 	            arrows[index].position = enemies[index].bounder.position.add(BABYLON.Vector3.Zero().add(enemies[index].frontVector.normalize().multiplyByFloats(20, 5, 20)));
 	            arrows[index].bounder.position = arrows[index].position;
 
-	            arrows[index].move = false;
+	            indicies.splice(indicies.indexOf(index), 1);
 	        }
 	    }, 4000);
 	}
@@ -865,27 +660,28 @@ function fireArrows(scene, dragon) {
 }
 
 function updateArrows(dragon) {
-    for (var i = 0; i < arrows.length; i++) {
+    for (var i = 0; i < indicies.length; i++) {
 
-    	if(arrows[i].move) {
-	        if (arrows[i].bounder.intersectsMesh(dragon.bounder, false)) {
+    	if(arrows[indicies[i]]) {
+	        if (arrows[indicies[i]].bounder.intersectsMesh(dragon.bounder, false)) {
 
-	        	arrows[i].isVisible = false;
-	           	arrows[i].position = enemies[i].bounder.position.add(BABYLON.Vector3.Zero().add(enemies[i].frontVector.normalize().multiplyByFloats(20, 5, 20)));
-	            arrows[i].bounder.position = arrows[i].position;
-	            arrows[i].move = false;
+	        	arrows[indicies[i]].isVisible = false;
+	            arrows[indicies[i]].position = enemies[indicies[i]].bounder.position.add(BABYLON.Vector3.Zero().add(enemies[indicies[i]].frontVector.normalize().multiplyByFloats(20, 5, 20)));
+	            arrows[indicies[i]].bounder.position = arrows[indicies[i]].position;
+
+	            indicies.splice(i, 1);
 
 	            dragon.health -= 10;
 	            updateHealth(dragon);
-	        } else {
-	            arrows[i].bounder.moveWithCollisions(arrows[i].frontVector.multiplyByFloats(arrows[i].speed, 
-	            	arrows[i].speed, arrows[i].speed));
 	        }
+	        else
+	            arrows[indicies[i]].bounder.moveWithCollisions(arrows[indicies[i]].frontVector.multiplyByFloats(arrows[indicies[i]].speed, 
+	            	arrows[indicies[i]].speed, arrows[indicies[i]].speed));
 	    }
     }
 }
 
-/*function createCoins(scene, dragon) {
+function createCoins(scene, dragon) {
 	BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
 
     function onCoinLoaded(newMeshes, particleSystems, skeletons) {
@@ -925,17 +721,8 @@ function updateArrows(dragon) {
             coins[index].isVisible = false;
             coins[index].bounder.checkCollisions = false;
         }
-
-        /*for(var i = 0; i < coins.length; i++) {
-        	coins[i].bounder.actionManager = new BABYLON.ActionManager(scene);
-        	coins[i].bounder.registerAction(new BABYLON.ExecuteCodeAction({trigger : BABYLON.ActionManager.OnIntersectionEnterTrigger, 
-	            parameter : dragon.bounder}, function () {
-	            	dragon.score++;
-	            	dragon._initScoreUpdate();
-	            }));
-        }
     }
-}*/
+}
 
 function updateCoinsRotation() {
 	for(var i = 0; i < coins.length; i++) {
@@ -1018,8 +805,7 @@ function createRocks(scene, dragon){
     fountain.actionManager = new BABYLON.ActionManager(scene);
     fountain.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger : BABYLON.ActionManager.OnIntersectionEnterTrigger, 
             parameter : dragon.bounder}, function () {
-                dragon.health -= 20;
-                updateHealth(dragon);
+                dragon.health -= 40;
                 console.log("health decreased");
                 console.log("dragon health : " + dragon.health);
             }));
@@ -1152,7 +938,7 @@ function calculateBoundingBoxOfCompositeMeshes(scene, newMeshes, flag) {
     _boxMesh.checkCollisions = true;
     _boxMesh.material = new BABYLON.StandardMaterial("alpha", scene);
     _boxMesh.material.alpha = .2;
-    _boxMesh.isVisible = false;
+    _boxMesh.isVisible = true;
 
     return { min: { x: minx, y: miny, z: minz }, max: { x: maxx, y: maxy, z: maxz }, lengthX: _lengthX, lengthY: _lengthY, lengthZ: _lengthZ, center: _center, boxMesh: _boxMesh };
 }
