@@ -1,0 +1,41 @@
+Exporter version: 5.4.0, Blender version: 2.76 (sub 0)
+========= Conversion from Blender to Babylon.js =========
+	Scene settings used:
+		selected layers only:  false
+		flat shading entire scene:  false
+		inline textures:  false
+		texture directory:  C:\Users\moaz\Downloads\
+	Python World class constructor completed
+	processing begun of mesh:  treeplan1
+		processing begun of Standard material:  Default
+		processing begun of Standard material:  ConiferBark
+			Diffuse texture found "ConiferBark_Diffuse"
+				Image texture found, type:  diffuseTexture, mapped using: "DiffuseUVLayer"
+			Bump texture found "ConiferBark_Normal"
+				Image texture found, type:  bumpTexture, mapped using: "DiffuseUVLayer"
+		processing begun of Standard material:  PalmBark
+			Diffuse texture found "PalmBark_Diffuse"
+				Image texture found, type:  diffuseTexture, mapped using: "DiffuseUVLayer"
+			Bump texture found "PalmBark_Normal"
+				Image texture found, type:  bumpTexture, mapped using: "DiffuseUVLayer"
+		processing begun of Standard material:  SampleLeaves_1
+			Diffuse texture found "SampleLeaves_1_Diffuse"
+				Image texture found, type:  diffuseTexture, mapped using: "DiffuseUVLayer"
+			Bump texture found "SampleLeaves_1_Normal"
+				Image texture found, type:  bumpTexture, mapped using: "DiffuseUVLayer"
+			Specular texture found "SampleLeaves_1_Specular"
+				Image texture found, type:  specularTexture, mapped using: "DiffuseUVLayer"
+				WARNING: Opacity non-std way to indicate opacity, use material alpha to also use Opacity texture
+		processing begun of multimaterial:  tree.Multimaterial#0
+		num positions      :  13646
+		num normals        :  13646
+		num uvs            :  27292
+		num uvs2           :  27292
+		num colors         :  0
+		num indices        :  38994
+	processing begun of camera (UniversalCamera):  Camera
+	processing begun of light (POINT):  Lamp
+========= Writing of scene file started =========
+========= Writing of scene file completed =========
+========= end of processing =========
+elapsed time:  0 min, 7.2957 secs
