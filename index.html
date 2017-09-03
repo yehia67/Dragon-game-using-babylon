@@ -9,13 +9,21 @@
             margin: 0;
             overflow: hidden;
         }
-
-        #scoreLabel {
+        #container {
             position:absolute;
             top:20px;
             right : 20px;
+        }
+        #scoreLabel {
+            display: inline-block;
+            position:relative;
             color:white;
             font-size: 2em;
+        }
+
+        #imgScore {
+            display: inline-block;
+            position: relative;
         }
     </style>
 
@@ -47,6 +55,9 @@
 </head>
 <body>
     <canvas id="renderCanvas" width="1600" height="1200"></canvas>
-    <div id="scoreLabel">Score : 0</div>
+    <div id="container">  
+        <img id="imgScore" src="coins_icon.png" height="32" width="32"/>
+        <div id="scoreLabel">x 0</div>
+    </div>
 </body>
 </html>
