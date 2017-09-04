@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", startGame, false);
 var canvas;
 var engine;
 
+var died = false;
+
 var Game = {};
 Game.scenes = [];
 Game.activeScene = 0;
@@ -38,10 +40,17 @@ function startGame() {
 		//Game.scenes[Game.activeScene].isReady = true;
 
 		engine.runRenderLoop(function() {
-			if(Game.scenes[Game.activeScene].isReady)
+			if(Game.scenes[Game.activeScene].isReady) {
 				Game.scenes[Game.activeScene].renderLoop();
-			else
+                if(died) {
+                    engine.stopRenderLoop();
+                    document.getElementById("renderCanvas").style.display = "none";
+                    document.getElementById("container").style.display = "none";
+                    document.getElementById("youAreDead").style.display = "block";
+                }
+            } else {
 				return;
+            }
 		});
 	//}
 }
@@ -61,9 +70,12 @@ Game.createLevelOne = function() {
 	scene.enemies = [];
 	scene.arrows = [];
 	scene.coins = [];
+    scene.trees = [];
 	scene.vist = [];
 
 	scene.dragon;
+    scene.castle;
+    
 
 	Game.assetsManagers[0] = new BABYLON.AssetsManager(scene);
 
@@ -126,6 +138,17 @@ Game.createLevelOne = function() {
 		createArrows(scene, 0.009);
 	}
 
+    /*var CastleTask = Game.assetsManagers[0].addMeshTask("Castle Task", "", "scenes/", "castle.babylon");
+    CastleTask.onSuccess = function(task) {
+        scene.castle = task.loadedMeshes[0];
+        scene.castle.scaling = new BABYLON.Vector3(30, 30, 30);
+    }*/
+  
+    var TreeTask = Game.assetsManagers[0].addMeshTask("Tree Task", "", "scenes/", "tree.babylon");
+    TreeTask.onSuccess = function(task) {
+        createTrees(scene, task.loadedMeshes, task.loadedSkeletons, 25);
+    }
+
 	Game.scenes[sceneIndex].applyDragonMovement = function (scene, dragon) {
         applyMovement(scene, dragon);
     }
@@ -155,7 +178,7 @@ Game.createLevelOne = function() {
     }
 
 	Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
-		if(dragon.score === 2) {
+		if(dragon.score === 1) {
 			Game.scenes[Game.activeScene].dispose();
 			Game.activeScene++;
 			Game.assetsManagers[Game.activeScene].load();
@@ -210,6 +233,8 @@ Game.createLevelTwo = function() {
 	scene.vist = [];
 
 	scene.dragon;
+    scene.castle;
+    scene.trees = [];
 
 	Game.assetsManagers[1] = new BABYLON.AssetsManager(scene);
 
@@ -246,9 +271,9 @@ Game.createLevelTwo = function() {
     skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("scenes/sky/sky", scene);
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
 
-    scene.fogMode = BABYLON.Scene.FOGMODE_EXP
+    /*scene.fogMode = BABYLON.Scene.FOGMODE_EXP
     scene.fogDensity = 0.002;
-    scene.fogColor = new BABYLON.Color3(0.9, 0.9, 0.85);
+    scene.fogColor = new BABYLON.Color3(0.9, 0.9, 0.85);*/
 
 	scene.collisionsEnabled = true;
 	scene.gravity = new BABYLON.Vector3(0, -10, 0);
@@ -275,6 +300,12 @@ Game.createLevelTwo = function() {
 
 		createArrows(scene, 0.015);
 	}
+
+    var TreeTask = Game.assetsManagers[1].addMeshTask("Tree Task", "", "scenes/", "tree.babylon");
+    TreeTask.onSuccess = function(task) {
+        console.log("heeenaaa");
+        createTrees(scene, task.loadedMeshes, task.loadedSkeletons, 25);
+    }
 
 	Game.scenes[sceneIndex].applyDragonMovement = function (scene, dragon) {
         applyMovement(scene, dragon);
@@ -421,13 +452,14 @@ Game.createLevelThree = function () {
         scene.dragon = dragon;
     }
 
+
     var enemiesTask = Game.assetsManagers[2].addMeshTask("Enemies Task", "", "scenes/", "archer_version_3.babylon");
     enemiesTask.onSuccess = function (task) {
         createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, enemyCount);
 
         createArrows(scene, 0.015);
     }
-
+     
     Game.scenes[sceneIndex].applyDragonMovement = function (scene, dragon) {
         applyMovement(scene, dragon);
     }
@@ -517,6 +549,7 @@ function createDragon(newMeshes, skeletons, scene, camera) {
 
     dragon.score = 0;
     dragon.health = 100;
+    dragon.isDead = false;
 
     createHealthBar(scene, dragon);
 
@@ -548,14 +581,18 @@ function createHealthBar(scene, dragon) {
     healthBar.rotation.y = Math.PI;
 }
 
-function updateHealth(dragon) {
+function updateHealth(scene, dragon) {
     if(dragon.health > 0) {
         healthBar.scaling.x = dragon.health / 100;
         healthBar.position.x = ((1.5 - ((dragon.health / 200) * 1.5)) * -1) + ((dragon.health / 200) * 1.5);
     } else {
-        dragon.health = 0;
-        healthBar.scaling.x = dragon.health / 100;
-        healthBar.position.x = ((1.5 - ((dragon.health / 200) * 1.5)) * -1) + ((dragon.health / 200) * 1.5);
+        if(!dragon.isDead) {
+            dragon.isDead = true;
+            scene.beginAnimation(dragon.skeletons[0], 1, 28, 3, true);
+            setTimeout(function() {
+                died = true;
+            }, 1070);
+        }
     }
 }
 
@@ -748,7 +785,7 @@ function createEnemies(scene, newMeshes, skeletons, numOfEnemies) {
         scene.enemies[index].skeletons[i] = skeletons[i];
     }
 
-    var direction = new BABYLON.Vector3(0, -1, 0);
+    /*var direction = new BABYLON.Vector3(0, -1, 0);
 
     var xPos = (Math.random() * 2001) - 1000;
     var zPos = (Math.random() * 2001) - 1000;
@@ -764,7 +801,7 @@ function createEnemies(scene, newMeshes, skeletons, numOfEnemies) {
     if (hit.pickedMesh) {
         scene.enemies[index].position = hit.pickedPoint;
         scene.enemies[index].position.y += 10;
-    }
+    }*/
 
     scene.enemies[index].bounder.position = scene.enemies[index].position;
     scene.enemies[index].bounder.name = "enemies_0_bounder";
@@ -776,7 +813,7 @@ function createEnemies(scene, newMeshes, skeletons, numOfEnemies) {
     for (var i = 0; i < numOfEnemies - 1; i++) {
         index = scene.enemies.push(cloneModel(scene.enemies[0], "enemies_" + i)) - 1;
 
-		xPos = (Math.random() * 2000) - 1000;
+		/*xPos = (Math.random() * 2000) - 1000;
         zPos = (Math.random() * 2000) - 1000;
 
         ray = new BABYLON.Ray(new BABYLON.Vector3(xPos, 500, zPos), direction, 10000);
@@ -790,7 +827,7 @@ function createEnemies(scene, newMeshes, skeletons, numOfEnemies) {
         if (hit.pickedMesh) {
             scene.enemies[index].position = hit.pickedPoint;
             scene.enemies[index].position.y += 10;
-        }
+        }*/
 
         scene.enemies[index].bounder.position = scene.enemies[index].position;
 
@@ -914,7 +951,7 @@ function updateArrows(scene, dragon) {
 	            scene.arrows[i].move = false;
 
 	            dragon.health -= 10;
-	            updateHealth(dragon);
+	            updateHealth(scene, dragon);
 	        } else {
 	            scene.arrows[i].bounder.moveWithCollisions(scene.arrows[i].frontVector.multiplyByFloats(scene.arrows[i].speed, 
 	            	scene.arrows[i].speed, scene.arrows[i].speed));
@@ -981,6 +1018,25 @@ function updateCoinsRotation(scene) {
 			if(scene.coins[i].isVisible === true)
 				scene.coins[i].rotation.y += 0.05;
 	}
+}
+
+function createTrees(scene, newMeshes, skeletons, numOfTrees) {
+    var index = scene.trees.push(newMeshes[0]) - 1
+
+    scene.trees[index].skeletons = [];
+
+    for(var i = 0; i < skeletons.length; i++) {
+        scene.trees[index].skeletons[i] = skeletons[i];
+    }
+    scene.trees[index].scaling = new BABYLON.Vector3(5, 5, 5);
+    var boundingBox = calculateBoundingBoxOfCompositeMeshes(scene,newMeshes,4);
+    scene.trees[index].bounder = boundingBox.boxMesh;
+    scene.trees[index].bounder.tempClone = scene.trees[index];
+    scene.trees[index].position = scene.trees[index].bounder.position;
+
+    for(var i = 1; i < numOfTrees; i++) {
+        index = scene.trees.push(cloneModel(scene.trees[index], "trees_" + index)) - 1;
+    }
 }
 
 function createRocks(scene, dragon){
@@ -1057,7 +1113,7 @@ function createRocks(scene, dragon){
     fountain.actionManager.registerAction(new BABYLON.ExecuteCodeAction({trigger : BABYLON.ActionManager.OnIntersectionEnterTrigger, 
             parameter : dragon.bounder}, function () {
                 dragon.health -= 20;
-                updateHealth(dragon);
+                updateHealth(scene, dragon);
                 console.log("health decreased");
                 console.log("dragon health : " + dragon.health);
             }));
@@ -1126,6 +1182,42 @@ function createConfiguredGround(scene, directory, texture)
 		        scene.enemies[i].bounder.position = scene.enemies[i].position;
 		    }
 	    }
+
+        if(scene.trees) {
+            for(var i = 0; i < scene.trees.length; i++) {
+                var direction = new BABYLON.Vector3(0, -1, 0);
+
+                var ray = new BABYLON.Ray(new BABYLON.Vector3((Math.random() * 2000) - 1000, 505, (Math.random() * 2000) - 1000), direction, 10000);
+
+                var hit = scene.pickWithRay(ray, function (mesh) {
+                    if (mesh.name.startsWith("ground")) {
+                        return true;
+                    }
+                });
+
+                if (hit.pickedMesh) {
+                    scene.trees[i].position = hit.pickedPoint;
+                    scene.trees[i].bounder.position = scene.trees[i].position;
+                }
+            }
+        }
+
+        if(scene.castle) {
+            var direction = new BABYLON.Vector3(0, -1, 0);
+
+            var ray = new BABYLON.Ray(new BABYLON.Vector3((Math.random() * 2000) - 1000, 505, (Math.random() * 2000) - 1000), direction, 10000);
+
+            var hit = scene.pickWithRay(ray, function (mesh) {
+                if (mesh.name.startsWith("ground")) {
+                    return true;
+                }
+            });
+
+            if (hit.pickedMesh) {
+                scene.castle.position = hit.pickedPoint;
+                //scene.trees[i].bounder.position = scene.trees[i].position;
+            }
+        }
 
 	    scene.isReady = true;
     }
@@ -1223,12 +1315,16 @@ function calculateBoundingBoxOfCompositeMeshes(scene, newMeshes, flag) {
         _boxMesh.scaling.x = 20;
         _boxMesh.scaling.y = 15;
         _boxMesh.scaling.z = 20;
+    } else if(flag === 4) {
+        _boxMesh.scaling.x = 20;
+        _boxMesh.scaling.y = 70;
+        _boxMesh.scaling.z = 20;
     }
     _boxMesh.position.y += .5; // if I increase this, the dude gets higher in the skyyyyy
     _boxMesh.checkCollisions = true;
     _boxMesh.material = new BABYLON.StandardMaterial("alpha", scene);
     _boxMesh.material.alpha = .2;
-    _boxMesh.isVisible = false;
+    _boxMesh.isVisible = true;
 
     return { min: { x: minx, y: miny, z: minz }, max: { x: maxx, y: maxy, z: maxz }, lengthX: _lengthX, lengthY: _lengthY, lengthZ: _lengthZ, center: _center, boxMesh: _boxMesh };
 }
