@@ -24,6 +24,7 @@ var maxheight = 300;
 function startGame() {
 	canvas = document.getElementById("renderCanvas");
 	engine = new BABYLON.Engine(canvas);
+	engine.enableOfflineSupport = false;
 
 	window.addEventListener('resize', function () {
         engine.resize();
@@ -33,8 +34,8 @@ function startGame() {
     Game.createLevelTwo();
 	Game.createLevelThree();
 
-	Game.assetsManagers[0].onFinish = function(tasks) {
-		Game.scenes[Game.activeScene].isReady = true;
+	//Game.assetsManagers[0].onFinish = function(tasks) {
+		//Game.scenes[Game.activeScene].isReady = true;
 
 		engine.runRenderLoop(function() {
 			if(Game.scenes[Game.activeScene].isReady)
@@ -42,7 +43,7 @@ function startGame() {
 			else
 				return;
 		});
-	}
+	//}
 }
 
 Game.createLevelOne = function() {
@@ -61,6 +62,8 @@ Game.createLevelOne = function() {
 	scene.arrows = [];
 	scene.coins = [];
 	scene.vist = [];
+
+	scene.dragon;
 
 	Game.assetsManagers[0] = new BABYLON.AssetsManager(scene);
 
@@ -86,9 +89,8 @@ Game.createLevelOne = function() {
 
 	    coinModel.isVisible = false;
 	    coinModel.bounder.checkCollisions = false;
-
-	    console.log("coin created");
 	}
+
 	var skybox = BABYLON.Mesh.CreateBox("skyBox", 10000.0, scene);
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
@@ -107,13 +109,14 @@ Game.createLevelOne = function() {
 
 	var light = new BABYLON.HemisphericLight("MainLevelLight", new BABYLON.Vector3(0, 10, 0), scene);
 
-	createConfiguredGround(scene);
+	//createConfiguredGround(scene);
 
 	var sceneIndex = Game.scenes.push(scene) - 1;
 
 	var dragonTask = Game.assetsManagers[0].addMeshTask("Dragon Task", "", "dragonKhalil/", "dragonKhalil.babylon");
 	dragonTask.onSuccess = function(task) {
 		dragon = createDragon(task.loadedMeshes, task.loadedSkeletons, scene, camera);
+		scene.dragon = dragon;
 	}
 
 	var enemiesTask = Game.assetsManagers[0].addMeshTask("Enemies Task", "", "scenes/", "archer_version_3.babylon");
@@ -163,6 +166,11 @@ Game.createLevelOne = function() {
 
 	Game.scenes[sceneIndex].isReady = false;
 
+	Game.assetsManagers[0].onFinish = function(tasks) {
+		console.log("here");
+		createConfiguredGround(scene);
+	}
+
 	Game.scenes[sceneIndex].renderLoop = function() {
 		if(!fireFlag) {
 			fireFlag = true;
@@ -200,6 +208,8 @@ Game.createLevelTwo = function() {
 	scene.arrows = [];
 	scene.coins = [];
 	scene.vist = [];
+
+	scene.dragon;
 
 	Game.assetsManagers[1] = new BABYLON.AssetsManager(scene);
 
@@ -248,14 +258,15 @@ Game.createLevelTwo = function() {
 
 	var light = new BABYLON.HemisphericLight("MainLevelLight", new BABYLON.Vector3(0, 10, 0), scene);
 
-	createConfiguredGround(scene);
+	//createConfiguredGround(scene);
 
 	var sceneIndex = Game.scenes.push(scene) - 1;
 
 	var dragonTask = Game.assetsManagers[1].addMeshTask("Dragon Task", "", "dragonKhalil/", "dragonKhalil.babylon");
 	dragonTask.onSuccess = function(task) {
 		dragon = createDragon(task.loadedMeshes, task.loadedSkeletons, scene, camera);
-		console.log('dragon : ' + dragon);
+
+		scene.dragon = dragon;
 	}
 
 	var enemiesTask = Game.assetsManagers[1].addMeshTask("Enemies Task", "", "scenes/", "archer_version_3.babylon");
@@ -263,8 +274,6 @@ Game.createLevelTwo = function() {
 		createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, enemyCount);
 
 		createArrows(scene, 0.015);
-
-		//createCoins(scene, dragon);
 	}
 
 	Game.scenes[sceneIndex].applyDragonMovement = function (scene, dragon) {
@@ -305,12 +314,11 @@ Game.createLevelTwo = function() {
     Game.scenes[sceneIndex].isReady = false;
 
     Game.assetsManagers[1].onFinish = function() {
-    	Game.scenes[sceneIndex].isReady = true;
+    	createConfiguredGround(scene);
     	document.getElementById("scoreLabel").textContent = "x " + dragon.score;
     }
 
 	Game.scenes[sceneIndex].renderLoop = function() {
-		console.log('dragon : ' + dragon);
 		if(!fireFlag) {
 			fireFlag = true;
 			setTimeout(function() {
@@ -352,6 +360,8 @@ Game.createLevelThree = function () {
 	scene.arrows = [];
 	scene.coins = [];
 	scene.vist = [];
+
+	scene.dragon;
 
     Game.assetsManagers[2] = new BABYLON.AssetsManager(scene);
 
@@ -400,13 +410,15 @@ Game.createLevelThree = function () {
 
     var light = new BABYLON.HemisphericLight("MainLevelLight", new BABYLON.Vector3(0, 10, 0), scene);
 
-    createConfiguredGround(scene);
+    //createConfiguredGround(scene);
 
     var sceneIndex = Game.scenes.push(scene) - 1;
 
     var dragonTask = Game.assetsManagers[2].addMeshTask("Dragon Task", "", "dragonKhalil/", "dragonKhalil.babylon");
     dragonTask.onSuccess = function (task) {
         dragon = createDragon(task.loadedMeshes, task.loadedSkeletons, scene, camera);
+
+        scene.dragon = dragon;
     }
 
     var enemiesTask = Game.assetsManagers[2].addMeshTask("Enemies Task", "", "scenes/", "archer_version_3.babylon");
@@ -414,8 +426,6 @@ Game.createLevelThree = function () {
         createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, enemyCount);
 
         createArrows(scene, 0.015);
-
-       // createCoins(scene, dragon);
     }
 
     Game.scenes[sceneIndex].applyDragonMovement = function (scene, dragon) {
@@ -449,7 +459,7 @@ Game.createLevelThree = function () {
     Game.scenes[sceneIndex].isReady = false;
 
     Game.assetsManagers[2].onFinish = function() {
-    	Game.scenes[sceneIndex].isReady = true;
+    	createConfiguredGround(scene);
     	document.getElementById("scoreLabel").textContent = "x " + dragon.score;
     }
 
@@ -459,7 +469,7 @@ Game.createLevelThree = function () {
             setTimeout(function () {
                 Game.scenes[sceneIndex].enemiesFire(scene, dragon);
                 fireFlag = false;
-            }, 6000);
+            }, 3000);
         }
 
         if (!meteorFlag) {
@@ -470,7 +480,7 @@ Game.createLevelThree = function () {
             }, 700);
         }
 
-        //this.updateActiveScene(dragon);
+        
         this.updateCoins(scene);
 		this.updateArrowsPos(scene, dragon);
 		this.updateEnemy(scene, dragon, enemyRange);
@@ -492,22 +502,6 @@ function createDragon(newMeshes, skeletons, scene, camera) {
     var theSkin = scene.getMaterialByName("untitled.WyvernSkin");
 	theSkin.backFaceCulling = false;
 
-
-	var direction = new BABYLON.Vector3(0, -1, 0);
-
-    var ray = new BABYLON.Ray(new BABYLON.Vector3(0, 505, 30), direction, 10000);
-
-    var hit = scene.pickWithRay(ray, function (mesh) {
-        if (mesh.name.startsWith("ground")) {
-            return true;
-        }
-    });
-
-    if (hit.pickedMesh) {
-        dragon.position = hit.pickedPoint;
-        dragon.position.y += 100;
-    }
-
     scene.beginAnimation(dragon.skeletons[0], 41, 49, 0.01, true);
 
     dragon.scaling = new BABYLON.Vector3(15, 15, 15);
@@ -525,8 +519,6 @@ function createDragon(newMeshes, skeletons, scene, camera) {
     dragon.health = 100;
 
     createHealthBar(scene, dragon);
-
-    console.log("finished");
 
     return dragon;
 }
@@ -853,7 +845,6 @@ function createArrows(scene, speed) {
             scene.arrows[index].skeletons[i] = skeletons[i];
         }
 
-        console.log("enemies length : " + scene.enemies.length);
         for(var i = 0; i < scene.enemies.length - 1; i++) {
 
             index = scene.arrows.push(cloneModel(scene.arrows[index], "arrows_" + i)) - 1;
@@ -876,8 +867,6 @@ function fireArrows(scene, dragon) {
             scene.beginAnimation(scene.enemies[i].skeletons[0], 1, 43, 0.8, true);
             scene.arrows[i].position = scene.enemies[i].bounder.position.add(BABYLON.Vector3.Zero().add(scene.enemies[i].frontVector.normalize().multiplyByFloats(20, 5, 20)));
             scene.arrows[i].bounder.position = scene.arrows[i].position;
-            console.log("bounder : " + scene.arrows[i].bounder.position);
-            console.log("arrow : " + scene.arrows[i].position);
             scene.arrows[i].frontVector = dragon.position.subtract(scene.arrows[i].position);
             scene.arrows[i].lookAt(dragon.position);
             scene.arrows[i].rotation.y += Math.PI / 2;
@@ -895,7 +884,6 @@ function fireArrows(scene, dragon) {
 
     function resetArrow(index) {
 	    setTimeout(function() {
-	        console.log("now at : " + index);
 	        if(scene.arrows[index]) {
 	            scene.arrows[index].isVisible = false;
 	            scene.arrows[index].position = scene.enemies[index].bounder.position.add(BABYLON.Vector3.Zero().add(scene.enemies[index].frontVector.normalize().multiplyByFloats(20, 5, 20)));
@@ -1102,6 +1090,44 @@ function createConfiguredGround(scene, directory, texture)
         ground.checkCollisions = true;
         ground.physicsImpostor =  new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.HeightmapImpostor,
             { mass: 0, friction: 10, restitution: .2 }, scene);
+
+        //positioning dragon
+        var direction = new BABYLON.Vector3(0, -1, 0);
+
+	    var ray = new BABYLON.Ray(new BABYLON.Vector3(0, 505, 30), direction, 10000);
+
+	    var hit = scene.pickWithRay(ray, function (mesh) {
+	        if (mesh.name.startsWith("ground")) {
+	            return true;
+	        }
+	    });
+
+	    if (hit.pickedMesh) {
+	        scene.dragon.position = hit.pickedPoint;
+	        scene.dragon.position.y += 100;
+	        scene.dragon.bounder.position = scene.dragon.position;
+	    }
+
+	    //positioning enemies
+	    for(var i = 0; i < scene.enemies.length; i++) {
+	    	var direction = new BABYLON.Vector3(0, -1, 0);
+
+		    var ray = new BABYLON.Ray(new BABYLON.Vector3((Math.random() * 2000) - 1000, 505, (Math.random() * 2000) - 1000), direction, 10000);
+
+		    var hit = scene.pickWithRay(ray, function (mesh) {
+		        if (mesh.name.startsWith("ground")) {
+		            return true;
+		        }
+		    });
+
+		    if (hit.pickedMesh) {
+		        scene.enemies[i].position = hit.pickedPoint;
+		        scene.enemies[i].position.y += 10;
+		        scene.enemies[i].bounder.position = scene.enemies[i].position;
+		    }
+	    }
+
+	    scene.isReady = true;
     }
 }
 
