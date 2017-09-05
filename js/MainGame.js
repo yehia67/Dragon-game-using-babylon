@@ -135,7 +135,7 @@ Game.createLevelOne = function() {
 	enemiesTask.onSuccess = function(task) {
 		createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, enemyCount);
 
-		createArrows(scene, 0.009);
+		createArrows(scene, 0.09);
 	}
 
     /*var CastleTask = Game.assetsManagers[0].addMeshTask("Castle Task", "", "scenes/", "castle.babylon");
