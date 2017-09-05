@@ -135,7 +135,7 @@ Game.createLevelOne = function() {
 	enemiesTask.onSuccess = function(task) {
 		createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, enemyCount);
 
-		createArrows(scene, 0.09);
+		createArrows(scene, 0.04);
 	}
 
     /*var CastleTask = Game.assetsManagers[0].addMeshTask("Castle Task", "", "scenes/", "castle.babylon");
@@ -672,6 +672,8 @@ function applyMovement(scene, dragon){
 
 function fire(scene, dragon, coinModel) {
 	if(isSpacePressed) {
+        var fireSound = new BABYLON.Sound("fireSound", "sounds/Crackling_Fireplace.mp3", scene);
+         fireSound.play();
 		var direction = new BABYLON.Vector3(dragon.frontVector.x, -1, dragon.frontVector.z);
 	    direction.normalize;
 	    var fireSystem = new BABYLON.ParticleSystem("particles", 2000, scene)
