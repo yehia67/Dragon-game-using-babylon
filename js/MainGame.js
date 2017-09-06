@@ -16,15 +16,12 @@ function MainGame() {
 	Game.scenes = [];
 	Game.activeScene = 0;
 	Game.assetsManagers = [];
-<<<<<<< 1ec206d1489c632eb0c46a343b9c1c143b722063
 	var enemiesKilled = 0;
-=======
     var assetsManager = new BABYLON.AssetsManager(Game.scenes);
     var fireSound;
     var coinSound;
     var backgroundSound;
 
->>>>>>> 001318e978c0a855420d9073c5dccdbf028459cb
 	var isAPressed = false;
 	var isDPressed = false;
 	var isWPressed = false;
@@ -210,7 +207,8 @@ function MainGame() {
 	    }
 
 		Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
-			if(enemiesKilled=== scene.enemyCount) {
+		    if (enemiesKilled === scene.enemyCount) {
+		        enemiesKilled = 0;
 				Game.activeScene++;
 				Game.assetsManagers[Game.activeScene].load();
 			}
@@ -222,7 +220,7 @@ function MainGame() {
 
 		Game.assetsManagers[0].onFinish = function(tasks) {
 			console.log("here");
-			createConfiguredGround(scene, "scenes/lake.png", "textures/grass.png");
+			createConfiguredGround(scene, "scenes/lake4.png", "textures/grass.png");
 	    	document.getElementById("scoreLabel").textContent = "x " + dragon.score;
 		}
 
@@ -252,7 +250,6 @@ function MainGame() {
 		
 		var fireFlag = false;
 		var meteorFlag = false;
-		enemiesKilled = 0;
 		var coinModel;
 
 		var enemyRange = 250;
@@ -379,7 +376,8 @@ function MainGame() {
 	    }
 
 	    Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
-			if(dragon.score === 1) {
+	        if (enemiesKilled === scene.enemyCount) {
+	            enemiesKilled = 0;
 				Game.activeScene++;
 				Game.assetsManagers[Game.activeScene].load();
 			}
@@ -422,7 +420,6 @@ function MainGame() {
 	    var dragon;
 	    var fireFlag = false;
 	    var meteorFlag = false;
-	    enemiesKilled = 0;
 	    var enemyRange = 300;
 
 	    var coindModel;
