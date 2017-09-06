@@ -186,7 +186,7 @@ function MainGame() {
 	    }
 
 		Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
-			if(dragon.score === 1) {
+			if(dragon.score === 2) {
 				Game.activeScene++;
 				Game.assetsManagers[Game.activeScene].load();
 			}
@@ -307,7 +307,7 @@ function MainGame() {
 
 		var arrowsTask = Game.assetsManagers[1].addMeshTask("Arrows Task", "", "scenes/", "arrow2.babylon");
 		arrowsTask.onSuccess = function(task) {
-			createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.02, enemyCount);
+			createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.06, enemyCount);
 		}
 
 	    var TreeTask = Game.assetsManagers[1].addMeshTask("Tree Task", "", "scenes/", "tree.babylon");
@@ -363,7 +363,7 @@ function MainGame() {
 				setTimeout(function() {
 					Game.scenes[sceneIndex].enemiesFire(scene, dragon);
 					fireFlag = false;
-				}, 3000);
+				}, 4500);
 			}
 
 			if(!meteorFlag) {
@@ -466,7 +466,7 @@ function MainGame() {
 
 	    var arrowsTask = Game.assetsManagers[2].addMeshTask("Arrows Task", "", "scenes/", "arrow2.babylon");
 		arrowsTask.onSuccess = function(task) {
-			createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.03, enemyCount);
+			createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.1, enemyCount);
 		}
 	     
 	    Game.scenes[sceneIndex].applyDragonMovement = function (scene, dragon) {
@@ -500,7 +500,7 @@ function MainGame() {
 	    Game.scenes[sceneIndex].isReady = false;
 
 	    Game.assetsManagers[2].onFinish = function() {
-	    	createConfiguredGround(scene, "scenes/lake3.png", "textures/sand.jpg");
+	    	createConfiguredGround(scene, "scenes/hm4.png", "scenes/vc_texture.jpg");
 	    	document.getElementById("scoreLabel").textContent = "x " + dragon.score;
 	    }
 
@@ -510,7 +510,7 @@ function MainGame() {
 	            setTimeout(function () {
 	                Game.scenes[sceneIndex].enemiesFire(scene, dragon);
 	                fireFlag = false;
-	            }, 1500);
+	            }, 3000);
 	        }
 
 	        if (!meteorFlag) {
@@ -616,7 +616,7 @@ function MainGame() {
 	    }
 
 	    if (isWPressed) {
-	        dragon.bounder.moveWithCollisions(dragon.frontVector.multiplyByFloats(1, 1, 1));
+	        dragon.bounder.moveWithCollisions(dragon.frontVector.multiplyByFloats(4, 4, 4));
 	    }
 
 	    if (isDPressed) {

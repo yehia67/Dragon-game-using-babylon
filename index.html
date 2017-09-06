@@ -53,6 +53,12 @@
             color: white;
         }
 
+        #gameInstructionsText{
+            text-align: center;
+            color: white;
+            position: absolute;
+        }
+
         #respawn {
             position: relative;
             color: white;
@@ -66,6 +72,14 @@
             height: 100%;
         }
 
+        #gameInstructionsContainer{
+            position: absolute;
+            display: none;
+            background: rgba(107, 120, 142, 1);
+            width: 600px;
+            height: 600px;
+        }
+
         #startGameBtn {
             border-radius: 5px;
             padding: 15px 25px;
@@ -73,11 +87,11 @@
             text-decoration: none;
             margin: 20px;
             color: #fff;
-            position: relative;
+            position: absolute;
             display: inline-block;
             background-color: #55acee;
             box-shadow: 0px 5px 0px 0px #3C93D5;
-            top:75%;
+            top:30%;
             left:45%;
         }
 
@@ -90,20 +104,67 @@
         #startGameBtn:hover {
             background-color: #6FC6FF;
         }
+
+        #gameInstructionsbtn{
+            border-radius: 5px;
+            padding: 15px 25px;
+            font-size: 22px;
+            text-decoration: none;
+            margin: 20px;
+            color: #fff;
+            position: absolute;
+            display: inline;
+            background-color: #55acee;
+            box-shadow: 0px 5px 0px 0px #3C93D5;
+            top:60%;
+            left:42%;
+        }
+
+        #gameInstructionsbtn:active {
+            transform: translate(0px, 5px);
+            -webkit-transform: translate(0px, 5px);
+            box-shadow: 0px 1px 0px 0px;
+        }
+
+        #gameInstructionsbtn:hover {
+            background-color: #6FC6FF;
+        }
+
+
+
+        #gameInstructions{
+            display: inline-block;
+            background: rgba(107, 120, 142, 1);
+            width: 100%;
+            height: 100%;
+        }
     </style>
 
     <script src="js/babylon.max.js"></script>
     <script src="js/cannon.max.js"></script>
+    <script type="text/javascript" src="js/GameInstruction.js"></script>
     <script type="text/javascript" src="js/MainGame.js"></script>
     <script type="text/javascript" src="js/Dead.js"></script>
+
 
     <script>
     document.addEventListener("DOMContentLoaded", start, false);
 
+
+    /*function gameInstruction() {
+        document.getElementById("gameInstructionsbtn").addEventListener("click",function () {
+            
+        })
+    }*/
+
     function start() {
-        document.getElementById("startGameBtn").addEventListener("click", function(){
+        document.getElementById("startGameBtn").addEventListener("click", function () {
             MainGame();
-        }); 
+        });
+        document.getElementById("gameInstructionsbtn").addEventListener("click", function () {
+            instructions();
+        });
+
     }
     </script>
     
@@ -125,8 +186,26 @@
         <h2 id="respawn">Press 'b' key to try again...</h2>
     </div>
 
+
+
     <div id="MainUI">
+        <img src="scenes/Dragon-Wallpapers-Backgrounds.jpg" style="width: 100%;height: 100%;">
         <button id="startGameBtn">Start Game</button>
+        <button id="gameInstructionsbtn">Game Instructions</button>
+
+
     </div>
+
+    <div id="gameInstructions">
+        <img src="scenes/Dragon-Wallpapers-Backgrounds.jpg" style="width: 100%;height: 100%;">
+        <div id="gameInstructionsContainer">
+            <h6 id="gameInstructionsText">tesssssssssssssssssssst</h6>
+
+        </div>
+
+
+    </div>
+
+
 </body>
 </html>

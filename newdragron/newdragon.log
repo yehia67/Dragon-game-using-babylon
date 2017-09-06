@@ -1,0 +1,89 @@
+Exporter version: 5.4.0, Blender version: 2.76 (sub 0)
+========= Conversion from Blender to Babylon.js =========
+	Scene settings used:
+		selected layers only:  false
+		flat shading entire scene:  false
+		inline textures:  false
+		texture directory:  C:\Users\moaz\Downloads\
+	Python World class constructor completed
+	processing begun of skeleton:  WyvernArmature, id:  0
+		processing begun of bone:  Hip, index:  0
+		processing begun of bone:  Tail1, index:  1
+		processing begun of bone:  Tail2, index:  2
+		processing begun of bone:  Tail3, index:  3
+		processing begun of bone:  Tail4, index:  4
+		processing begun of bone:  Tail5, index:  5
+		processing begun of bone:  Tail6, index:  6
+		processing begun of bone:  Thigh.Left, index:  7
+		processing begun of bone:  Shin.Left, index:  8
+		processing begun of bone:  Foot.Left, index:  9
+		processing begun of bone:  Toes.Left, index:  10
+		processing begun of bone:  Thigh.Right, index:  11
+		processing begun of bone:  Shin.Right, index:  12
+		processing begun of bone:  Foot.Right, index:  13
+		processing begun of bone:  Toes.Right, index:  14
+		processing begun of bone:  Back1, index:  15
+		processing begun of bone:  Back2, index:  16
+		processing begun of bone:  Neck1, index:  17
+		processing begun of bone:  Neck2, index:  18
+		processing begun of bone:  Head, index:  19
+		processing begun of bone:  Jaw, index:  20
+		processing begun of bone:  Shoulder.Left, index:  21
+		processing begun of bone:  Upperarm.Left, index:  22
+		processing begun of bone:  Forearm.Left, index:  23
+		processing begun of bone:  Wing1a.Left, index:  24
+		processing begun of bone:  Wing1b.Left, index:  25
+		processing begun of bone:  Wing1c.Left, index:  26
+		processing begun of bone:  Wing2a.Left, index:  27
+		processing begun of bone:  Wing2b.Left, index:  28
+		processing begun of bone:  Wing2c.Left, index:  29
+		processing begun of bone:  Wing3a.Left, index:  30
+		processing begun of bone:  Wing3b.Left, index:  31
+		processing begun of bone:  Wing3c.Left, index:  32
+		processing begun of bone:  Wing4a.Left, index:  33
+		processing begun of bone:  Wing4b.Left, index:  34
+		processing begun of bone:  Wing4c.Left, index:  35
+		processing begun of bone:  Shoulder.Right, index:  36
+		processing begun of bone:  Upperarm.Right, index:  37
+		processing begun of bone:  Forearm.Right, index:  38
+		processing begun of bone:  Wing1a.Right, index:  39
+		processing begun of bone:  Wing1b.Right, index:  40
+		processing begun of bone:  Wing1c.Right, index:  41
+		processing begun of bone:  Wing2a.Right, index:  42
+		processing begun of bone:  Wing2b.Right, index:  43
+		processing begun of bone:  Wing2c.Right, index:  44
+		processing begun of bone:  Wing3a.Right, index:  45
+		processing begun of bone:  Wing3b.Right, index:  46
+		processing begun of bone:  Wing3c.Right, index:  47
+		processing begun of bone:  Wing4a.Right, index:  48
+		processing begun of bone:  Wing4b.Right, index:  49
+		processing begun of bone:  Wing4c.Right, index:  50
+		processing action Die:  in[1 - 8], out[0 - 8]
+		processing action Die.001:  in[1 - 8], out[20 - 28]
+		processing action Fly:  in[1 - 9], out[40 - 49]
+		processing action Hit:  in[1 - 8], out[60 - 68]
+		processing action Hover:  in[1 - 9], out[80 - 89]
+	processing begun of camera (UniversalCamera):  Camera
+	processing begun of mesh:  Wyvern
+		processing begun of Standard material:  WyvernSkin
+			Diffuse texture found "Texture"
+				Image texture found, type:  diffuseTexture, mapped using: "UVMap"
+			Specular texture found "Texture"
+				Image texture found, type:  specularTexture, mapped using: "UVMap"
+		num positions      :  1563
+		num normals        :  1563
+		num uvs            :  3126
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  4308
+		Skeleton stats:  
+			Total Influencers:  2297
+			Avg # of influencers per vertex:  1.4696
+			Highest # of influencers observed:  4, num vertices with this:  32
+			exported as 4 influencers
+			num skeletonWeights and skeletonIndices:  6252
+	processing begun of light (POINT):  Lamp
+========= Writing of scene file started =========
+========= Writing of scene file completed =========
+========= end of processing =========
+elapsed time:  0 min, 3.2843 secs
