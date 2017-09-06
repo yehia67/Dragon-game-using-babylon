@@ -26,7 +26,7 @@ function MainGame() {
 	var isUpPressed = false;
 	var isDownPressed = false;
 	var isSpacePressed = false;
-
+	var coinTimeOut = 10000;
 	var scenesize = 4000;
 	var maxheight = 300;
 
@@ -754,6 +754,7 @@ function MainGame() {
 				    var coin = cloneModel(coinModel, "coins_");
 				    scene.coins.push(coin) ;
 				    coin.position = hit.pickedMesh.position;
+				    coin.position.y += 30;
 				    coin.bounder.position = coin.position;
 
 				    //console.log("created coins : " + scene.coins[scene.coins.indexOf(coin)].position);
@@ -764,6 +765,14 @@ function MainGame() {
 
 				    coin.isVisible = true;
 				    coin.bounder.checkCollisions = true;
+				    if (coin) {
+				        setTimeout(function () {
+				            coin.bounder.dispose();
+				            coin.dispose();
+				            scene.coins.splice(scene.coins.indexOf(coin), 1);
+
+				        }, coinTimeOut);
+				    }
 				}, 900);
 		    }
 
