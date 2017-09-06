@@ -11,12 +11,20 @@ function MainGame() {
 	var engine;
 
 	var died = false;
-
+    
 	var Game = {};
 	Game.scenes = [];
 	Game.activeScene = 0;
 	Game.assetsManagers = [];
+<<<<<<< 1ec206d1489c632eb0c46a343b9c1c143b722063
 	var enemiesKilled = 0;
+=======
+    var assetsManager = new BABYLON.AssetsManager(Game.scenes);
+    var fireSound;
+    var coinSound;
+    var backgroundSound;
+
+>>>>>>> 001318e978c0a855420d9073c5dccdbf028459cb
 	var isAPressed = false;
 	var isDPressed = false;
 	var isWPressed = false;
@@ -34,6 +42,14 @@ function MainGame() {
 		canvas = document.getElementById("renderCanvas");
 		engine = new BABYLON.Engine(canvas);
 		engine.enableOfflineSupport = false;
+   
+
+    
+
+    /*binaryTask = assetsManager.addBinaryFileTask("laser task", "sounds/laser.wav");
+    binaryTask.onSuccess = function (task) {
+        laserSound = new BABYLON.Sound("laser", task.data, scene, null, { loop: false });
+    }*/
 
 		window.addEventListener('resize', function () {
 	        engine.resize();
@@ -79,12 +95,20 @@ function MainGame() {
 		scene.enemyCount = 20;
 		scene.dragon;
 	    scene.castle;
-	    
-
+  
+          
 		Game.assetsManagers[0] = new BABYLON.AssetsManager(scene);
 
 		BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
+         var binaryTask = Game.assetsManagers[0].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
+    binaryTask.onSuccess = function (task) {
+        fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
+    }
 
+    binaryTask = Game.assetsManagers[0].addBinaryFileTask("coin task", "sounds/235273__godowan__coins3.wav");
+    binaryTask.onSuccess = function (task) {
+        coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
+    }
 		function onCoinLoaded(newMeshes, particleSystems, skeletons) {
 		    coinModel = newMeshes[0];
 
@@ -104,6 +128,7 @@ function MainGame() {
 		    coinModel.bounder.position = coinModel.position;
 
 		    coinModel.isVisible = false;
+             coinSound.play();
 		    coinModel.bounder.checkCollisions = false;
 		}
 
@@ -244,6 +269,16 @@ function MainGame() {
 	    scene.trees = [];
 
 		Game.assetsManagers[1] = new BABYLON.AssetsManager(scene);
+        BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
+         var binaryTask = Game.assetsManagers[1].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
+    binaryTask.onSuccess = function (task) {
+        fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
+    }
+
+    binaryTask = Game.assetsManagers[1].addBinaryFileTask("coin task", "sounds/235273__godowan__coins3.wav");
+    binaryTask.onSuccess = function (task) {
+        coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
+    }
 
 		BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
 
@@ -266,6 +301,7 @@ function MainGame() {
 		    coinModel.bounder.position = coinModel.position;
 
 		    coinModel.isVisible = false;
+            coinSound.play();
 		    coinModel.bounder.checkCollisions = false;
 		}
 
@@ -401,6 +437,16 @@ function MainGame() {
 		scene.dragon;
 
 	    Game.assetsManagers[2] = new BABYLON.AssetsManager(scene);
+        BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
+         var binaryTask = Game.assetsManagers[2].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
+    binaryTask.onSuccess = function (task) {
+        fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
+    }
+
+    binaryTask = Game.assetsManagers[2].addBinaryFileTask("coin task", "sounds/235273__godowan__coins3.wav");
+    binaryTask.onSuccess = function (task) {
+        coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
+    }
 
 	    BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
 
@@ -423,6 +469,7 @@ function MainGame() {
 	        coinModel.bounder.position = coinModel.position;
 
 	        coinModel.isVisible = false;
+            coinSound.play();
 	        coinModel.bounder.checkCollisions = false;
 	    }
 
@@ -666,10 +713,12 @@ function MainGame() {
 	    	if(scene.coins[i]) {
 		    	if(scene.coins[i].bounder.intersectsMesh(dragon.bounder, false) && scene.coins[i].isVisible) {
 		    	    dragon.score++;
-		    		scene.coins[i].bounder.dispose();
+		    		coinSound.play();
+                    scene.coins[i].bounder.dispose();
 		    		scene.coins[i].dispose();
 		    		document.getElementById("scoreLabel").textContent = "x " + dragon.score;
 		    		scene.coins.splice(i, 1);
+
 		    	}
 		    }
 	    }
@@ -677,7 +726,7 @@ function MainGame() {
 
 	function fire(scene, dragon, coinModel) {
 		if(isSpacePressed) {
-	        var fireSound = new BABYLON.Sound("fireSound", "sounds/Crackling_Fireplace.mp3", scene);
+	       
 	         fireSound.play();
 			var direction = new BABYLON.Vector3(dragon.frontVector.x, -1, dragon.frontVector.z);
 		    direction.normalize;
