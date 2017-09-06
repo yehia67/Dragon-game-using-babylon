@@ -16,7 +16,7 @@ function MainGame() {
 	Game.scenes = [];
 	Game.activeScene = 0;
 	Game.assetsManagers = [];
-
+	var enemiesKilled = 0;
 	var isAPressed = false;
 	var isDPressed = false;
 	var isWPressed = false;
@@ -63,7 +63,6 @@ function MainGame() {
 	Game.createLevelOne = function() {
 
 		var dragon;
-		var enemyCount = 20;
 		var fireFlag = false;
 
 		var coinModel
@@ -77,7 +76,7 @@ function MainGame() {
 		scene.coins = [];
 	    scene.trees = [];
 		scene.vist = [];
-
+		scene.enemyCount = 20;
 		scene.dragon;
 	    scene.castle;
 	    
@@ -138,12 +137,12 @@ function MainGame() {
 
 		var enemiesTask = Game.assetsManagers[0].addMeshTask("Enemies Task", "", "scenes/", "archer_version_3.babylon");
 		enemiesTask.onSuccess = function(task) {
-			createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, enemyCount);
+		    createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, scene.enemyCount);
 		}
 
 		var arrowsTask = Game.assetsManagers[0].addMeshTask("Arrows Task", "", "scenes/", "arrow2.babylon");
 		arrowsTask.onSuccess = function(task) {
-			createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.015, enemyCount);
+		    createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.015, scene.enemyCount);
 		}
 
 	    /*var CastleTask = Game.assetsManagers[0].addMeshTask("Castle Task", "", "scenes/", "castle.babylon");
@@ -186,7 +185,7 @@ function MainGame() {
 	    }
 
 		Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
-			if(dragon.score === 1) {
+			if(enemiesKilled=== scene.enemyCount) {
 				Game.activeScene++;
 				Game.assetsManagers[Game.activeScene].load();
 			}
@@ -225,10 +224,10 @@ function MainGame() {
 
 	Game.createLevelTwo = function() {
 		var dragon;
-		var enemyCount = 25;
+		
 		var fireFlag = false;
 		var meteorFlag = false;
-
+		enemiesKilled = 0;
 		var coinModel;
 
 		var enemyRange = 250;
@@ -239,7 +238,7 @@ function MainGame() {
 		scene.arrows = [];
 		scene.coins = [];
 		scene.vist = [];
-
+		scene.enemyCount = 25;
 		scene.dragon;
 	    scene.castle;
 	    scene.trees = [];
@@ -302,12 +301,12 @@ function MainGame() {
 
 		var enemiesTask = Game.assetsManagers[1].addMeshTask("Enemies Task", "", "scenes/", "archer_version_3.babylon");
 		enemiesTask.onSuccess = function(task) {
-			createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, enemyCount);
+		    createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, scene.enemyCount);
 		}
 
 		var arrowsTask = Game.assetsManagers[1].addMeshTask("Arrows Task", "", "scenes/", "arrow2.babylon");
 		arrowsTask.onSuccess = function(task) {
-			createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.02, enemyCount);
+		    createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.02, scene.enemyCount);
 		}
 
 	    var TreeTask = Game.assetsManagers[1].addMeshTask("Tree Task", "", "scenes/", "tree.babylon");
@@ -385,10 +384,9 @@ function MainGame() {
 	}
 	Game.createLevelThree = function () {
 	    var dragon;
-	    var enemyCount = 30;
 	    var fireFlag = false;
 	    var meteorFlag = false;
-
+	    enemiesKilled = 0;
 	    var enemyRange = 300;
 
 	    var coindModel;
@@ -399,7 +397,7 @@ function MainGame() {
 		scene.arrows = [];
 		scene.coins = [];
 		scene.vist = [];
-
+		scene.enemyCount = 30;
 		scene.dragon;
 
 	    Game.assetsManagers[2] = new BABYLON.AssetsManager(scene);
@@ -461,12 +459,12 @@ function MainGame() {
 
 	    var enemiesTask = Game.assetsManagers[2].addMeshTask("Enemies Task", "", "scenes/", "archer_version_3.babylon");
 	    enemiesTask.onSuccess = function (task) {
-	        createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, enemyCount);
+	        createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, scene.enemyCount);
 	    }
 
 	    var arrowsTask = Game.assetsManagers[2].addMeshTask("Arrows Task", "", "scenes/", "arrow2.babylon");
 		arrowsTask.onSuccess = function(task) {
-			createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.03, enemyCount);
+		    createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.03, scene.enemyCount);
 		}
 	     
 	    Game.scenes[sceneIndex].applyDragonMovement = function (scene, dragon) {
@@ -732,7 +730,7 @@ function MainGame() {
 		    	//console.log("pickedMesh : " + hit.pickedMesh.name);
 				scene.beginAnimation(hit.pickedMesh.tempClone.skeletons[0], 51, 72, 0.7, true);
 				hit.pickedMesh.tempClone.isDead = true;
-
+				enemiesKilled++;
 				setTimeout(function() {
 				    var index = scene.enemies.indexOf(hit.pickedMesh.tempClone);
 
