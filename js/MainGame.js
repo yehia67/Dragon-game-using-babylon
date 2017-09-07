@@ -71,7 +71,7 @@ function MainGame() {
 		 
 		var fireFlag = false;
 
-		var coinModel
+		var coinModel;
 
 		var enemyRange = 200;
 
@@ -164,12 +164,6 @@ function MainGame() {
 		arrowsTask.onSuccess = function(task) {
 		    createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.015, scene.enemyCount);
 		}
-
-	    /*var CastleTask = Game.assetsManagers[0].addMeshTask("Castle Task", "", "scenes/", "castle.babylon");
-	    CastleTask.onSuccess = function(task) {
-	        scene.castle = task.loadedMeshes[0];
-	        scene.castle.scaling = new BABYLON.Vector3(30, 30, 30);
-	    }*/
 	  
 	    var TreeTask = Game.assetsManagers[0].addMeshTask("Tree Task", "", "scenes/", "tree.babylon");
 	    TreeTask.onSuccess = function(task) {
@@ -670,7 +664,7 @@ function MainGame() {
 	    }
 
 	    if (isWPressed) {
-	        dragon.bounder.moveWithCollisions(dragon.frontVector.multiplyByFloats(4, 4, 4));
+	        dragon.bounder.moveWithCollisions(dragon.frontVector.multiplyByFloats(2, 0, 2));
 	    }
 
 	    if (isDPressed) {
