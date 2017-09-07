@@ -95,7 +95,7 @@ function MainGame() {
 
 		BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
 
-        var fireSoundTask = Game.assetsManagers[0].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
+		var fireSoundTask = Game.assetsManagers[0].addBinaryFileTask("fire task", "sounds/Small Fireball.mp3");
         fireSoundTask.onSuccess = function (task) {
         	scene.fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
         }
@@ -273,7 +273,7 @@ function MainGame() {
 
 		Game.assetsManagers[1] = new BABYLON.AssetsManager(scene);
 
-        var fireSoundTask = Game.assetsManagers[1].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
+        var fireSoundTask = Game.assetsManagers[1].addBinaryFileTask("fire task", "sounds/Small Fireball.mp3");
         fireSoundTask.onSuccess = function (task) {
         	scene.fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
         }
@@ -448,7 +448,7 @@ function MainGame() {
 
 	    Game.assetsManagers[2] = new BABYLON.AssetsManager(scene);
 
-        var fireSoundTask = Game.assetsManagers[2].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
+        var fireSoundTask = Game.assetsManagers[2].addBinaryFileTask("fire task", "sounds/Small Fireball.mp3");
         fireSoundTask.onSuccess = function (task) {
         	scene.fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
         }
@@ -692,13 +692,13 @@ function MainGame() {
 
 	    if (isUpPressed)
 	    {
-	        var up = new BABYLON.Vector3(0, 0.5, 0);
+	        var up = new BABYLON.Vector3(0, 1, 0);
 	        dragon.bounder.moveWithCollisions(up);
 	    }
 
 	    if (isDownPressed)
 	    {
-	        var down = new BABYLON.Vector3(0, -0.5, 0);
+	        var down = new BABYLON.Vector3(0, -1, 0);
 	        dragon.bounder.moveWithCollisions(down);
 	    }
 
