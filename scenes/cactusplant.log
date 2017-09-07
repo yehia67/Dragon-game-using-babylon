@@ -1,0 +1,26 @@
+Exporter version: 5.4.0, Blender version: 2.76 (sub 0)
+========= Conversion from Blender to Babylon.js =========
+	Scene settings used:
+		selected layers only:  false
+		flat shading entire scene:  false
+		inline textures:  false
+		texture directory:  C:\Users\moaz\Downloads\cactus\
+	Python World class constructor completed
+	processing begun of mesh:  Cylinder
+		processing begun of Standard material:  cactus
+			Diffuse texture found "cactus"
+				Image texture found, type:  diffuseTexture, mapped using: "UVMap"
+	WARNING: Error encountered processing image file:  , Error:  'C:\\Users\\moaz\\Downloads\\cactus\\pd1642707.jpg' and 'C:\\Users\\moaz\\Downloads\\cactus\\pd1642707.jpg' are the same file
+		num positions      :  2609
+		num normals        :  2609
+		num uvs            :  5218
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  5724
+		WARNING: # of 0 area faces found:  256
+	processing begun of camera (UniversalCamera):  Camera
+	processing begun of light (POINT):  Point
+========= Writing of scene file started =========
+========= Writing of scene file completed =========
+========= end of processing =========
+elapsed time:  0 min, 1.456 secs
