@@ -819,7 +819,6 @@ function MainGame() {
 				    coin.rotation.x = Math.PI / 2;
 
 				    coin.isVisible = true;
-                    coinSound.play();
 				    coin.bounder.checkCollisions = true;
                     if (coin) {
                         setTimeout(function () {
