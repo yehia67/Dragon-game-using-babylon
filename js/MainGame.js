@@ -263,7 +263,7 @@ function MainGame() {
 
 		scene.dragon;
 	    scene.castle;
-		scene.trees = [];
+		scene.cactus = [];
 
 	    scene.fireSound;
 		scene.coinSound;
@@ -347,9 +347,9 @@ function MainGame() {
 			createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.06, scene.enemyCount);
 		}
 
-	    var TreeTask = Game.assetsManagers[1].addMeshTask("Tree Task", "", "scenes/", "tree.babylon");
-	    TreeTask.onSuccess = function(task) {
-	        createTrees(scene, task.loadedMeshes, task.loadedSkeletons, 25);
+	    var CactusTask = Game.assetsManagers[1].addMeshTask("Cactus Task", "", "scenes/", "cactusplant.babylon");
+        CactusTask.onSuccess = function(task) {
+	        createCactus(scene, task.loadedMeshes, task.loadedSkeletons, 50);
 	    }
 
 		Game.scenes[sceneIndex].applyDragonMovement = function (scene, dragon) {
@@ -1108,6 +1108,26 @@ function MainGame() {
 	    }
 	}
 
+
+    function createCactus(scene, newMeshes, skeletons, numOfCactus) {
+        var index = scene.cactus.push(newMeshes[0]) - 1
+
+        scene.cactus[index].skeletons = [];
+
+        for(var i = 0; i < skeletons.length; i++) {
+            scene.cactus[index].skeletons[i] = skeletons[i];
+        }
+        scene.cactus[index].scaling = new BABYLON.Vector3(5, 5, 5);
+        var boundingBox = calculateBoundingBoxOfCompositeMeshes(scene,newMeshes,4);
+        scene.cactus[index].bounder = boundingBox.boxMesh;
+        scene.cactus[index].bounder.tempClone = scene.cactus[index];
+        scene.cactus[index].position = scene.cactus[index].bounder.position;
+
+        for(var i = 1; i < numOfCactus; i++) {
+            index = scene.cactus.push(cloneModel(scene.cactus[index], "cactus_" + index)) - 1;
+        }
+    }
+
 	function createRocks(scene, dragon){
 	    var fountain = BABYLON.Mesh.CreateSphere("foutain", 10, 10, scene, false);
 	    var xPos = (Math.random() * 1000) - 500;
@@ -1281,6 +1301,31 @@ function MainGame() {
 	                }
 	            }
 	        }
+
+
+
+            if(scene.cactus) {
+                var counter = 0;
+                for(var i = 0; i < scene.cactus.length; i++) {
+                    var direction = new BABYLON.Vector3(0, -1, 0);
+
+                    var ray = new BABYLON.Ray(new BABYLON.Vector3((Math.random() * 2000) - 1000, 505, (Math.random() * 2000) - 1000), direction, 10000);
+
+                    var hit = scene.pickWithRay(ray, function (mesh) {
+                        if (mesh.name.startsWith("ground")) {
+
+                            return true;
+                        }
+
+                        return false;
+                    });
+
+                    if (hit.pickedMesh) {
+                        scene.cactus[i].position = hit.pickedPoint;
+                        scene.cactus[i].bounder.position = scene.cactus[i].position;
+                    }
+                }
+            }
 
 	        if(scene.castle) {
 	            var direction = new BABYLON.Vector3(0, -1, 0);
