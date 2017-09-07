@@ -30,7 +30,6 @@ function MainGame() {
 	var isUpPressed = false;
 	var isDownPressed = false;
 	var isSpacePressed = false;
-
     var coinTimeOut = 10000;
 	var scenesize = 4000;
 	var maxheight = 300;
@@ -741,7 +740,8 @@ function MainGame() {
                     scene.coins[i].bounder.dispose();
 		    		scene.coins[i].dispose();
 		    		document.getElementById("scoreLabel").textContent = "x " + dragon.score;
-		    		scene.coins.splice(i, 1);
+		    	    //scene.coins.splice(i, 1);
+		    		scene.coins[i] = null;
 		    	}
 		    }
 	    }
@@ -818,9 +818,9 @@ function MainGame() {
 				    scene.arrows.splice(index, 1);
 
 				    var coin = cloneModel(coinModel, "coins_");
-				    scene.coins.push(coin) ;
+				    scene.coins.push(coin);
 				    coin.position = hit.pickedMesh.position;
-                    coin.position.y += 30;
+				    coin.position.y += 30;
 				    coin.bounder.position = coin.position;
 
 				    coin.scaling = new BABYLON.Vector3(0.15, 0.15, 0.15);
@@ -831,16 +831,26 @@ function MainGame() {
 
 				    coin.isVisible = true;
 				    coin.bounder.checkCollisions = true;
-
-                  	for(var i = 0; i < scene.coins.length; i++) {
-                  		if(scene.coins[i]) {
-                  			disposeCoin(i);
-                  		}
-                  	}
+                    
+				    (function (coin) {
+				       
+				        setTimeout(function () {
+				            if (coin) {
+				                coin.bounder.dispose();
+				                coin.dispose();
+				                //scene.coins.splice(scene.coins.indexOf(coin), 1);
+				                scene[scene.coins.indexOf(coin)] = null;
+				            }
+				            }, coinTimeOut);
+				           
+				    }(coin));
+				    
+				  
+                  	
 				}, 900);
 		    }
 
-		    function disposeCoin(index) {
+		   /* function disposeCoin(index) {
 		    	scene.coins[index].diposed = true;
 		    	setTimeout(function () {
                 	if(scene.coins[index]) {
@@ -850,7 +860,7 @@ function MainGame() {
                 	}
 
               	}, coinTimeOut);
-		    }
+		    }*/
 
 		    setTimeout(function () {
 		               fireSystem.stop();
