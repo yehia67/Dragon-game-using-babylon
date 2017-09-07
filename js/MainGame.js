@@ -18,10 +18,6 @@ function MainGame() {
 	Game.assetsManagers = [];
 
 	var enemiesKilled = 0;
-    var assetsManager = new BABYLON.AssetsManager(Game.scenes);
-    var fireSound;
-    var coinSound;
-    var backgroundSound;
 
 
 	var isAPressed = false;
@@ -88,20 +84,26 @@ function MainGame() {
 
 		scene.dragon;
 	    scene.castle;
+
+		scene.fireSound;
+		scene.coinSound;
+		scene.backgroundSound;
 	    
 
 		Game.assetsManagers[0] = new BABYLON.AssetsManager(scene);
 
 		BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
-        var binaryTask = Game.assetsManagers[0].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
-        binaryTask.onSuccess = function (task) {
-        fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
+
+        var fireSoundTask = Game.assetsManagers[0].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
+        fireSoundTask.onSuccess = function (task) {
+        	scene.fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
         }
 
-        binaryTask = Game.assetsManagers[0].addBinaryFileTask("coin task", "sounds/235273__godowan__coins3.wav");
-        binaryTask.onSuccess = function (task) {
-        coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
+        var coinSoundTask = Game.assetsManagers[0].addBinaryFileTask("coin task", "sounds/235273__godowan__coins3.wav");
+        coinSoundTask.onSuccess = function (task) {
+        	scene.coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
         }
+
 		function onCoinLoaded(newMeshes, particleSystems, skeletons) {
 		    coinModel = newMeshes[0];
 
@@ -203,7 +205,7 @@ function MainGame() {
 
 		Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
 
-		    if (enemiesKilled === scene.enemyCount) {
+		    if (dragon.score === 2) {
 		        enemiesKilled = 0;
 
 				Game.activeScene++;
@@ -258,21 +260,27 @@ function MainGame() {
 		scene.arrows = [];
 		scene.coins = [];
 		scene.vist = [];
+		scene.trees = [];
 
 		scene.dragon;
 	    scene.castle;
-	    scene.trees = [];
+
+	    scene.fireSound;
+		scene.coinSound;
+		scene.backgroundSound;
 
 		Game.assetsManagers[1] = new BABYLON.AssetsManager(scene);
+
         BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
-        var binaryTask = Game.assetsManagers[1].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
-        binaryTask.onSuccess = function (task) {
-        fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
+
+        var fireSoundTask = Game.assetsManagers[1].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
+        fireSoundTask.onSuccess = function (task) {
+        	scene.fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
         }
 
-        binaryTask = Game.assetsManagers[1].addBinaryFileTask("coin task", "sounds/235273__godowan__coins3.wav");
-        binaryTask.onSuccess = function (task) {
-        coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
+        var coinSoundTask = Game.assetsManagers[1].addBinaryFileTask("coin task", "sounds/235273__godowan__coins3.wav");
+        coinSoundTask.onSuccess = function (task) {
+        	scene.coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
         }
 
 		BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
@@ -296,7 +304,6 @@ function MainGame() {
 		    coinModel.bounder.position = coinModel.position;
 
 		    coinModel.isVisible = false;
-            coinSound.play();
 		    coinModel.bounder.checkCollisions = false;
 		}
 
@@ -374,7 +381,7 @@ function MainGame() {
 	    }
 
 	    Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
-	        if (enemiesKilled === scene.enemyCount) {
+	        if (dragon.score === 2) {
 	            enemiesKilled = 0;
 				Game.activeScene++;
 				Game.assetsManagers[Game.activeScene].load();
@@ -414,6 +421,7 @@ function MainGame() {
 			this.render();
 		}
 	}
+
 	Game.createLevelThree = function () {
 	    var dragon;
 	    var enemyCount = 30;
@@ -433,16 +441,22 @@ function MainGame() {
 
 		scene.dragon;
 
+		scene.fireSound;
+		scene.coinSound;
+		scene.backgroundSound;
+
 	    Game.assetsManagers[2] = new BABYLON.AssetsManager(scene);
+
         BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
-        var binaryTask = Game.assetsManagers[2].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
-        binaryTask.onSuccess = function (task) {
-        fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
+
+        var fireSoundTask = Game.assetsManagers[2].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
+        fireSoundTask.onSuccess = function (task) {
+        	scene.fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
         }
 
-        binaryTask = Game.assetsManagers[2].addBinaryFileTask("coin task", "sounds/235273__godowan__coins3.wav");
-        binaryTask.onSuccess = function (task) {
-        coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
+        var coinSoundTask = Game.assetsManagers[2].addBinaryFileTask("coin task", "sounds/235273__godowan__coins3.wav");
+        coinSoundTask.onSuccess = function (task) {
+        	scene.coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
         }
 
 	    BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
@@ -466,7 +480,6 @@ function MainGame() {
 	        coinModel.bounder.position = coinModel.position;
 
 	        coinModel.isVisible = false;
-            coinSound.play();
 	        coinModel.bounder.checkCollisions = false;
 	    }
 
@@ -709,8 +722,9 @@ function MainGame() {
 	    for(var i = 0; i < scene.coins.length; i++) {
 	    	if(scene.coins[i]) {
 		    	if(scene.coins[i].bounder.intersectsMesh(dragon.bounder, false) && scene.coins[i].isVisible) {
+		    		console.log("henaa");
 		    	    dragon.score++;
-                    coinSound.play();
+                    scene.coinSound.play();
                     scene.coins[i].bounder.dispose();
 		    		scene.coins[i].dispose();
 		    		document.getElementById("scoreLabel").textContent = "x " + dragon.score;
@@ -723,7 +737,7 @@ function MainGame() {
 	function fire(scene, dragon, coinModel) {
 		if(isSpacePressed) {
 
-	         fireSound.play();
+	        scene.fireSound.play();
 			var direction = new BABYLON.Vector3(dragon.frontVector.x, -1, dragon.frontVector.z);
 		    direction.normalize;
 		    var fireSystem = new BABYLON.ParticleSystem("particles", 2000, scene)
