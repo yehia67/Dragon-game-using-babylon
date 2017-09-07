@@ -836,9 +836,11 @@ function MainGame() {
 				       
 				        setTimeout(function () {
 				            if (coin) {
+				                coin.isVisible = false;
 				                coin.bounder.dispose();
 				                coin.dispose();
 				                //scene.coins.splice(scene.coins.indexOf(coin), 1);
+                              
 				                scene[scene.coins.indexOf(coin)] = null;
 				            }
 				            }, coinTimeOut);
