@@ -783,7 +783,7 @@ function MainGame() {
 		    	//console.log("pickedMesh : " + hit.pickedMesh.name);
 				scene.beginAnimation(hit.pickedMesh.tempClone.skeletons[0], 51, 72, 0.7, true);
 				hit.pickedMesh.tempClone.isDead = true;
-
+				enemiesKilled++;
 				setTimeout(function() {
 				    var index = scene.enemies.indexOf(hit.pickedMesh.tempClone);
 
@@ -1235,7 +1235,7 @@ function MainGame() {
 			        return false;
 			    });
 
-			    if (hit.pickedMesh && hit.pickedMesh.position.y <= maxheight-50) {
+			    if (hit.pickedMesh && hit.pickedPoint.position.y <= maxheight-50) {
 			        scene.enemies[i].position = hit.pickedPoint;
 			        scene.enemies[i].position.y += 10;
 			        scene.enemies[i].bounder.position = scene.enemies[i].position;
