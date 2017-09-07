@@ -71,7 +71,7 @@ function MainGame() {
 		 
 		var fireFlag = false;
 
-		var coinModel;
+		var coinModel
 
 		var enemyRange = 200;
 
@@ -125,6 +125,8 @@ function MainGame() {
 
 		    coinModel.isVisible = false;
 		    coinModel.bounder.checkCollisions = false;
+
+		    coinModel.diposed = false;
 		}
 
 		var skybox = BABYLON.Mesh.CreateBox("skyBox", 10000.0, scene);
@@ -164,6 +166,12 @@ function MainGame() {
 		arrowsTask.onSuccess = function(task) {
 		    createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.015, scene.enemyCount);
 		}
+
+	    /*var CastleTask = Game.assetsManagers[0].addMeshTask("Castle Task", "", "scenes/", "castle.babylon");
+	    CastleTask.onSuccess = function(task) {
+	        scene.castle = task.loadedMeshes[0];
+	        scene.castle.scaling = new BABYLON.Vector3(30, 30, 30);
+	    }*/
 	  
 	    var TreeTask = Game.assetsManagers[0].addMeshTask("Tree Task", "", "scenes/", "tree.babylon");
 	    TreeTask.onSuccess = function(task) {
@@ -265,8 +273,6 @@ function MainGame() {
 
 		Game.assetsManagers[1] = new BABYLON.AssetsManager(scene);
 
-        BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
-
         var fireSoundTask = Game.assetsManagers[1].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
         fireSoundTask.onSuccess = function (task) {
         	scene.fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
@@ -299,6 +305,8 @@ function MainGame() {
 
 		    coinModel.isVisible = false;
 		    coinModel.bounder.checkCollisions = false;
+
+		    coinModel.diposed = false;
 		}
 
 		var skybox = BABYLON.Mesh.CreateBox("skyBox", 10000.0, scene);
@@ -440,8 +448,6 @@ function MainGame() {
 
 	    Game.assetsManagers[2] = new BABYLON.AssetsManager(scene);
 
-        BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
-
         var fireSoundTask = Game.assetsManagers[2].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
         fireSoundTask.onSuccess = function (task) {
         	scene.fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
@@ -474,6 +480,8 @@ function MainGame() {
 
 	        coinModel.isVisible = false;
 	        coinModel.bounder.checkCollisions = false;
+
+	        coinModel.diposed = false;
 	    }
 
 	    var skybox = BABYLON.Mesh.CreateBox("skyBox", 10000.0, scene);
@@ -820,15 +828,34 @@ function MainGame() {
 
 				    coin.isVisible = true;
 				    coin.bounder.checkCollisions = true;
-                    if (coin) {
-                        setTimeout(function () {
-                        	coin.bounder.dispose();
-                        	coin.dispose();
-                    		scene.coins.splice(scene.coins.indexOf(coin), 1);
+				    console.log("5elset");
+                    /*setTimeout(function () {
+                    	console.log("coin : " + coin);
+                    	if(coin) {
+	                    	coin.bounder.dispose();
+	                    	coin.dispose();
+	                		scene.coins.splice(scene.coins.indexOf(coin), 1);
+	                	}
 
-                      }, coinTimeOut);
-					}
+                  	}, coinTimeOut);*/
+
+                  	for(var i = 0; i < scene.coins.length; i++) {
+                  		if(scene.coins[i] && !scene.coins[i].disposed)
+                  			disposeCoin(i);
+                  	}
 				}, 900);
+		    }
+
+		    function disposeCoin(index) {
+		    	scene.coins[index].diposed = true;
+		    	setTimeout(function () {
+                	if(scene.coins[index]) {
+                    	scene.coins[index].bounder.dispose();
+                    	scene.coins[index].dispose();
+                		scene.coins.splice(index, 1);
+                	}
+
+              	}, coinTimeOut);
 		    }
 
 		    setTimeout(function () {
