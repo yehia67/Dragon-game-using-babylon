@@ -17,6 +17,13 @@ function MainGame() {
 	Game.activeScene = 0;
 	Game.assetsManagers = [];
 
+	var enemiesKilled = 0;
+    var assetsManager = new BABYLON.AssetsManager(Game.scenes);
+    var fireSound;
+    var coinSound;
+    var backgroundSound;
+
+
 	var isAPressed = false;
 	var isDPressed = false;
 	var isWPressed = false;
@@ -27,6 +34,7 @@ function MainGame() {
 	var isDownPressed = false;
 	var isSpacePressed = false;
 
+    var coinTimeOut = 10000;
 	var scenesize = 4000;
 	var maxheight = 300;
 
@@ -85,7 +93,15 @@ function MainGame() {
 		Game.assetsManagers[0] = new BABYLON.AssetsManager(scene);
 
 		BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
+        var binaryTask = Game.assetsManagers[0].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
+        binaryTask.onSuccess = function (task) {
+        fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
+        }
 
+        binaryTask = Game.assetsManagers[0].addBinaryFileTask("coin task", "sounds/235273__godowan__coins3.wav");
+        binaryTask.onSuccess = function (task) {
+        coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
+        }
 		function onCoinLoaded(newMeshes, particleSystems, skeletons) {
 		    coinModel = newMeshes[0];
 
@@ -186,7 +202,10 @@ function MainGame() {
 	    }
 
 		Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
-			if(dragon.score === 2) {
+
+		    if (enemiesKilled === scene.enemyCount) {
+		        enemiesKilled = 0;
+
 				Game.activeScene++;
 				Game.assetsManagers[Game.activeScene].load();
 			}
@@ -198,7 +217,7 @@ function MainGame() {
 
 		Game.assetsManagers[0].onFinish = function(tasks) {
 			console.log("here");
-			createConfiguredGround(scene, "scenes/lake.png", "textures/grass.png");
+			createConfiguredGround(scene, "scenes/lake4.png", "textures/grass.png");
 	    	document.getElementById("scoreLabel").textContent = "x " + dragon.score;
 		}
 
@@ -245,6 +264,16 @@ function MainGame() {
 	    scene.trees = [];
 
 		Game.assetsManagers[1] = new BABYLON.AssetsManager(scene);
+        BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
+        var binaryTask = Game.assetsManagers[1].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
+        binaryTask.onSuccess = function (task) {
+        fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
+        }
+
+        binaryTask = Game.assetsManagers[1].addBinaryFileTask("coin task", "sounds/235273__godowan__coins3.wav");
+        binaryTask.onSuccess = function (task) {
+        coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
+        }
 
 		BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
 
@@ -267,6 +296,7 @@ function MainGame() {
 		    coinModel.bounder.position = coinModel.position;
 
 		    coinModel.isVisible = false;
+            coinSound.play();
 		    coinModel.bounder.checkCollisions = false;
 		}
 
@@ -344,7 +374,8 @@ function MainGame() {
 	    }
 
 	    Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
-			if(dragon.score === 1) {
+	        if (enemiesKilled === scene.enemyCount) {
+	            enemiesKilled = 0;
 				Game.activeScene++;
 				Game.assetsManagers[Game.activeScene].load();
 			}
@@ -403,6 +434,16 @@ function MainGame() {
 		scene.dragon;
 
 	    Game.assetsManagers[2] = new BABYLON.AssetsManager(scene);
+        BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
+        var binaryTask = Game.assetsManagers[2].addBinaryFileTask("fire task", "sounds/Crackling_Fireplace.mp3");
+        binaryTask.onSuccess = function (task) {
+        fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
+        }
+
+        binaryTask = Game.assetsManagers[2].addBinaryFileTask("coin task", "sounds/235273__godowan__coins3.wav");
+        binaryTask.onSuccess = function (task) {
+        coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
+        }
 
 	    BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
 
@@ -425,6 +466,7 @@ function MainGame() {
 	        coinModel.bounder.position = coinModel.position;
 
 	        coinModel.isVisible = false;
+            coinSound.play();
 	        coinModel.bounder.checkCollisions = false;
 	    }
 
@@ -668,7 +710,8 @@ function MainGame() {
 	    	if(scene.coins[i]) {
 		    	if(scene.coins[i].bounder.intersectsMesh(dragon.bounder, false) && scene.coins[i].isVisible) {
 		    	    dragon.score++;
-		    		scene.coins[i].bounder.dispose();
+                    coinSound.play();
+                    scene.coins[i].bounder.dispose();
 		    		scene.coins[i].dispose();
 		    		document.getElementById("scoreLabel").textContent = "x " + dragon.score;
 		    		scene.coins.splice(i, 1);
@@ -679,7 +722,7 @@ function MainGame() {
 
 	function fire(scene, dragon, coinModel) {
 		if(isSpacePressed) {
-	        var fireSound = new BABYLON.Sound("fireSound", "sounds/Crackling_Fireplace.mp3", scene);
+
 	         fireSound.play();
 			var direction = new BABYLON.Vector3(dragon.frontVector.x, -1, dragon.frontVector.z);
 		    direction.normalize;
@@ -754,6 +797,7 @@ function MainGame() {
 				    var coin = cloneModel(coinModel, "coins_");
 				    scene.coins.push(coin) ;
 				    coin.position = hit.pickedMesh.position;
+                    coin.position.y += 30;
 				    coin.bounder.position = coin.position;
 
 				    //console.log("created coins : " + scene.coins[scene.coins.indexOf(coin)].position);
@@ -763,7 +807,16 @@ function MainGame() {
 				    coin.rotation.x = Math.PI / 2;
 
 				    coin.isVisible = true;
+                    coinSound.play();
 				    coin.bounder.checkCollisions = true;
+                    if (coin) {
+                        setTimeout(function () {
+                        	coin.bounder.dispose();
+                        	coin.dispose();
+                    		scene.coins.splice(scene.coins.indexOf(coin), 1);
+
+                      }, coinTimeOut);
+					}
 				}, 900);
 		    }
 
