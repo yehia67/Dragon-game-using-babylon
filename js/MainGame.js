@@ -89,6 +89,7 @@ function MainGame() {
 		scene.fireSound;
 		scene.coinSound;
 		scene.backgroundSound;
+		scene.wingsSound;
 	    
 
 		Game.assetsManagers[0] = new BABYLON.AssetsManager(scene);
@@ -103,6 +104,11 @@ function MainGame() {
         var coinSoundTask = Game.assetsManagers[0].addBinaryFileTask("coin task", "sounds/235273__godowan__coins3.wav");
         coinSoundTask.onSuccess = function (task) {
         	scene.coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
+        }
+
+        var wingsSoundTask = Game.assetsManagers[0].addBinaryFileTask("Wings sound task", "sounds/Wings Flapping.mp3");
+        wingsSoundTask.onSuccess = function(task) {
+        	scene.wingsSound = new BABYLON.Sound("wings", task.data, scene, null, { loop : true});
         }
 
 		function onCoinLoaded(newMeshes, particleSystems, skeletons) {
@@ -208,6 +214,7 @@ function MainGame() {
 
 		Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
 		    if (enemiesKilled === scene.enemyCount) {
+		    		scene.wingsSound.stop();
 		            enemiesKilled = 0;
 		            Game.activeScene++;
 		            Game.assetsManagers[Game.activeScene].load();
@@ -222,6 +229,7 @@ function MainGame() {
 			console.log("here");
 			createConfiguredGround(scene, "scenes/lake4.png", "textures/grass.png");
 	    	document.getElementById("scoreLabel").textContent = "x " + dragon.score;
+	    	scene.wingsSound.play();
 		}
 
 		Game.scenes[sceneIndex].renderLoop = function() {
@@ -351,7 +359,7 @@ function MainGame() {
 
 	    var CactusTask = Game.assetsManagers[1].addMeshTask("Cactus Task", "", "scenes/", "cactusplant.babylon");
         CactusTask.onSuccess = function(task) {
-	        createCactus(scene, task.loadedMeshes, task.loadedSkeletons, 50);
+	        createCactus(scene, task.loadedMeshes, task.loadedSkeletons, 10);
 	    }
 
 		Game.scenes[sceneIndex].applyDragonMovement = function (scene, dragon) {
@@ -791,7 +799,7 @@ function MainGame() {
 		    });
 
 		    if(hit.pickedMesh && !hit.pickedMesh.tempClone.isDead) {
-		    	//console.log("pickedMesh : " + hit.pickedMesh.name);
+
 				scene.beginAnimation(hit.pickedMesh.tempClone.skeletons[0], 51, 72, 0.7, true);
 				hit.pickedMesh.tempClone.isDead = true;
 				enemiesKilled++;
@@ -799,49 +807,35 @@ function MainGame() {
 				setTimeout(function() {
 				    var index = scene.enemies.indexOf(hit.pickedMesh.tempClone);
 
-				    //console.log("index : " + index);
 				    hit.pickedMesh.tempClone.dispose();
 				    hit.pickedMesh.dispose();
-				    //  enemies[index] = null;
+
 				    scene.enemies.splice(index, 1);
 				    scene.arrows[index].move = false;
 				    scene.arrows[index].bounder.dispose();
 				    scene.arrows[index].dispose();
-				   // arrows[index] = null;
-				    //indicies.splice(indicies.indexOf(arrows[index]), 1);
+
 				    scene.arrows.splice(index, 1);
-				    //console.log("index again : " + index);
-				   // coins[index].isVisible = true;
-				   // console.log("coins[ " + index + "] : " + coins[index].isVisible);
-				    //coins[index].bounder.checkCollisions = true;
+
 				    var coin = cloneModel(coinModel, "coins_");
 				    scene.coins.push(coin) ;
 				    coin.position = hit.pickedMesh.position;
                     coin.position.y += 30;
 				    coin.bounder.position = coin.position;
 
-				    //console.log("created coins : " + scene.coins[scene.coins.indexOf(coin)].position);
 				    coin.scaling = new BABYLON.Vector3(0.15, 0.15, 0.15);
 				    coin.material = new BABYLON.StandardMaterial("coinMat", scene);
 				    coin.material.diffuseColor = new BABYLON.Color3.Yellow();
 				    coin.rotation.x = Math.PI / 2;
+				    coin.diposed = false;
 
 				    coin.isVisible = true;
 				    coin.bounder.checkCollisions = true;
-				    console.log("5elset");
-                    /*setTimeout(function () {
-                    	console.log("coin : " + coin);
-                    	if(coin) {
-	                    	coin.bounder.dispose();
-	                    	coin.dispose();
-	                		scene.coins.splice(scene.coins.indexOf(coin), 1);
-	                	}
-
-                  	}, coinTimeOut);*/
 
                   	for(var i = 0; i < scene.coins.length; i++) {
-                  		if(scene.coins[i] && !scene.coins[i].disposed)
+                  		if(scene.coins[i]) {
                   			disposeCoin(i);
+                  		}
                   	}
 				}, 900);
 		    }
@@ -1150,8 +1144,8 @@ function MainGame() {
 
 	function createRocks(scene, dragon){
 	    var fountain = BABYLON.Mesh.CreateSphere("foutain", 10, 10, scene, false);
-	    var xPos = (Math.random() * 1000) - 500;
-	    var zPos = (Math.random() * 1000) - 500;
+	    var xPos = (Math.random() * 2000) - 1000;
+	    var zPos = (Math.random() * 2000) - 1000;
 	    fountain.position = new BABYLON.Vector3(xPos, 500, zPos);
 	    fountain.material = new BABYLON.StandardMaterial("emitterMat", scene);
 	    fountain.material.diffuseColor = new BABYLON.Color3(98/256, 93/256, 93/256);
@@ -1229,7 +1223,8 @@ function MainGame() {
 	        fireSystem.stop();
 	        setTimeout(function() {
 	            smokeSystem.stop();
-	            fountain.dispose();
+	            if(fountain)
+	            	fountain.dispose();
 	        }, 1000);
 	    }, 5000); 
 	}
