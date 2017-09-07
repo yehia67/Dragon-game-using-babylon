@@ -19,6 +19,7 @@ function MainGame() {
 
 	var enemiesKilled = 0;
 
+    var bonusScore = 0;
 
 	var isAPressed = false;
 	var isDPressed = false;
@@ -67,7 +68,7 @@ function MainGame() {
 	Game.createLevelOne = function() {
 
 		var dragon;
-		var enemyCount = 20;
+		 
 		var fireFlag = false;
 
 		var coinModel
@@ -81,7 +82,7 @@ function MainGame() {
 		scene.coins = [];
 	    scene.trees = [];
 		scene.vist = [];
-
+		scene.enemyCount = 20;
 		scene.dragon;
 	    scene.castle;
 
@@ -156,12 +157,12 @@ function MainGame() {
 
 		var enemiesTask = Game.assetsManagers[0].addMeshTask("Enemies Task", "", "scenes/", "archer_version_3.babylon");
 		enemiesTask.onSuccess = function(task) {
-			createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, enemyCount);
+		    createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, scene.enemyCount);
 		}
 
 		var arrowsTask = Game.assetsManagers[0].addMeshTask("Arrows Task", "", "scenes/", "arrow2.babylon");
 		arrowsTask.onSuccess = function(task) {
-			createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.015, enemyCount);
+		    createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.015, scene.enemyCount);
 		}
 
 	    /*var CastleTask = Game.assetsManagers[0].addMeshTask("Castle Task", "", "scenes/", "castle.babylon");
@@ -204,12 +205,10 @@ function MainGame() {
 	    }
 
 		Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
-
-		    if (dragon.score === 2) {
-		        enemiesKilled = 0;
-
-				Game.activeScene++;
-				Game.assetsManagers[Game.activeScene].load();
+		    if (enemiesKilled === scene.enemyCount) {
+		            enemiesKilled = 0;
+		            Game.activeScene++;
+		            Game.assetsManagers[Game.activeScene].load();
 			}
 		}
 
@@ -246,7 +245,6 @@ function MainGame() {
 
 	Game.createLevelTwo = function() {
 		var dragon;
-		var enemyCount = 25;
 		var fireFlag = false;
 		var meteorFlag = false;
 
@@ -260,10 +258,12 @@ function MainGame() {
 		scene.arrows = [];
 		scene.coins = [];
 		scene.vist = [];
-		scene.trees = [];
+
+		scene.enemyCount = 25;
 
 		scene.dragon;
 	    scene.castle;
+		scene.trees = [];
 
 	    scene.fireSound;
 		scene.coinSound;
@@ -336,15 +336,15 @@ function MainGame() {
 
 			scene.dragon = dragon;
 		}
-
+		bonusScore = 0;
 		var enemiesTask = Game.assetsManagers[1].addMeshTask("Enemies Task", "", "scenes/", "archer_version_3.babylon");
 		enemiesTask.onSuccess = function(task) {
-			createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, enemyCount);
+			createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, scene.enemyCount);
 		}
 
 		var arrowsTask = Game.assetsManagers[1].addMeshTask("Arrows Task", "", "scenes/", "arrow2.babylon");
 		arrowsTask.onSuccess = function(task) {
-			createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.06, enemyCount);
+			createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.06, scene.enemyCount);
 		}
 
 	    var TreeTask = Game.assetsManagers[1].addMeshTask("Tree Task", "", "scenes/", "tree.babylon");
@@ -381,10 +381,10 @@ function MainGame() {
 	    }
 
 	    Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
-	        if (dragon.score === 2) {
-	            enemiesKilled = 0;
+	        if (enemiesKilled === scene.enemyCount) {
 				Game.activeScene++;
 				Game.assetsManagers[Game.activeScene].load();
+				enemiesKilled = 0;
 			}
 		}
 
@@ -424,7 +424,6 @@ function MainGame() {
 
 	Game.createLevelThree = function () {
 	    var dragon;
-	    var enemyCount = 30;
 	    var fireFlag = false;
 	    var meteorFlag = false;
 
@@ -438,7 +437,7 @@ function MainGame() {
 		scene.arrows = [];
 		scene.coins = [];
 		scene.vist = [];
-
+		scene.enemyCount = 30;
 		scene.dragon;
 
 		scene.fireSound;
@@ -516,12 +515,12 @@ function MainGame() {
 
 	    var enemiesTask = Game.assetsManagers[2].addMeshTask("Enemies Task", "", "scenes/", "archer_version_3.babylon");
 	    enemiesTask.onSuccess = function (task) {
-	        createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, enemyCount);
+	        createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, scene.enemyCount);
 	    }
 
 	    var arrowsTask = Game.assetsManagers[2].addMeshTask("Arrows Task", "", "scenes/", "arrow2.babylon");
 		arrowsTask.onSuccess = function(task) {
-			createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.1, enemyCount);
+		    createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.1, scene.enemyCount);
 		}
 	     
 	    Game.scenes[sceneIndex].applyDragonMovement = function (scene, dragon) {
@@ -612,7 +611,7 @@ function MainGame() {
 		dragon.bounder.position = dragon.position;
 
 	    dragon.score = 0;
-	    dragon.health = 100;
+	    dragon.health = 100+bonusScore;
 	    dragon.isDead = false;
 
 	    createHealthBar(scene, dragon);
@@ -725,6 +724,10 @@ function MainGame() {
 		    		console.log("henaa");
 		    	    dragon.score++;
                     scene.coinSound.play();
+		    	    if (dragon.score >= scene.enemyCount / 2)
+		    	    {
+		    	        bonusScore += 5;
+		    	    }
                     scene.coins[i].bounder.dispose();
 		    		scene.coins[i].dispose();
 		    		document.getElementById("scoreLabel").textContent = "x " + dragon.score;
@@ -789,7 +792,8 @@ function MainGame() {
 		    	//console.log("pickedMesh : " + hit.pickedMesh.name);
 				scene.beginAnimation(hit.pickedMesh.tempClone.skeletons[0], 51, 72, 0.7, true);
 				hit.pickedMesh.tempClone.isDead = true;
-
+				enemiesKilled++;
+				console.log(enemiesKilled);
 				setTimeout(function() {
 				    var index = scene.enemies.indexOf(hit.pickedMesh.tempClone);
 
@@ -1241,13 +1245,17 @@ function MainGame() {
 			        return false;
 			    });
 
-			    if (hit.pickedMesh) {
+			    if (hit.pickedMesh && hit.pickedPoint.y <= maxheight-50) {
 			        scene.enemies[i].position = hit.pickedPoint;
 			        scene.enemies[i].position.y += 10;
 			        scene.enemies[i].bounder.position = scene.enemies[i].position;
 
 		            scene.arrows[i].bounder.position = scene.enemies[i].bounder.position.add(BABYLON.Vector3.Zero().add(scene.enemies[i].frontVector.normalize().multiplyByFloats(20, 5, 20)));
 		            scene.arrows[i].position = scene.arrows[i].bounder.position;
+			    }
+			    else {
+			        console.log("Fixed");
+			        i--;
 			    }
 		    }
 
