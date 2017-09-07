@@ -21,7 +21,7 @@ function MainGame() {
     var fireSound;
     var coinSound;
     var backgroundSound;
-
+    var bonusScore = 0;
 	var isAPressed = false;
 	var isDPressed = false;
 	var isWPressed = false;
@@ -208,9 +208,14 @@ function MainGame() {
 
 		Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
 		    if (enemiesKilled === scene.enemyCount) {
-		        enemiesKilled = 0;
-				Game.activeScene++;
-				Game.assetsManagers[Game.activeScene].load();
+		     //   if (dragon.score >= scene.enemyCount * 1/2) {
+		            enemiesKilled = 0;
+		            Game.activeScene++;
+		            Game.assetsManagers[Game.activeScene].load();
+		      //  }
+		       // else {
+
+		       // }
 			}
 		}
 
@@ -331,7 +336,7 @@ function MainGame() {
 
 			scene.dragon = dragon;
 		}
-
+		bonusScore = 0;
 		var enemiesTask = Game.assetsManagers[1].addMeshTask("Enemies Task", "", "scenes/", "archer_version_3.babylon");
 		enemiesTask.onSuccess = function(task) {
 		    createEnemies(scene, task.loadedMeshes, task.loadedSkeletons, scene.enemyCount);
@@ -599,7 +604,7 @@ function MainGame() {
 		dragon.bounder.position = dragon.position;
 
 	    dragon.score = 0;
-	    dragon.health = 100;
+	    dragon.health = 100+bonusScore;
 	    dragon.isDead = false;
 
 	    createHealthBar(scene, dragon);
@@ -710,7 +715,11 @@ function MainGame() {
 	    	if(scene.coins[i]) {
 		    	if(scene.coins[i].bounder.intersectsMesh(dragon.bounder, false) && scene.coins[i].isVisible) {
 		    	    dragon.score++;
-		    		coinSound.play();
+		    	    coinSound.play();
+		    	    if (dragon.score >= scene.enemyCount / 2)
+		    	    {
+		    	        bonusScore += 5;
+		    	    }
                     scene.coins[i].bounder.dispose();
 		    		scene.coins[i].dispose();
 		    		document.getElementById("scoreLabel").textContent = "x " + dragon.score;
@@ -1227,13 +1236,16 @@ function MainGame() {
 			        return false;
 			    });
 
-			    if (hit.pickedMesh) {
+			    if (hit.pickedMesh && hit.pickedMesh.position.y <= maxheight-50) {
 			        scene.enemies[i].position = hit.pickedPoint;
 			        scene.enemies[i].position.y += 10;
 			        scene.enemies[i].bounder.position = scene.enemies[i].position;
 
 		            scene.arrows[i].bounder.position = scene.enemies[i].bounder.position.add(BABYLON.Vector3.Zero().add(scene.enemies[i].frontVector.normalize().multiplyByFloats(20, 5, 20)));
 		            scene.arrows[i].position = scene.arrows[i].bounder.position;
+			    }
+			    else {
+			        i--;
 			    }
 		    }
 
