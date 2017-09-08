@@ -1,4 +1,4 @@
-function Dead() {
+function Dead(status) {
 	document.getElementById("renderCanvas").style.display = "inline-block";
 	document.getElementById("container").style.display = "inline-block";
 	document.getElementById("scoreLabel").style.display = "inline-block";
@@ -11,7 +11,8 @@ function Dead() {
 
 	document.addEventListener("keyup", function () {
 
-	    if (event.key === 'b' || event.key === 'B') {
+	    if((event.key === 'b' || event.key === 'B') && status) {
+	    	status = false;
 	    	MainGame();
 	    }
 	});
