@@ -69,17 +69,39 @@
             color: white;
         }
 
+        #gameInstructionsTitle{
+            position: absolute;
+            color: white;
+            font: bold 50px/50px Helvetica, Sans-Serif;
+            top: 50px;
+            left: 38%;
+            width: 100%;
+        }
+
+        #gameInstructions1{
+            position: absolute;
+            color: white;
+            font: bold 20px/40px Helvetica, Sans-Serif;
+            top: 100px;
+            left: 20%;
+            width: 100%;
+        }
+
+        #gameInstructions2{
+            position: absolute;
+            color: white;
+            font: bold 20px/40px Helvetica, Sans-Serif;
+            top: 250px;
+            left: 20%;
+            width: 100%;
+        }
+
         #respawnWin {
             position: relative;
             color: white;
             text-align: center;
         }
 
-        #gameInstructionsText{
-            text-align: center;
-            color: white;
-            position: absolute;
-        }
 
         #respawn {
             position: relative;
@@ -98,8 +120,8 @@
             position: absolute;
             display: none;
             background: rgba(107, 120, 142, 1);
-            width: 600px;
-            height: 600px;
+            width: 100%;
+            height: 100%;
         }
 
         #startGameBtn {
@@ -151,14 +173,41 @@
         #gameInstructionsbtn:hover {
             background-color: #6FC6FF;
         }
+        #startbtn1{
+            border-radius: 5px;
+            padding: 15px 25px;
+            font-size: 22px;
+            text-decoration: none;
+            margin: 20px;
+            color: #fff;
+            position: absolute;
+            display: inline;
+            background-color: #55acee;
+            box-shadow: 0px 5px 0px 0px #3C93D5;
+            top:70%;
+            left:42%;
+        }
 
+        #startbtn1:active {
+            transform: translate(0px, 5px);
+            -webkit-transform: translate(0px, 5px);
+            box-shadow: 0px 1px 0px 0px;
+        }
 
+        #startbtn1:hover {
+            background-color: #6FC6FF;
+        }
 
         #gameInstructions{
-            display: none;
+            display: inline-block;
             background: rgba(107, 120, 142, 1);
             width: 100%;
             height: 100%;
+        }
+
+        .image {
+            position: relative;
+            width: 100%; /* for IE 6 */
         }
     </style>
 
@@ -179,6 +228,9 @@
         });
         document.getElementById("gameInstructionsbtn").addEventListener("click", function () {
             instructions();
+        });
+        document.getElementById("startbtn1").addEventListener("click", function () {
+            MainGame();
         });
 
     }
@@ -215,11 +267,23 @@
     </div>
 
     <div id="gameInstructions">
-        <img src="scenes/Dragon-Wallpapers-Backgrounds.jpg" style="width: 100%;height: 100%;">
-        <div id="gameInstructionsContainer">
-            <h6 id="gameInstructionsText">tesssssssssssssssssssst</h6>
+        <div id="gameInstructionsContainer" class="image">
+            <img src="scenes/Dragon-Wallpapers-Backgrounds.jpg" alt="" style="width: 100%;height: 100%;"/>
+
+            <h1 id="gameInstructionsTitle">Instructions</h1>
+
+            <h5 id="gameInstructions1" >Use the arrow keys <img src="images/arrows.png"  style="width:200px;height: 200px" align="center"/>for left-right rotation and changing elevation  heights</h5>
+
+            <br/>
+
+            <h5 id="gameInstructions2">Use the <img src="images/wad.png"  style="width:200px;height: 200px" align="center"/> keys for movement</h5>
+
+            <button id="startbtn1">Start</button>
         </div>
+
+
     </div>
+
 
 
 </body>

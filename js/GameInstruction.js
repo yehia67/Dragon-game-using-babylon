@@ -9,7 +9,7 @@ function instructions() {
     document.getElementById("youAreDead").style.display = "none";
 
     document.getElementById("gameInstructionsContainer").style.display = "inline-block";
-    document.getElementById("gameInstructionsText").style.display = "inline-block";
+    //document.getElementById("gameInstructionsText").style.display = "inline-block";
     document.getElementById("gameInstructions").style.display = "inline-block";
 
 

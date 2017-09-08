@@ -5,8 +5,8 @@ function MainGame() {
 	document.getElementById("imgScore").style.display = "inline-block";
 	document.getElementById("MainUI").style.display = "none";
 	document.getElementById("startGameBtn").style.display = "none";
-	document.getElementById("gameInstructionsbtn").style.display = "none";
-	document.getElementById("gameInstructions").style.display = "none";
+    document.getElementById("startbtn1").style.display = "none";
+    document.getElementById("gameInstructions").style.display = "none";
 	document.getElementById("youAreDead").style.display = "none";
 	document.getElementById("youWonContainer").style.display = "none";
 
