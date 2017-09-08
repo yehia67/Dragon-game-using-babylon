@@ -213,7 +213,6 @@ function MainGame() {
 
 		Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
 		    if (enemiesKilled === scene.enemyCount) {
-		    		scene.wingsSound.stop();
 		            enemiesKilled = 0;
 		            Game.activeScene++;
 		            Game.assetsManagers[Game.activeScene].load();
@@ -638,7 +637,10 @@ function MainGame() {
 	    healthBarContainerMaterial.backFaceCulling = false;
 
 	    healthBar = BABYLON.MeshBuilder.CreatePlane("hb1", {width:1.5, height:0.07, subdivisions:4}, scene);        
-	    healthBarContainer = BABYLON.MeshBuilder.CreatePlane("hb2", {width:1.5, height:.07, subdivisions:4}, scene);       
+	    healthBarContainer = BABYLON.MeshBuilder.CreatePlane("hb2", {width:1.5, height:.07, subdivisions:4}, scene);
+
+	    healthBar.scaling.x = dragon.health / 100;
+	    healthBarContainer.scaling.x = dragon.health / 100;    
 
 	    healthBar.position = new BABYLON.Vector3(0, .001, -.01);           // Move in front of container slightly.  Without this there is flickering.
 	    healthBarContainer.position = new BABYLON.Vector3(0, 1, 0);     // Position above player.
