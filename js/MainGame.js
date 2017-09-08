@@ -169,7 +169,7 @@ function MainGame() {
 
 		var arrowsTask = Game.assetsManagers[0].addMeshTask("Arrows Task", "", "scenes/", "arrow2.babylon");
 		arrowsTask.onSuccess = function(task) {
-		    createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.015, scene.enemyCount);
+		    createArrows(scene, task.loadedMeshes, task.loadedSkeletons, 0.03, scene.enemyCount);
 		}
 
 	    /*var CastleTask = Game.assetsManagers[0].addMeshTask("Castle Task", "", "scenes/", "castle.babylon");
@@ -572,7 +572,7 @@ function MainGame() {
 	            setTimeout(function () {
 	                Game.scenes[sceneIndex].enemiesFire(scene, dragon);
 	                fireFlag = false;
-	            }, 3000);
+	            }, 4000);
 	        }
 
 	        if (!meteorFlag) {
@@ -607,12 +607,12 @@ function MainGame() {
 
 	    scene.beginAnimation(dragon.skeletons[0], 41, 49, 0.01, true);
 
-	    dragon.scaling = new BABYLON.Vector3(15, 15, 15);
+	    dragon.scaling = new BABYLON.Vector3(25, 25, 25);
 	    dragon.frontVector = new BABYLON.Vector3(0, 0, -1);
 	    dragon.rotation.y = 3.14;
 	    camera.lockedTarget = dragon;
 	    camera.heightOffset = 20;
-	    camera.radius = 60;
+	    camera.radius = 80;
 
 	    var boundingBox = calculateBoundingBoxOfCompositeMeshes(scene, newMeshes, 3);
 	    dragon.bounder = boundingBox.boxMesh;
@@ -785,12 +785,12 @@ function MainGame() {
 
 		    var ray = new BABYLON.Ray(origin, direction, length);
 
-		    var rayHelper = new BABYLON.RayHelper(ray);
+		    /*var rayHelper = new BABYLON.RayHelper(ray);
 		    rayHelper.show(scene);
 
 		    setTimeout(function () {
 		        rayHelper.hide();
-		    }, 500);
+		    }, 500);*/
 
 		    var hit = scene.pickWithRay(ray, function(mesh) {
 		        if(mesh.name.startsWith("enemies")) {
@@ -1478,7 +1478,7 @@ function MainGame() {
 	    _boxMesh.checkCollisions = true;
 	    _boxMesh.material = new BABYLON.StandardMaterial("alpha", scene);
 	    _boxMesh.material.alpha = .2;
-	    _boxMesh.isVisible = true;
+	    _boxMesh.isVisible = false;
 
 	    return { min: { x: minx, y: miny, z: minz }, max: { x: maxx, y: maxy, z: maxz }, lengthX: _lengthX, lengthY: _lengthY, lengthZ: _lengthZ, center: _center, boxMesh: _boxMesh };
 	}
