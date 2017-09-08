@@ -390,6 +390,7 @@ function MainGame() {
 
 	    Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
 	        if (enemiesKilled === scene.enemyCount) {
+	            maxheight = 600;
 				Game.activeScene++;
 				Game.assetsManagers[Game.activeScene].load();
 				enemiesKilled = 0;
@@ -623,7 +624,10 @@ function MainGame() {
 	    dragon.isDead = false;
 
 	    createHealthBar(scene, dragon);
-
+	    if (Game.activeScene === 2)
+	    {
+	        dragon.position.y = maxheight - 50;
+	    }
 	    return dragon;
 	}
 
