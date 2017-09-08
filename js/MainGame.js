@@ -104,7 +104,8 @@ function MainGame() {
 		scene.coinSound;
 		scene.backgroundSound;
 		scene.wingsSound;
-	    scene.music;
+		scene.music;
+		scene.enemysound;
 
 		Game.assetsManagers[0] = new BABYLON.AssetsManager(scene);
 
@@ -122,7 +123,10 @@ function MainGame() {
         coinSoundTask.onSuccess = function (task) {
         	scene.coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
         }
-        
+        var enemySoundTask = Game.assetsManagers[0].addBinaryFileTask("enemy task", "sounds/Scream And Die.mp3");
+        enemySoundTask.onSuccess = function (task) {
+            scene.enemysound = new BABYLON.Sound("enemy", task.data, scene, null, { loop: false });
+        }
         var wingsSoundTask = Game.assetsManagers[0].addBinaryFileTask("Wings sound task", "sounds/Wings Flapping.mp3");
         wingsSoundTask.onSuccess = function(task) {
         	scene.wingsSound = new BABYLON.Sound("wings", task.data, scene, null, { loop : true});
@@ -294,6 +298,7 @@ function MainGame() {
 	    scene.fireSound;
 		scene.coinSound;
 		scene.backgroundSound;
+		scene.enemysound;
 
 		Game.assetsManagers[1] = new BABYLON.AssetsManager(scene);
 
@@ -306,7 +311,10 @@ function MainGame() {
         coinSoundTask.onSuccess = function (task) {
         	scene.coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
         }
-
+        var enemySoundTask = Game.assetsManagers[0].addBinaryFileTask("enemy task", "sounds/Scream And Die.mp3");
+        enemySoundTask.onSuccess = function (task) {
+            scene.enemysound = new BABYLON.Sound("enemy", task.data, scene, null, { loop: false });
+        }
 		BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
          
 		function onCoinLoaded(newMeshes, particleSystems, skeletons) {
@@ -466,7 +474,7 @@ function MainGame() {
 		scene.vist = [];
 		scene.enemyCount = 30;
 		scene.dragon;
-
+		scene.enemysound;
 		scene.fireSound;
 		scene.coinSound;
 		scene.backgroundSound;
@@ -482,7 +490,10 @@ function MainGame() {
         coinSoundTask.onSuccess = function (task) {
         	scene.coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
         }
-
+        var enemySoundTask = Game.assetsManagers[0].addBinaryFileTask("enemy task", "sounds/Scream And Die.mp3");
+        enemySoundTask.onSuccess = function (task) {
+            scene.enemysound = new BABYLON.Sound("enemy", task.data, scene, null, { loop: false });
+        }
 	    BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
 
 	    function onCoinLoaded(newMeshes, particleSystems, skeletons) {
@@ -686,7 +697,7 @@ function MainGame() {
 	function updateHealth(scene, dragon) {
 	    if(dragon.health > 0) {
 	        healthBar.scaling.x = dragon.health / 100;
-	        healthBar.position.x = ((0.75 - ((dragon.health / 200) * 0.75)) * -1) + ((dragon.health / 200) * 0.75);
+	        healthBar.position.x = 0;
 	    } else {
 	    	healthBar.scaling.x = dragon.health / 100;
 	        healthBar.position.x = ((0.75 - ((dragon.health / 200) * 0.75)) * -1) + ((dragon.health / 200) * 0.75);
@@ -833,6 +844,7 @@ function MainGame() {
 				scene.beginAnimation(hit.pickedMesh.tempClone.skeletons[0], 51, 72, 0.7, true);
 				hit.pickedMesh.tempClone.isDead = true;
 				enemiesKilled++;
+				scene.enemysound.play();
 				console.log(enemiesKilled);
 				setTimeout(function() {
 				    var index = scene.enemies.indexOf(hit.pickedMesh.tempClone);
