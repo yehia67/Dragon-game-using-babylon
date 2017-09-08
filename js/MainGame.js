@@ -71,7 +71,7 @@ function MainGame() {
                     	Game.scenes[i].dispose();
                     }
 
-                    Dead();
+                    Dead(died);
                 }
             } else {
 				return;
