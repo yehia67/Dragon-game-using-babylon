@@ -105,7 +105,7 @@ function MainGame() {
 		scene.backgroundSound;
 		scene.wingsSound;
 		scene.music;
-		scene.enemysound;
+		//scene.enemysound;
 
 		Game.assetsManagers[0] = new BABYLON.AssetsManager(scene);
 
@@ -123,10 +123,10 @@ function MainGame() {
         coinSoundTask.onSuccess = function (task) {
         	scene.coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
         }
-        var enemySoundTask = Game.assetsManagers[0].addBinaryFileTask("enemy task", "sounds/Scream And Die.mp3");
+       /* var enemySoundTask = Game.assetsManagers[0].addBinaryFileTask("enemy task", "sounds/Scream And Die.mp3");
         enemySoundTask.onSuccess = function (task) {
             scene.enemysound = new BABYLON.Sound("enemy", task.data, scene, null, { loop: false });
-        }
+        }*/
         var wingsSoundTask = Game.assetsManagers[0].addBinaryFileTask("Wings sound task", "sounds/Wings Flapping.mp3");
         wingsSoundTask.onSuccess = function(task) {
         	scene.wingsSound = new BABYLON.Sound("wings", task.data, scene, null, { loop : true});
@@ -234,7 +234,7 @@ function MainGame() {
 	    }
 
 		Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
-		    if (enemiesKilled === 17) {
+		    if (enemiesKilled === 10) {
 		            enemiesKilled = 0;
 		            Game.activeScene++;
 		            Game.assetsManagers[Game.activeScene].load();
@@ -311,10 +311,7 @@ function MainGame() {
         coinSoundTask.onSuccess = function (task) {
         	scene.coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
         }
-        var enemySoundTask = Game.assetsManagers[0].addBinaryFileTask("enemy task", "sounds/Scream And Die.mp3");
-        enemySoundTask.onSuccess = function (task) {
-            scene.enemysound = new BABYLON.Sound("enemy", task.data, scene, null, { loop: false });
-        }
+        
 		BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
          
 		function onCoinLoaded(newMeshes, particleSystems, skeletons) {
@@ -340,7 +337,10 @@ function MainGame() {
 
 		    coinModel.diposed = false;
 		}
-
+		/*var enemySoundTask = Game.assetsManagers[0].addBinaryFileTask("enemy task", "sounds/Scream And Die.mp3");
+		enemySoundTask.onSuccess = function (task) {
+		    scene.enemysound = new BABYLON.Sound("enemy", task.data, scene, null, { loop: false });
+		}*/
 		var skybox = BABYLON.Mesh.CreateBox("skyBox", 10000.0, scene);
 	    var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
 	    skyboxMaterial.backFaceCulling = false;
@@ -415,7 +415,7 @@ function MainGame() {
 	    }
 
 	    Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
-	        if (enemiesKilled === 22) {
+	        if (enemiesKilled === 1) {
 	            maxheight = 600;
 				Game.activeScene++;
 				Game.assetsManagers[Game.activeScene].load();
@@ -474,7 +474,7 @@ function MainGame() {
 		scene.vist = [];
 		scene.enemyCount = 30;
 		scene.dragon;
-		scene.enemysound;
+		//scene.enemysound;
 		scene.fireSound;
 		scene.coinSound;
 		scene.backgroundSound;
@@ -676,10 +676,10 @@ function MainGame() {
 	    healthBarContainerMaterial.backFaceCulling = false;
 
 	    healthBar = BABYLON.MeshBuilder.CreatePlane("hb1", {width:1.5, height:0.07, subdivisions:4}, scene);        
-	    healthBarContainer = BABYLON.MeshBuilder.CreatePlane("hb2", {width:1.5, height:.07, subdivisions:4}, scene);
+	    healthBarContainer = BABYLON.MeshBuilder.CreatePlane("hb2", { width: 1.5, height: 0.07, subdivisions: 4 }, scene);
 
-	    healthBar.scaling.x = dragon.health / 100;
-	    healthBarContainer.scaling.x = dragon.health / 100;    
+	    healthBar.scaling.x = dragon.health / (100+bonusScore);
+	    healthBarContainer.scaling.x = dragon.health / (100 + bonusScore);
 
 	    healthBar.position = new BABYLON.Vector3(0, .001, -.01);           // Move in front of container slightly.  Without this there is flickering.
 	    healthBarContainer.position = new BABYLON.Vector3(0, 1, 0);     // Position above player.
@@ -696,11 +696,12 @@ function MainGame() {
 
 	function updateHealth(scene, dragon) {
 	    if(dragon.health > 0) {
-	        healthBar.scaling.x = dragon.health / 100;
-	        healthBar.position.x = 0;
+	        healthBar.scaling.x = dragon.health / (100 + bonusScore);
+	        healthBar.position.x = -(1 - dragon.health / (100 + bonusScore)) * 1.5 / 2;
+	       // healthBar.position.x = -dragon.health / 100;
 	    } else {
-	    	healthBar.scaling.x = dragon.health / 100;
-	        healthBar.position.x = ((0.75 - ((dragon.health / 200) * 0.75)) * -1) + ((dragon.health / 200) * 0.75);
+	        healthBar.scaling.x = dragon.health / (100 + bonusScore);
+	    	healthBar.position.x = -(1 - dragon.health / (100 + bonusScore)) * 1.5 / 2;
 	        if(!dragon.isDead) {
 	            dragon.isDead = true;
 	            scene.beginAnimation(dragon.skeletons[0], 1, 28, 3, true);
@@ -844,7 +845,7 @@ function MainGame() {
 				scene.beginAnimation(hit.pickedMesh.tempClone.skeletons[0], 51, 72, 0.7, true);
 				hit.pickedMesh.tempClone.isDead = true;
 				enemiesKilled++;
-				scene.enemysound.play();
+				//scene.enemysound.play();
 				console.log(enemiesKilled);
 				setTimeout(function() {
 				    var index = scene.enemies.indexOf(hit.pickedMesh.tempClone);
