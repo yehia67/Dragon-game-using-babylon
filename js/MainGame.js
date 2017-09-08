@@ -5,12 +5,16 @@ function MainGame() {
 	document.getElementById("imgScore").style.display = "inline-block";
 	document.getElementById("MainUI").style.display = "none";
 	document.getElementById("startGameBtn").style.display = "none";
+	document.getElementById("gameInstructionsbtn").style.display = "none";
+	document.getElementById("gameInstructions").style.display = "none";
 	document.getElementById("youAreDead").style.display = "none";
+	document.getElementById("youWonContainer").style.display = "none";
 
 	var canvas;
 	var engine;
 
 	var died = false;
+	var won = false;
 
 	var Game = {};
 	Game.scenes = [];
@@ -30,6 +34,7 @@ function MainGame() {
 	var isUpPressed = false;
 	var isDownPressed = false;
 	var isSpacePressed = false;
+
     var coinTimeOut = 10000;
 	var scenesize = 4000;
 	var maxheight = 300;
@@ -50,11 +55,13 @@ function MainGame() {
 		engine.runRenderLoop(function() {
 			if(Game.scenes[Game.activeScene].isReady) {
 				Game.scenes[Game.activeScene].renderLoop();
+				if(won) {
+					engine.stopRenderLoop();
+
+					Winning();
+				}
                 if(died) {
                     engine.stopRenderLoop();
-                    for(var i = 0; i < Game.scenes.length; i++) {
-                    	Game.scenes[i].dispose();
-                    }
 
                     Dead();
                 }
@@ -213,6 +220,7 @@ function MainGame() {
 
 		Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
 		    if (enemiesKilled === scene.enemyCount) {
+		    		won = true;
 		            enemiesKilled = 0;
 		            Game.activeScene++;
 		            Game.assetsManagers[Game.activeScene].load();
@@ -560,6 +568,12 @@ function MainGame() {
 	        createRocks(scene, dragon);
 	    }
 
+	    Game.scenes[sceneIndex].haveWon = function() {
+	    	if(enemiesKilled === 25) {
+	    		won = true;
+	    	}
+	    }
+
 	    Game.scenes[sceneIndex].isReady = false;
 
 	    Game.assetsManagers[2].onFinish = function() {
@@ -584,7 +598,7 @@ function MainGame() {
 	            }, 500);
 	        }
 
-	        
+	        this.haveWon();
 	        this.updateCoins(scene);
 			this.updateArrowsPos(scene, dragon);
 			this.updateEnemy(scene, dragon, enemyRange);

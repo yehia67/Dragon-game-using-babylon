@@ -17,6 +17,7 @@
             padding: 0;
             margin: 0;
             overflow: hidden;
+            z-index: 49;
         }
 
         #container {
@@ -45,12 +46,33 @@
             background: rgba(0,0,0,0.85);
             position: fixed;
             display: none;
-
         }
 
         #youDiedHeader {
             text-align: center;
             color: white;
+        }
+
+        #youWonContainer {
+            width: 100%;
+            height: 100%;
+            top: 0px;
+            left: 0px;
+            background: rgba(0,0,0,0.85);
+            position: fixed;
+            display: none;
+            z-index: 50;
+        }
+
+        #youWon {
+            text-align: center;
+            color: white;
+        }
+
+        #respawnWin {
+            position: relative;
+            color: white;
+            text-align: center;
         }
 
         #gameInstructionsText{
@@ -133,7 +155,7 @@
 
 
         #gameInstructions{
-            display: inline-block;
+            display: none;
             background: rgba(107, 120, 142, 1);
             width: 100%;
             height: 100%;
@@ -145,17 +167,11 @@
     <script type="text/javascript" src="js/GameInstruction.js"></script>
     <script type="text/javascript" src="js/MainGame.js"></script>
     <script type="text/javascript" src="js/Dead.js"></script>
+    <script type="text/javascript" src="js/Winning.js"></script>
 
 
     <script>
     document.addEventListener("DOMContentLoaded", start, false);
-
-
-    /*function gameInstruction() {
-        document.getElementById("gameInstructionsbtn").addEventListener("click",function () {
-            
-        })
-    }*/
 
     function start() {
         document.getElementById("startGameBtn").addEventListener("click", function () {
@@ -186,24 +202,23 @@
         <h2 id="respawn">Press 'b' key to try again...</h2>
     </div>
 
+    <div id="youWonContainer">
+        <h1 id="youWon">Congratulations, You Won</h1>
 
+        <h2 id="respawnWin">Press 'b' key to try again...</h2>
+    </div>
 
     <div id="MainUI">
         <img src="scenes/Dragon-Wallpapers-Backgrounds.jpg" style="width: 100%;height: 100%;">
         <button id="startGameBtn">Start Game</button>
         <button id="gameInstructionsbtn">Game Instructions</button>
-
-
     </div>
 
     <div id="gameInstructions">
         <img src="scenes/Dragon-Wallpapers-Backgrounds.jpg" style="width: 100%;height: 100%;">
         <div id="gameInstructionsContainer">
             <h6 id="gameInstructionsText">tesssssssssssssssssssst</h6>
-
         </div>
-
-
     </div>
 
 
