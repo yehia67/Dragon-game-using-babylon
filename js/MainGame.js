@@ -58,10 +58,18 @@ function MainGame() {
 				if(won) {
 					engine.stopRenderLoop();
 
+					for(var i = 0; i < Game.scenes.length; i++) {
+                    	Game.scenes[i].dispose();
+                    }
+
 					Winning();
 				}
                 if(died) {
                     engine.stopRenderLoop();
+
+                    for(var i = 0; i < Game.scenes.length; i++) {
+                    	Game.scenes[i].dispose();
+                    }
 
                     Dead();
                 }
@@ -102,8 +110,9 @@ function MainGame() {
 
 		BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
             
-       scene.music = new BABYLON.Sound("Music", "sounds/City-of-Dread.mp3", scene, null, { loop: true, autoplay: true });
+        scene.music = new BABYLON.Sound("Music", "sounds/Tower Defense.mp3", scene, null, { loop: true, autoplay : true});
         scene.music.play();
+
 		var fireSoundTask = Game.assetsManagers[0].addBinaryFileTask("fire task", "sounds/Small Fireball.mp3");
         fireSoundTask.onSuccess = function (task) {
         	scene.fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
@@ -224,7 +233,6 @@ function MainGame() {
 		    if (enemiesKilled === 17) {
 		            enemiesKilled = 0;
 		            Game.activeScene++;
-                    scene.music.stop();
 		            Game.assetsManagers[Game.activeScene].load();
 			}
 		}
@@ -288,9 +296,7 @@ function MainGame() {
 		scene.backgroundSound;
 
 		Game.assetsManagers[1] = new BABYLON.AssetsManager(scene);
-             
-      scene.music = new BABYLON.Sound("Music", "sounds/City-of-Dread.mp3", scene, null, { loop: true, autoplay: true });
-        scene.music.play();
+
         var fireSoundTask = Game.assetsManagers[1].addBinaryFileTask("fire task", "sounds/Small Fireball.mp3");
         fireSoundTask.onSuccess = function (task) {
         	scene.fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
@@ -404,7 +410,6 @@ function MainGame() {
 	        if (enemiesKilled === 22) {
 	            maxheight = 600;
 				Game.activeScene++;
-                scene.music.stop();
 				Game.assetsManagers[Game.activeScene].load();
 				enemiesKilled = 0;
 			}
@@ -472,8 +477,6 @@ function MainGame() {
         fireSoundTask.onSuccess = function (task) {
         	scene.fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
         }
-        scene.music = new BABYLON.Sound("Music", "sounds/City-of-Dread.mp3", scene, null, { loop: true, autoplay: true });
-        scene.music.play();
 
         var coinSoundTask = Game.assetsManagers[2].addBinaryFileTask("coin task", "sounds/235273__godowan__coins3.wav");
         coinSoundTask.onSuccess = function (task) {
@@ -691,7 +694,6 @@ function MainGame() {
 	            dragon.isDead = true;
 	            scene.beginAnimation(dragon.skeletons[0], 1, 28, 3, true);
 	            setTimeout(function() {
-	                scene.music.stop();
                     died = true;
 	            }, 1070);
 	        }
