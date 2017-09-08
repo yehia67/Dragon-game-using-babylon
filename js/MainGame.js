@@ -96,12 +96,14 @@ function MainGame() {
 		scene.coinSound;
 		scene.backgroundSound;
 		scene.wingsSound;
-	    
+	    scene.music;
 
 		Game.assetsManagers[0] = new BABYLON.AssetsManager(scene);
 
 		BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
-
+            
+       scene.music = new BABYLON.Sound("Music", "sounds/City-of-Dread.mp3", scene, null, { loop: true, autoplay: true });
+        scene.music.play();
 		var fireSoundTask = Game.assetsManagers[0].addBinaryFileTask("fire task", "sounds/Small Fireball.mp3");
         fireSoundTask.onSuccess = function (task) {
         	scene.fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
@@ -111,7 +113,7 @@ function MainGame() {
         coinSoundTask.onSuccess = function (task) {
         	scene.coinSound = new BABYLON.Sound("coin", task.data, scene, null, { loop: false });
         }
-
+        
         var wingsSoundTask = Game.assetsManagers[0].addBinaryFileTask("Wings sound task", "sounds/Wings Flapping.mp3");
         wingsSoundTask.onSuccess = function(task) {
         	scene.wingsSound = new BABYLON.Sound("wings", task.data, scene, null, { loop : true});
@@ -222,6 +224,7 @@ function MainGame() {
 		    if (enemiesKilled === 17) {
 		            enemiesKilled = 0;
 		            Game.activeScene++;
+                    scene.music.stop();
 		            Game.assetsManagers[Game.activeScene].load();
 			}
 		}
@@ -273,7 +276,7 @@ function MainGame() {
 		scene.arrows = [];
 		scene.coins = [];
 		scene.vist = [];
-
+        scene.music;
 		scene.enemyCount = 25;
 
 		scene.dragon;
@@ -285,7 +288,9 @@ function MainGame() {
 		scene.backgroundSound;
 
 		Game.assetsManagers[1] = new BABYLON.AssetsManager(scene);
-
+             
+      scene.music = new BABYLON.Sound("Music", "sounds/City-of-Dread.mp3", scene, null, { loop: true, autoplay: true });
+        scene.music.play();
         var fireSoundTask = Game.assetsManagers[1].addBinaryFileTask("fire task", "sounds/Small Fireball.mp3");
         fireSoundTask.onSuccess = function (task) {
         	scene.fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
@@ -297,7 +302,7 @@ function MainGame() {
         }
 
 		BABYLON.SceneLoader.ImportMesh("", "scenes/", "kimoshhh.babylon", scene, onCoinLoaded);
-
+         
 		function onCoinLoaded(newMeshes, particleSystems, skeletons) {
 		    coinModel = newMeshes[0];
 
@@ -399,6 +404,7 @@ function MainGame() {
 	        if (enemiesKilled === 22) {
 	            maxheight = 600;
 				Game.activeScene++;
+                scene.music.stop();
 				Game.assetsManagers[Game.activeScene].load();
 				enemiesKilled = 0;
 			}
@@ -459,13 +465,15 @@ function MainGame() {
 		scene.fireSound;
 		scene.coinSound;
 		scene.backgroundSound;
-
+        scene.music;
 	    Game.assetsManagers[2] = new BABYLON.AssetsManager(scene);
 
         var fireSoundTask = Game.assetsManagers[2].addBinaryFileTask("fire task", "sounds/Small Fireball.mp3");
         fireSoundTask.onSuccess = function (task) {
         	scene.fireSound = new BABYLON.Sound("fire", task.data, scene, null, { loop: false });
         }
+        scene.music = new BABYLON.Sound("Music", "sounds/City-of-Dread.mp3", scene, null, { loop: true, autoplay: true });
+        scene.music.play();
 
         var coinSoundTask = Game.assetsManagers[2].addBinaryFileTask("coin task", "sounds/235273__godowan__coins3.wav");
         coinSoundTask.onSuccess = function (task) {
@@ -683,7 +691,8 @@ function MainGame() {
 	            dragon.isDead = true;
 	            scene.beginAnimation(dragon.skeletons[0], 1, 28, 3, true);
 	            setTimeout(function() {
-	                died = true;
+	                scene.music.stop();
+                    died = true;
 	            }, 1070);
 	        }
 	    }
