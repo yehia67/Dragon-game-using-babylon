@@ -234,7 +234,7 @@ function MainGame() {
 	    }
 
 		Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
-		    if (enemiesKilled === 10) {
+		    if (enemiesKilled === scene.enemyCount-3) {
 		            enemiesKilled = 0;
 		            Game.activeScene++;
 		            Game.assetsManagers[Game.activeScene].load();
@@ -415,7 +415,7 @@ function MainGame() {
 	    }
 
 	    Game.scenes[sceneIndex].updateActiveScene = function(dragon) {
-	        if (enemiesKilled === 1) {
+	        if (enemiesKilled === scene.enemyCount-3) {
 	            maxheight = 600;
 				Game.activeScene++;
 				Game.assetsManagers[Game.activeScene].load();
